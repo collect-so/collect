@@ -1,0 +1,28 @@
+{
+  "name": "@collect/sdk",
+  "description": "Official Collect SDK",
+  "license": "MIT",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist/**/*.{js,d.ts,mjs}",
+    "./package.json"
+  ],
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "types:check": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "node-fetch": "3.3.1",
+    "yup": "1.2.0"
+  },
+  "peerDependencies": {},
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  }
+}

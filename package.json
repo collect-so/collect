@@ -1,22 +1,52 @@
 {
-  "name": "collect-javascript-sdk",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/collect-so/collect-javascript-sdk.git"
-  },
-  "author": "Collect Software Inc.",
+  "name": "collect",
+  "private": true,
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/collect-so/collect-javascript-sdk/issues"
+  "scripts": {
+    "clean": "pnpm -r run clean",
+    "dev": "pnpm -r run dev",
+    "build": "pnpm -r run build",
+    "types:check": "pnpm -r run types:check",
+    "format": "prettier --write ./**/*.{ts,tsx}",
+    "lint": "eslint --ext mjs,js,ts,tsx",
+    "lint:fix": "pnpm lint --fix",
+    "changesets": "npx changeset",
+    "version": "changeset version",
+    "release": "changeset publish",
+    "prepublishOnly": "pnpm -r run clean && pnpm -r run build",
+    "publish": "pnpm -r publish",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
-  "homepage": "https://github.com/collect-so/collect-javascript-sdk#readme",
-  "dependencies": {
-    "axios": "^1.3.4"
+  "devDependencies": {
+    "@changesets/cli": "^2.26.2",
+    "@swc/jest": "^0.2.26",
+    "@types/jest": "^29.5.2",
+    "@types/node": "^20.3.2",
+    "@types/react": "^18.2.14",
+    "@typescript-eslint/eslint-plugin": "5.60.1",
+    "@typescript-eslint/parser": "5.60.1",
+    "eslint": "8.43.0",
+    "eslint-config-prettier": "8.8.0",
+    "eslint-plugin-jest-dom": "5.0.1",
+    "eslint-plugin-perfectionist": "^1.4.0",
+    "jest": "29.5.0",
+    "prettier": "2.8.8",
+    "rimraf": "5.0.1",
+    "tsup": "^7.1.0",
+    "typescript": "5.0.4"
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": false,
+    "useTabs": false,
+    "singleQuote": true,
+    "arrowParens": "always",
+    "trailingComma": "none"
+  },
+  "packageManager": "pnpm@8.6.5",
+  "engines": {
+    "pnpm": "8",
+    "node": "^18.x"
   }
 }
