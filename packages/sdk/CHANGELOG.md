@@ -1,5 +1,11 @@
 # @collect.so/sdk
 
+## 0.0.4
+
+### Patch Changes
+
+- Change
+
 ## 0.0.2
 
 ### Patch Changes
