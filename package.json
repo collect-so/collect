@@ -12,9 +12,8 @@
     "lint:fix": "pnpm lint --fix",
     "changesets": "npx changeset",
     "version": "changeset version",
-    "release": "pnpm build && changeset publish",
+    "release": "pnpm build && pnpm changesets publish",
     "prepublishOnly": "pnpm -r run clean && pnpm -r run build",
-    "publish": "pnpm -r publish",
     "test": "jest",
     "test:watch": "jest --watch"
   },
