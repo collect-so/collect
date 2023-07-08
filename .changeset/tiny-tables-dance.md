@@ -2,4 +2,4 @@
 '@collect.so/sdk': patch
 ---
 
-Init
+Init 2
