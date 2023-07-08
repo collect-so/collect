@@ -5,10 +5,16 @@ on:
     branches:
       - main
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+permissions:
+  contents: read # for checkout
+
+env:
+  CI: true
+  PNPM_CACHE_FOLDER: .pnpm-store
 
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,13 +28,16 @@ jobs:
           pnpm lint
           pnpm types:check
           pnpm test
-          pnpm clean
-          pnpm build
 
   release:
     name: Release
     runs-on: ubuntu-latest
     needs: ["test"]
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -36,19 +45,30 @@ jobs:
       - name: Install
         uses: ./.github/workflows/install
 
-      - name: Creating .npmrc
-        run: |
-          cat << EOF > "$HOME/.npmrc"
-            //registry.npmjs.org/:_authToken=$NPM_TOKEN
-          EOF
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}  
+      - name: Build
+        run: pnpm build
 
-      - name: Create Release Pull Request or Publish to npm
+      - name: Setup .npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Create release Pull Request or publish to NPM
         id: changesets
         uses: changesets/action@v1
         with:
           publish: pnpm release
+          commit: "ci(changesets): version packages"
+          setupGitUser: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create @dev release
+        if: steps.changesets.outputs.published != 'true'
+        run: |
+          git checkout main
+          pnpm version:dev
+          pnpm release:dev
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

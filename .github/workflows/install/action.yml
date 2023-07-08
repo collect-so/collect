@@ -13,6 +13,12 @@ runs:
         cache: pnpm
         registry-url: 'https://registry.npmjs.org'
 
+    - name: Setup Git User
+      shell: bash
+      run: |
+        git config --global user.email "nctilucent@gmail.com"
+        git config --global user.name "Erik Farukshin"
+
     - name: Install Dependencies
       shell: bash
       run: |

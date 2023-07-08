@@ -10,12 +10,12 @@
     "format": "prettier --write ./**/*.{ts,tsx}",
     "lint": "eslint --ext mjs,js,ts,tsx",
     "lint:fix": "pnpm lint --fix",
-    "changesets": "npx changeset",
-    "version": "changeset version",
-    "release": "pnpm build && pnpm changesets publish",
-    "prepublishOnly": "pnpm -r run clean && pnpm -r run build",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "version": "changeset version",
+    "release": "changeset publish",
+    "version:dev": "changeset version --snapshot dev",
+    "release:dev": "changeset publish --tag dev"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.2",

@@ -53,7 +53,7 @@ importers:
         specifier: 5.0.4
         version: 5.0.4
 
-  packages/sdk:
+  packages/javascript-sdk:
     dependencies:
       node-fetch:
         specifier: 3.3.1
