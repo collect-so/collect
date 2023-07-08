@@ -53,12 +53,6 @@ importers:
         specifier: 5.0.4
         version: 5.0.4
 
-  examples/node:
-    dependencies:
-      '@collect/sdk':
-        specifier: workspace:*
-        version: link:../../packages/sdk
-
   packages/sdk:
     dependencies:
       node-fetch:

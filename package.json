@@ -12,7 +12,7 @@
     "lint:fix": "pnpm lint --fix",
     "changesets": "npx changeset",
     "version": "changeset version",
-    "release": "changeset publish",
+    "release": "pnpm build && changeset publish",
     "prepublishOnly": "pnpm -r run clean && pnpm -r run build",
     "publish": "pnpm -r publish",
     "test": "jest",
