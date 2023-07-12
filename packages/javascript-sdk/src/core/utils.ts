@@ -2,7 +2,6 @@ import type {
   AnyObject,
   Label,
   LabelOrModelOrPayload,
-  Model,
   PropertyType,
   RecordPayload,
   SearchParams
@@ -10,7 +9,6 @@ import type {
 
 import { isLabel } from '../types'
 import { ISO_8601_FULL } from './constants'
-import { registeredModels, validator } from './sdk'
 
 const suggestType = (value: unknown): PropertyType => {
   if (typeof value === 'string' && value !== '') {
@@ -89,27 +87,4 @@ export const extractLabelAndParams = (
   }
 
   return { label, params } as const
-}
-
-// TODO: doesn't work with search params
-export async function validate(
-  labelOrModelOrPayload: LabelOrModelOrPayload,
-  payload?: RecordPayload
-) {
-  let shouldValidate = false
-  let model: Model
-
-  if (isLabel(labelOrModelOrPayload)) {
-    shouldValidate = labelOrModelOrPayload in registeredModels
-    model = registeredModels[labelOrModelOrPayload]
-  } else {
-    shouldValidate = Boolean(
-      typeof labelOrModelOrPayload !== undefined && payload
-    )
-    model = labelOrModelOrPayload as Model
-  }
-
-  if (shouldValidate && validator) {
-    await validator(model)(payload!)
-  }
 }
