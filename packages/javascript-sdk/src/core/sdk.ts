@@ -1,47 +1,22 @@
-import type { Label, Model, Models, Validator } from '../types'
+import type { Label, Model } from '../types'
+import type { BaseInit } from './base'
 
-import { yupValidator } from '../validators/yup'
-import { createApi } from './api'
-import { createFetcher } from './fetcher'
+import { base } from './base'
 import { Result } from './result'
-
-// runtime
-export let token: string
-export let registeredModels: Models = {}
-export let validator: Validator
-export let api: ReturnType<typeof createApi>
 
 class Collect extends Result {
   constructor() {
     super()
   }
 
-  init(options: {
-    baseUrl?: string
-    models?: Models
-    token: string
-    validator?: Validator
-  }) {
-    const {
-      baseUrl = 'localhost:3000',
-      token: tokenOption,
-      validator: validatorOption = yupValidator
-    } = options
-
-    token = tokenOption
-    api = createApi(createFetcher({ baseUrl, token }))
-
-    if (validatorOption) validator = validatorOption
+  init(options: BaseInit) {
+    base.init(options)
 
     return this
   }
 
-  get token() {
-    return token
-  }
-
   registerModel(label: Label, model: Model) {
-    registeredModels[label] = model
+    base.registerModel(label, model)
 
     return this
   }

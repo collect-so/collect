@@ -1,7 +1,6 @@
 /* eslint-disable prefer-rest-params */
 import type {
   AnyObject,
-  AnyRecord,
   AnyResult,
   Label,
   LabelOrModel,
@@ -12,11 +11,29 @@ import type {
 } from '../types'
 
 import { isLabelOrModel, isResultWithId } from '../types'
-import { api } from './sdk'
-import { createBody, extractLabelAndParams, validate } from './utils'
+import { base } from './base'
+import { createBody, extractLabelAndParams } from './utils'
 
 type CreateResult = Omit<Result, 'update'> & {
   update(searchParams: SearchParams, payload: RecordPayload): Promise<Result>
+}
+
+// TODO: refactor
+const createProxy = (
+  newResult: Result,
+  labelOrModelOrPayload: LabelOrModelOrPayload
+) => {
+  return new Proxy(newResult, {
+    get(_, prop) {
+      if (prop === 'update' && isLabelOrModel(labelOrModelOrPayload)) {
+        return (...args: any[]) =>
+          // @ts-expect-error A spread argument must either have a tuple type or be passed to a rest parameter.
+          newResult.update(labelOrModelOrPayload, ...args)
+      }
+      // @ts-expect-error A spread argument must either have a tuple type or be passed to a rest parameter.
+      return Reflect.get(...arguments)
+    }
+  })
 }
 
 export class Result {
@@ -35,27 +52,13 @@ export class Result {
     labelOrModelOrPayload: LabelOrModelOrPayload,
     payload?: RecordPayload
   ): Promise<CreateResult> {
-    await validate(labelOrModelOrPayload, payload)
+    await base.validate(labelOrModelOrPayload, payload)
 
     const body = createBody(labelOrModelOrPayload, payload)
 
-    const data = await api.createRecord(body)
+    const data = await base.api?.createRecord(body)
 
-    // TODO: refactor
-    const newResult = new Result(data)
-    const proxy = new Proxy(newResult, {
-      get(_, prop) {
-        if (prop === 'update' && isLabelOrModel(labelOrModelOrPayload)) {
-          return (...args: any[]) =>
-            // @ts-expect-error A spread argument must either have a tuple type or be passed to a rest parameter.
-            newResult.update(labelOrModelOrPayload, ...args)
-        }
-        // @ts-expect-error A spread argument must either have a tuple type or be passed to a rest parameter.
-        return Reflect.get(...arguments)
-      }
-    })
-
-    return proxy
+    return createProxy(new Result(data), labelOrModelOrPayload)
   }
 
   async update(
@@ -76,7 +79,7 @@ export class Result {
     let body: AnyObject
 
     if (isLabelOrModel(labelOrModelOrParams)) {
-      await validate(labelOrModelOrParams, payload)
+      await base.validate(labelOrModelOrParams, payload)
       body = createBody(labelOrModelOrParams, payload)
       params = searchParamsOrPayload
     } else {
@@ -84,7 +87,7 @@ export class Result {
       body = searchParamsOrPayload
     }
 
-    const data = await api.updateRecordWithSearchParams(params, body)
+    const data = await base.api?.updateRecordWithSearchParams(params, body)
 
     return new Result(data)
   }
@@ -100,7 +103,7 @@ export class Result {
       searchParams
     )
 
-    const data = await api.findRecords(params, label)
+    const data = await base.api?.findRecords(params, label)
 
     return new Result(data)
   }
@@ -116,7 +119,7 @@ export class Result {
       searchParams
     )
 
-    const data = await api.deleteRecords(params, label)
+    const data = await base.api?.deleteRecords(params, label)
 
     return new Result(data)
   }
@@ -150,7 +153,7 @@ export class Result {
       params = targetOrSearchParams
     }
 
-    await api.linkRecords(originId, params, metadata)
+    await base.api?.linkRecords(originId, params, metadata)
 
     return this
   }
