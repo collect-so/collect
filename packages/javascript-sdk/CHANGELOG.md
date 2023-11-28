@@ -1,4 +1,4 @@
-# @collect.so/javascript-sdk
+# @collect/javascript-sdk
 
 ## 0.0.2
 
