@@ -1,0 +1,27 @@
+{
+  "name": "@collect.so/types",
+  "description": "Collect TypeScript types",
+  "license": "MIT",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist/**/*.{js,d.ts,mjs}",
+    "./package.json"
+  ],
+  "scripts": {
+    "build": "tsc -d --declarationMap",
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "dependencies": {},
+  "peerDependencies": {},
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "https",
+    "url": "https://github.com/collect-so/collect-toolkit"
+  }
+}
