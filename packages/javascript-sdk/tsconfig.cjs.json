@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "outDir": "./cjs",
+    "module": "commonjs",
+    "target": "es2017",
+    "checkJs": false,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictFunctionTypes": true,
+    "types": [ "node" ],
+    "esModuleInterop": false // This is a viral option, do not enable https://www.semver-ts.org/#module-interop
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["./src/collect.esm.node.ts", "./src/collect.esm.worker.ts"],
+}

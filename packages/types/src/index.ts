@@ -1,8 +1,7 @@
-import type { RequireAtLeastOne, Enumerable } from './utils';
+/* eslint-disable perfectionist/sort-union-types */
+import type { Enumerable, RequireAtLeastOne } from './utils';
 
 export type CollectDateTime = {
-    year: number;
-    month?: number;
     day?: number;
     hour?: number;
     minute?: number;
@@ -12,14 +11,14 @@ export type CollectDateTime = {
     nanosecond?: number;
 };
 
-export type CollectQueryCommonParams = {
-    orderBy?: Record<string, 'asc' | 'desc'>;
+export type CollectQueryCommonParams<T extends object = object> = {
     skip?: number;
     limit?: number;
+    orderBy?: Record<keyof T | string, 'asc' | 'desc'>;
 };
 
 // WHERE CLAUSE
-export type CollectQueryWhere<T extends {} = {}> = Record<
+export type CollectQueryWhere<T extends object = object> = Record<
     keyof T | string,
     | string
     | number
@@ -31,23 +30,24 @@ export type CollectQueryWhere<T extends {} = {}> = Record<
     | RequireAtLeastOne<Record<'lt' | 'lte' | 'gt' | 'gte', number | CollectDateTime>>
     | RequireAtLeastOne<Record<'startsWith' | 'endsWith' | 'contains', string>>
 >;
-export type CollectQueryWhereParam = {
+export type CollectQueryWhereParam<T extends object = object> = {
     where:
-        | CollectQueryWhere
-        | RequireAtLeastOne<Record<'AND' | 'OR' | 'NOT', Enumerable<CollectQueryWhere>>>;
+        | CollectQueryWhere<T>
+        | RequireAtLeastOne<Record<'AND' | 'OR' | 'NOT', Enumerable<CollectQueryWhere<T>>>>;
+    pick?: "*" | Array<keyof T | string>
 };
 
 // INCLUDES CLAUSE
-export type CollectQueryIncludes = Record<
+export type CollectQueryIncludes<T extends object = object> = Record<
     string,
-    Partial<CollectQueryWhereParam> & Partial<CollectQueryIncludesParam> & CollectQueryCommonParams
+    Partial<CollectQueryWhereParam<T>> & Partial<CollectQueryIncludesParam<T>> & CollectQueryCommonParams<T>
 >;
-export type CollectQueryIncludesParam = {
-    includes: CollectQueryIncludes;
+export type CollectQueryIncludesParam<T extends object = object> = {
+    includes: CollectQueryIncludes<T>;
 };
 
-export type CollectQuery = CollectQueryCommonParams &
+export type CollectQuery<T extends object = object> = CollectQueryCommonParams &
     NonNullable<
-        | (CollectQueryWhereParam & { includes?: never; labels?: string[]; depth?: '*' | number })
-        | (CollectQueryIncludesParam & { where?: never })
+        | (CollectQueryWhereParam<T> & { depth?: '*' | number; includes?: never; labels?: string[] })
+        | (CollectQueryIncludesParam<T> & { where?: never })
     >;

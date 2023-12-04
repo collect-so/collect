@@ -5,10 +5,10 @@ import type {
   PropertyType,
   RecordPayload,
   SearchParams
-} from '../types'
+} from '../types/types.js'
 
-import { isLabel } from '../types'
-import { ISO_8601_FULL } from './constants'
+import { ISO_8601_FULL } from '../core/constants.js'
+import { isLabel } from './type-guards.js'
 
 const suggestType = (value: unknown): PropertyType => {
   if (typeof value === 'string' && value !== '') {
@@ -87,4 +87,20 @@ export const extractLabelAndParams = (
   }
 
   return { label, params } as const
+}
+
+export function validateInteger(
+  name: string,
+  n: unknown,
+  defaultVal?: number
+): number {
+  if (!Number.isInteger(n)) {
+    if (defaultVal !== undefined) {
+      return defaultVal;
+    } else {
+      throw new Error(`${name} must be an integer`);
+    }
+  }
+
+  return n as number;
 }
