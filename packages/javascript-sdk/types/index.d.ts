@@ -1,12 +1,13 @@
 declare module '@collect.so/javascript-sdk' {
-  import { createApi } from '../src/core/api'
-  import { UserProvidedConfig } from '../src/types'
+  import { CollectRestAPI, UserProvidedConfig } from '../src/types'
+  import { Result } from '../src/core/result'
   export namespace Collect {}
 
-  export class Collect extends ReturnType<typeof createApi>{
+  export class Collect extends Result {
     static Collect: typeof Collect;
 
-    constructor(apiKey: string, config?: UserProvidedConfig);
+    constructor(token: string, config?: UserProvidedConfig);
+    public api: CollectRestAPI
   }
 
   export default Collect;

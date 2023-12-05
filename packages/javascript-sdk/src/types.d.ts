@@ -8,17 +8,15 @@ export type CollectConstructor = {
 };
 declare const Collect: CollectConstructor;
 
-export type CollectObjectApi = {
-  token: string | null;
-  host: string;
-  port: string | number;
-  protocol: string;
-  basePath: string;
+export type CollectState = {
+  token: string;
+  url: string;
   timeout: number;
-  maxNetworkRetries: number;
   httpClient: any;
-  dev: boolean;
+  debug: boolean;
 }
+export type CollectRestAPI = ReturnType<typeof createApi>
+
 export type CollectObject = {
   models: Map<string, Model>
   validator?: Validator;
@@ -27,22 +25,23 @@ export type CollectObject = {
     labelOrModelOrPayload: LabelOrModelOrPayload,
     payload?: RecordPayload
   ): void;
-  _api: CollectObjectApi;
-  _getPropsFromConfig: (config: Record<string, unknown>) => UserProvidedConfig;
+  api: CollectRestAPI;
 
-} & ReturnType<typeof createApi>;
+  _state: CollectState;
+  _getPropsFromConfig: (config: Record<string, unknown>) => UserProvidedConfig;
+}
 
 type CommonUserProvidedConfig = {
   timeout?: number;
-  maxNetworkRetries?: number;
   httpClient?: HttpClientInterface;
+  validator?: Validator;
 }
 export type UserProvidedConfig =
   | CommonUserProvidedConfig & {
-    protocol?: string;
-    host?: string;
-    port?: number;
+    protocol: string;
+    host: string;
+    port: number;
   }
   | CommonUserProvidedConfig & {
-    url?: string;
+    url: string;
   };
