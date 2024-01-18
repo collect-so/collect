@@ -1,4 +1,4 @@
-import { normalizeData } from '../src/core/utils'
+import { normalizeData } from '../src/utils/utils.js'
 
 describe(`normalize data`, () => {
   it('suggests correct types for non-array values', () => {

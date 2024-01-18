@@ -1,8 +1,12 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "./tsconfig.cjs.json",
   "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "./dist"
+    "noEmit": true,
+    "types": ["node", "mocha"]
   },
-  "include": ["./**/*.ts"]
+  "ts-node": {
+    "experimentalResolver": true
+  },
+  "exclude": [ "**/node_modules"],
+  "include": ["src/**/*.ts", "test/**/*.ts"]
 }

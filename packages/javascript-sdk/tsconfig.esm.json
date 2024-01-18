@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.cjs.json",
+  "compilerOptions": {
+    "outDir": "./esm",
+    "module": "es2022",
+  },
+  "exclude": ["./src/collect.cjs.node.ts", "./src/collect.cjs.worker.ts"],
+}

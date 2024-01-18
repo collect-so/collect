@@ -8,11 +8,11 @@ import type {
   RecordId,
   RecordPayload,
   SearchParams
-} from '../types'
+} from '../types/types.js'
+import { isLabelOrModel, isResultWithId } from '../utils/type-guards.js'
+import { createBody, extractLabelAndParams } from '../utils/utils.js'
+import { CollectRestAPI } from '../types.js'
 
-import { isLabelOrModel, isResultWithId } from '../types'
-import { base } from './base'
-import { createBody, extractLabelAndParams } from './utils'
 
 type CreateResult = Omit<Result, 'update'> & {
   update(searchParams: SearchParams, payload: RecordPayload): Promise<Result>
@@ -38,9 +38,11 @@ const createProxy = (
 
 export class Result {
   readonly data?: AnyObject
+  readonly api: CollectRestAPI;
 
-  constructor(data?: AnyObject) {
+  constructor(api: CollectRestAPI & {}, data?: AnyObject) {
     this.data = data
+    this.api = api
   }
 
   async create(payload: RecordPayload): Promise<CreateResult>
@@ -52,13 +54,13 @@ export class Result {
     labelOrModelOrPayload: LabelOrModelOrPayload,
     payload?: RecordPayload
   ): Promise<CreateResult> {
-    await base.validate(labelOrModelOrPayload, payload)
+    // await this.api.validate(labelOrModelOrPayload, payload)
 
     const body = createBody(labelOrModelOrPayload, payload)
 
-    const data = await base.api?.createRecord(body)
+    const data = await this.api?.createRecord(body)
 
-    return createProxy(new Result(data), labelOrModelOrPayload)
+    return createProxy(new Result(this.api, data), labelOrModelOrPayload)
   }
 
   async update(
@@ -79,7 +81,7 @@ export class Result {
     let body: AnyObject
 
     if (isLabelOrModel(labelOrModelOrParams)) {
-      await base.validate(labelOrModelOrParams, payload)
+      // await this.collectInstance.validate(labelOrModelOrParams, payload)
       body = createBody(labelOrModelOrParams, payload)
       params = searchParamsOrPayload
     } else {
@@ -87,9 +89,9 @@ export class Result {
       body = searchParamsOrPayload
     }
 
-    const data = await base.api?.updateRecordWithSearchParams(params, body)
+    const data = await this.api?.updateRecordWithSearchParams(params, body)
 
-    return new Result(data)
+    return new Result(this.api, data)
   }
 
   public async find(searchParams: SearchParams): Promise<Result>
@@ -103,9 +105,9 @@ export class Result {
       searchParams
     )
 
-    const data = await base.api?.findRecords(params, label)
+    const data = await this.api?.findRecords(params, label)
 
-    return new Result(data)
+    return new Result(this.api, data)
   }
 
   async delete(searchParams: SearchParams): Promise<Result>
@@ -119,9 +121,9 @@ export class Result {
       searchParams
     )
 
-    const data = await base.api?.deleteRecords(params, label)
+    const data = await this.api?.deleteRecords(params, label)
 
-    return new Result(data)
+    return new Result( this.api, data,)
   }
 
   async link(
@@ -153,7 +155,7 @@ export class Result {
       params = targetOrSearchParams
     }
 
-    await base.api?.linkRecords(originId, params, metadata)
+    await this.api?.linkRecords(originId, params, metadata)
 
     return this
   }

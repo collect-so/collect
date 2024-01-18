@@ -4,21 +4,22 @@
   "license": "MIT",
   "version": "0.0.2",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "./dist/**/*.{js,d.ts,mjs}",
-    "./package.json"
-  ],
+  "main": "cjs/stripe.cjs.node.js",
+  "types": "types/index.d.ts",
   "scripts": {
+    "build": "pnpm build-esm && pnpm build-cjs",
+    "build-esm": "mkdir -p esm && tsc -p tsconfig.esm.json && echo '{\"type\":\"module\",\"name\": \"@collect.so/javascript-sdk\"}' > esm/package.json",
+    "build-cjs": "mkdir -p cjs && tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\",\"name\": \"@collect.so/javascript-sdk\"}' > cjs/package.json",
     "dev": "tsup --watch",
-    "build": "tsup",
     "types:check": "tsc --noEmit",
-    "clean": "rimraf dist"
+    "clean": "rm -rf ./dist ./node_modules/.cache ./coverage ./esm ./cjs"
   },
   "dependencies": {
-    "node-fetch": "3.3.1",
+    "@collect.so/types": "packages:../types",
     "yup": "1.2.0"
+  },
+  "devDependencies": {
+    "node-fetch": "3.3.2"
   },
   "peerDependencies": {},
   "sideEffects": false,
@@ -28,5 +29,24 @@
   "repository": {
     "type": "https",
     "url": "https://github.com/collect-so/collect-toolkit"
+  },
+  "exports": {
+    "types": "./types/index.d.ts",
+    "browser": {
+      "import": "./esm/collect.esm.worker.js",
+      "require": "./cjs/collect.cjs.worker.js"
+    },
+    "deno": {
+      "import": "./esm/collect.esm.worker.js",
+      "require": "./cjs/collect.cjs.worker.js"
+    },
+    "worker": {
+      "import": "./esm/collect.esm.worker.js",
+      "require": "./cjs/collect.cjs.worker.js"
+    },
+    "default": {
+      "import": "./esm/collect.esm.node.js",
+      "require": "./cjs/collect.cjs.node.js"
+    }
   }
 }

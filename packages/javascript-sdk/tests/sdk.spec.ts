@@ -1,14 +1,19 @@
 import fetch, { Response } from 'node-fetch'
 import { number, object, string } from 'yup'
 
-import { collect } from '../src'
+import { createCollect } from '../src/core/sdk'
+import { NodeHttpClient } from '../src/fetcher/NodeHttpClient'
+
 
 const mockedFetch = fetch as jest.MockedFunction<typeof fetch>
+const Collect = createCollect(new NodeHttpClient())
+// @ts-ignore
+const collect = new Collect('123')
 
 describe(`Collect`, () => {
   describe('implementation', () => {
     it('is chainable', async () => {
-      collect.init({ token: '123' })
+
       mockedFetch.mockResolvedValue(
         new Response({
           id: 1,
@@ -36,7 +41,7 @@ describe(`Collect`, () => {
   })
   describe('validation', () => {
     it('validates by label', async () => {
-      collect.init({ token: 'token' })
+
       collect.registerModel(
         'Movie',
         object({
@@ -62,7 +67,7 @@ describe(`Collect`, () => {
       )
     })
     it('validates by model param', async () => {
-      collect.init({ token: 'token' })
+
       collect.registerModel(
         'Movie',
         object({
@@ -88,7 +93,6 @@ describe(`Collect`, () => {
       }).rejects.toThrow('Must be exactly 5 characters')
     })
     it(`doesn't validate without label`, async () => {
-      collect.init({ token: 'token' })
       collect.registerModel(
         'Movie',
         object({
@@ -104,7 +108,6 @@ describe(`Collect`, () => {
       }).not.toThrow()
     })
     it(`validation doesn't break after chaining`, async () => {
-      collect.init({ token: 'token' })
       collect.registerModel(
         'Movie',
         object({
@@ -126,7 +129,6 @@ describe(`Collect`, () => {
   })
   describe('creating records', () => {
     it('creates record by id', async () => {
-      collect.init({ token: 'token' })
       const response1 = {
         id: 1,
         title: 'Forrest Gump',
@@ -187,7 +189,6 @@ describe(`Collect`, () => {
   })
   describe('updating records', () => {
     it('updates record by id', async () => {
-      collect.init({ token: 'token' })
       const response = {
         name: 'Forrest Gump',
         rating: 9
@@ -213,7 +214,6 @@ describe(`Collect`, () => {
   })
   describe('linking records', () => {
     it('links by id', async () => {
-      collect.init({ token: 'token' })
       const response = {
         id: 1,
         name: 'Forrest Gump',
@@ -239,7 +239,6 @@ describe(`Collect`, () => {
       )
     })
     it('links another instance', async () => {
-      collect.init({ token: 'token' })
       mockedFetch.mockResolvedValueOnce(
         new Response({
           id: 'movieId',
@@ -271,7 +270,6 @@ describe(`Collect`, () => {
       )
     })
     it('links to array', async () => {
-      collect.init({ token: 'token' })
       mockedFetch.mockResolvedValueOnce(
         new Response({
           id: 'movieId',
