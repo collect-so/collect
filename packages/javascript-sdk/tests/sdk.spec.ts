@@ -4,16 +4,16 @@ import { number, object, string } from 'yup'
 import { createCollect } from '../src/core/sdk'
 import { NodeHttpClient } from '../src/fetcher/NodeHttpClient'
 
-
 const mockedFetch = fetch as jest.MockedFunction<typeof fetch>
 const Collect = createCollect(new NodeHttpClient())
-// @ts-ignore
-const collect = new Collect('123')
+
+const collect = new Collect('123', {
+  url: ''
+})
 
 describe(`Collect`, () => {
   describe('implementation', () => {
     it('is chainable', async () => {
-
       mockedFetch.mockResolvedValue(
         new Response({
           id: 1,
@@ -41,7 +41,6 @@ describe(`Collect`, () => {
   })
   describe('validation', () => {
     it('validates by label', async () => {
-
       collect.registerModel(
         'Movie',
         object({
@@ -67,7 +66,6 @@ describe(`Collect`, () => {
       )
     })
     it('validates by model param', async () => {
-
       collect.registerModel(
         'Movie',
         object({

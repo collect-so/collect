@@ -1,10 +1,11 @@
+import type { CollectQuery } from '@collect.so/types'
+
 import type {
   AnyObject,
   Label,
   LabelOrModelOrPayload,
   PropertyType,
-  RecordPayload,
-  SearchParams
+  RecordPayload
 } from '../types/types.js'
 
 import { ISO_8601_FULL } from '../core/constants.js'
@@ -72,21 +73,21 @@ export const createBody = (
   return body
 }
 
-export const extractLabelAndParams = (
-  labelOrSearchParams: Label | SearchParams,
-  searchParams?: SearchParams
-) => {
-  let label
-  let params = {}
+export const extractLabelAndParams = <T extends object = object>(
+  labelOrSearchParams: CollectQuery<T> | Label,
+  searchParams?: CollectQuery<T>
+): { label: Label, params: CollectQuery<T>} => {
+  let label: Label = ''
+  let params: CollectQuery<T>
 
   if (typeof searchParams !== 'undefined' && isLabel(labelOrSearchParams)) {
     label = labelOrSearchParams
     params = searchParams
   } else {
-    params = labelOrSearchParams
+    params = labelOrSearchParams as CollectQuery<T>
   }
 
-  return { label, params } as const
+  return { label, params } as { label: Label, params: CollectQuery<T>}
 }
 
 export function validateInteger(
@@ -96,11 +97,11 @@ export function validateInteger(
 ): number {
   if (!Number.isInteger(n)) {
     if (defaultVal !== undefined) {
-      return defaultVal;
+      return defaultVal
     } else {
-      throw new Error(`${name} must be an integer`);
+      throw new Error(`${name} must be an integer`)
     }
   }
 
-  return n as number;
+  return n as number
 }

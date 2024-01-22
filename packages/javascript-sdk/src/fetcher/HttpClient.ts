@@ -1,79 +1,80 @@
-import {RequestData, RequestHeaders, ResponseHeaders} from './types.js';
+import { RequestData, RequestHeaders, ResponseHeaders } from './types.js'
 
-type TimeoutError = TypeError & {code?: string};
+type TimeoutError = TypeError & { code?: string }
 
 export interface HttpClientInterface {
   makeRequest: (
-   url: string,
-   config: MakeRequestConfig
-  ) => Promise<HttpClientResponseInterface>;
+    url: string,
+    config: MakeRequestConfig
+  ) => Promise<HttpClientResponseInterface>
 }
 
 export interface MakeRequestConfig {
-  method: string,
-  headers?: RequestHeaders,
-  requestData?: RequestData,
-  protocol?: string,
+  method: string
+  headers?: RequestHeaders
+  requestData?: RequestData
+  protocol?: string
   timeout?: number
+  credentials?: string
 }
 
 export interface HttpClientResponseInterface {
-  getStatusCode: () => number;
-  getHeaders: () => ResponseHeaders;
-  getRawResponse: () => unknown;
-  toStream: (streamCompleteCallback: () => void) => unknown;
-  toJSON: () => Promise<any>;
+  getStatusCode: () => number
+  getHeaders: () => ResponseHeaders
+  getRawResponse: () => unknown
+  toStream: (streamCompleteCallback: () => void) => unknown
+  toJSON: () => Promise<any>
 }
 
 export class HttpClient implements HttpClientInterface {
-  static CONNECTION_CLOSED_ERROR_CODES: string[];
-  static TIMEOUT_ERROR_CODE: string;
+  static CONNECTION_CLOSED_ERROR_CODES: string[]
+  static TIMEOUT_ERROR_CODE: string
 
   makeRequest(
     url: string,
-    {method, headers, requestData, protocol, timeout}: MakeRequestConfig
+    { method, headers, requestData, protocol, timeout }: MakeRequestConfig
   ): Promise<HttpClientResponseInterface> {
-    throw new Error('makeRequest not implemented.');
+    throw new Error('makeRequest not implemented.')
   }
 
   static makeTimeoutError(): TimeoutError {
     const timeoutErr: TimeoutError = new TypeError(
       HttpClient.TIMEOUT_ERROR_CODE
-    );
-    timeoutErr.code = HttpClient.TIMEOUT_ERROR_CODE;
-    return timeoutErr;
+    )
+    timeoutErr.code = HttpClient.TIMEOUT_ERROR_CODE
+    return timeoutErr
   }
 }
 
-HttpClient.CONNECTION_CLOSED_ERROR_CODES = ['ECONNRESET', 'EPIPE'];
-HttpClient.TIMEOUT_ERROR_CODE = 'ETIMEDOUT';
+HttpClient.CONNECTION_CLOSED_ERROR_CODES = ['ECONNRESET', 'EPIPE']
+HttpClient.TIMEOUT_ERROR_CODE = 'ETIMEDOUT'
 
 export class HttpClientResponse implements HttpClientResponseInterface {
-  _statusCode: number;
-  _headers: ResponseHeaders;
+  _statusCode: number
+  _headers: ResponseHeaders
 
   constructor(statusCode: number, headers: ResponseHeaders) {
-    this._statusCode = statusCode;
-    this._headers = headers;
+    this._statusCode = statusCode
+    this._headers = headers
   }
 
   getStatusCode(): number {
-    return this._statusCode;
+    return this._statusCode
   }
 
   getHeaders(): ResponseHeaders {
-    return this._headers;
+    return this._headers
   }
 
   getRawResponse(): unknown {
-    throw new Error('getRawResponse not implemented.');
+    throw new Error('getRawResponse not implemented.')
   }
 
   toStream(streamCompleteCallback: () => void): unknown {
-    throw new Error('toStream not implemented.');
+    throw new Error('toStream not implemented.')
   }
 
   toJSON(): any {
-    throw new Error('toJSON not implemented.');
+    throw new Error('toJSON not implemented.')
   }
 }

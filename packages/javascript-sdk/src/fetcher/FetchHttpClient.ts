@@ -1,9 +1,10 @@
-import { ResponseHeaders } from './types.js';
+import { ResponseHeaders } from './types.js'
 import {
   HttpClient,
   HttpClientInterface,
   HttpClientResponse,
-  HttpClientResponseInterface, MakeRequestConfig
+  HttpClientResponseInterface,
+  MakeRequestConfig
 } from './HttpClient.js'
 import { DEFAULT_TIMEOUT } from '../core/constants.js'
 
@@ -11,7 +12,7 @@ type FetchWithTimeout = (
   url: string,
   init: RequestInit,
   timeout: number
-) => Promise<Response>;
+) => Promise<Response>
 
 /**
  * HTTP client which uses a `fetch` function to issue requests.
@@ -22,10 +23,10 @@ type FetchWithTimeout = (
  * node-fetch package (https://github.com/node-fetch/node-fetch).
  */
 export class FetchHttpClient extends HttpClient implements HttpClientInterface {
-  private readonly _fetchFn: FetchWithTimeout;
+  private readonly _fetchFn: FetchWithTimeout
 
   constructor(fetchFn?: typeof fetch) {
-    super();
+    super()
 
     // Default to global fetch if available
     if (!fetchFn) {
@@ -33,9 +34,9 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
         throw new Error(
           'fetch() function not provided and is not defined in the global scope. ' +
             'You must provide a fetch implementation.'
-        );
+        )
       }
-      fetchFn = globalThis.fetch;
+      fetchFn = globalThis.fetch
     }
 
     // Both timeout behaviors differs from Node:
@@ -44,11 +45,11 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     if (globalThis.AbortController) {
       // Utilise native AbortController if available
       // AbortController was added in Node v15.0.0, v14.17.0
-      this._fetchFn = FetchHttpClient.makeFetchWithAbortTimeout(fetchFn);
+      this._fetchFn = FetchHttpClient.makeFetchWithAbortTimeout(fetchFn)
     } else {
       // Fall back to racing against a timeout promise if not available in the runtime
       // This does not actually cancel the underlying fetch operation or resources
-      this._fetchFn = FetchHttpClient.makeFetchWithRaceTimeout(fetchFn);
+      this._fetchFn = FetchHttpClient.makeFetchWithRaceTimeout(fetchFn)
     }
   }
 
@@ -56,21 +57,21 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     fetchFn: typeof fetch
   ): FetchWithTimeout {
     return (url, init, timeout): Promise<Response> => {
-      let pendingTimeoutId: NodeJS.Timeout | null;
+      let pendingTimeoutId: NodeJS.Timeout | null
       const timeoutPromise = new Promise<never>((_, reject) => {
         pendingTimeoutId = setTimeout(() => {
-          pendingTimeoutId = null;
-          reject(HttpClient.makeTimeoutError());
-        }, timeout);
-      });
+          pendingTimeoutId = null
+          reject(HttpClient.makeTimeoutError())
+        }, timeout)
+      })
 
-      const fetchPromise = fetchFn(url, init);
+      const fetchPromise = fetchFn(url, init)
       return Promise.race([fetchPromise, timeoutPromise]).finally(() => {
         if (pendingTimeoutId) {
-          clearTimeout(pendingTimeoutId);
+          clearTimeout(pendingTimeoutId)
         }
-      });
-    };
+      })
+    }
   }
 
   private static makeFetchWithAbortTimeout(
@@ -78,49 +79,44 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
   ): FetchWithTimeout {
     return async (url, init, timeout): Promise<Response> => {
       // Use AbortController because AbortSignal.timeout() was added later in Node v17.3.0, v16.14.0
-      const abort = new AbortController();
+      const abort = new AbortController()
       let timeoutId: NodeJS.Timeout | null = setTimeout(() => {
-        timeoutId = null;
-        abort.abort(HttpClient.makeTimeoutError());
-      }, timeout);
+        timeoutId = null
+        abort.abort(HttpClient.makeTimeoutError())
+      }, timeout)
       try {
         return await fetchFn(url, {
           ...init,
-          signal: abort.signal,
-        });
+          signal: abort.signal
+        })
       } catch (err) {
         // Some implementations, like node-fetch, do not respect the reason passed to AbortController.abort()
         // and instead it always throws an AbortError
         // We catch this case to normalise all timeout errors
         if ((err as any).name === 'AbortError') {
-          throw HttpClient.makeTimeoutError();
+          throw HttpClient.makeTimeoutError()
         } else {
-          throw err;
+          throw err
         }
       } finally {
         if (timeoutId) {
-          clearTimeout(timeoutId);
+          clearTimeout(timeoutId)
         }
       }
-    };
+    }
   }
 
   async makeRequest(
     url: string,
-    {
-      method,
-      headers,
-      requestData,
-      protocol,
-      timeout
-    }: MakeRequestConfig
+    { method, headers, requestData, protocol, timeout }: MakeRequestConfig
   ): Promise<HttpClientResponseInterface> {
     // For methods which expect payloads, we should always pass a body value
     // even when it is empty. Without this, some JS runtimes (eg. Deno) will
     // inject a second Content-Length header.
     const methodHasPayload =
-      method == 'POST' || method == 'PUT' || method == 'PATCH';
-    const body = JSON.stringify(requestData) || (methodHasPayload ? '' : undefined);
+      method == 'POST' || method == 'PUT' || method == 'PATCH'
+    const body =
+      JSON.stringify(requestData) || (methodHasPayload ? '' : undefined)
 
     const res = await this._fetchFn(
       url,
@@ -129,28 +125,30 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
         // @ts-ignore
         headers,
         // @ts-ignore
-        body,
+        body
       },
       timeout ?? DEFAULT_TIMEOUT
-    );
-    return new FetchHttpClientResponse(res);
+    )
+    return new FetchHttpClientResponse(res)
   }
 }
 
-export class FetchHttpClientResponse extends HttpClientResponse
-  implements HttpClientResponseInterface {
-  _res: Response;
+export class FetchHttpClientResponse
+  extends HttpClientResponse
+  implements HttpClientResponseInterface
+{
+  _res: Response
 
   constructor(res: Response) {
     super(
       res.status,
       FetchHttpClientResponse._transformHeadersToObject(res.headers)
-    );
-    this._res = res;
+    )
+    this._res = res
   }
 
   getRawResponse(): Response {
-    return this._res;
+    return this._res
   }
 
   toStream(
@@ -161,30 +159,30 @@ export class FetchHttpClientResponse extends HttpClientResponse
     // away. This callback emits a response event with metadata and completes
     // metrics, so it's ok to do this without waiting for the stream to be
     // completely read.
-    streamCompleteCallback();
+    streamCompleteCallback()
 
     // Fetch's `body` property is expected to be a readable stream of the body.
-    return this._res.body;
+    return this._res.body
   }
 
   toJSON(): Promise<any> {
-    return this._res.json();
+    return this._res.json()
   }
 
   static _transformHeadersToObject(headers: Headers): ResponseHeaders {
     // Fetch uses a Headers instance so this must be converted to a barebones
     // JS object to meet the HttpClient interface.
-    const headersObj: ResponseHeaders = {};
+    const headersObj: ResponseHeaders = {}
     for (const entry of headers) {
       if (!Array.isArray(entry) || entry.length != 2) {
         throw new Error(
           'Response objects produced by the fetch function given to FetchHttpClient do not have an iterable headers map. Response#headers should be an iterable object.'
-        );
+        )
       }
 
-      headersObj[entry[0]] = entry[1];
+      headersObj[entry[0]] = entry[1]
     }
 
-    return headersObj;
+    return headersObj
   }
 }

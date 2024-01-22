@@ -1,47 +1,51 @@
-import { HttpClientInterface } from './fetcher/HttpClient.js'
-import { createApi } from './core/api.js'
-import { Label, LabelOrModelOrPayload, Model, RecordPayload } from './types/types.js'
-import { Validator } from './validators/types.js'
+import type { createApi } from './core/api.js'
+import type { HttpClientInterface } from './fetcher/HttpClient.js'
+import type {
+  Label,
+  LabelOrModelOrPayload,
+  Model,
+  RecordPayload
+} from './types/types.js'
+import type { Validator } from './validators/types.js'
 
 export type CollectConstructor = {
-  new (key: string, config: Record<string, unknown>): CollectObject;
-};
-declare const Collect: CollectConstructor;
+  new (key: string, config: Record<string, unknown>): CollectObject
+}
+declare const Collect: CollectConstructor
 
 export type CollectState = {
-  token: string;
-  url: string;
-  timeout: number;
-  httpClient: any;
-  debug: boolean;
+  debug: boolean
+  timeout: number
+  token: string
 }
 export type CollectRestAPI = ReturnType<typeof createApi>
 
 export type CollectObject = {
+  _getPropsFromConfig: (config: Record<string, unknown>) => UserProvidedConfig
+  _state: CollectState
+  api: CollectRestAPI
+  d
   models: Map<string, Model>
-  validator?: Validator;
-  registerModel(label: Label, model: Model): void;
+  registerModel(label: Label, model: Model): voi
+
   validate(
     labelOrModelOrPayload: LabelOrModelOrPayload,
     payload?: RecordPayload
-  ): void;
-  api: CollectRestAPI;
-
-  _state: CollectState;
-  _getPropsFromConfig: (config: Record<string, unknown>) => UserProvidedConfig;
+  ): void
+  validator?: Validator
 }
 
 type CommonUserProvidedConfig = {
-  timeout?: number;
-  httpClient?: HttpClientInterface;
-  validator?: Validator;
+  httpClient?: HttpClientInterface
+  timeout?: number
+  validator?: Validator
 }
 export type UserProvidedConfig =
-  | CommonUserProvidedConfig & {
-    protocol: string;
-    host: string;
-    port: number;
-  }
-  | CommonUserProvidedConfig & {
-    url: string;
-  };
+  | (CommonUserProvidedConfig & {
+      host: string
+      port: number
+      protocol: string
+    })
+  | (CommonUserProvidedConfig & {
+      url: string
+    })

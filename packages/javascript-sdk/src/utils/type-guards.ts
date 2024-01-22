@@ -1,4 +1,10 @@
-import { AnyObject, Label, LabelOrModel, Model, RecordId } from '../types/types.js'
+import type {
+  AnyObject,
+  Label,
+  LabelOrModel,
+  Model,
+  RecordId
+} from '../types/types.js'
 
 export const isLabel = (param: unknown): param is Label =>
   typeof param === 'string'
