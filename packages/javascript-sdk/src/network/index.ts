@@ -1,4 +1,4 @@
-import type { HttpClient, MakeRequestConfig } from './HttpClient.js'
+import type { HttpClient, MakeRequestConfig } from './HttpClient'
 
 const defaultHeaders = {
   'Content-Type': 'application/json'

@@ -1,12 +1,12 @@
-import { ResponseHeaders } from './types.js'
-import {
-  HttpClient,
+import type {
   HttpClientInterface,
-  HttpClientResponse,
   HttpClientResponseInterface,
   MakeRequestConfig
-} from './HttpClient.js'
-import { DEFAULT_TIMEOUT } from '../core/constants.js'
+} from './HttpClient'
+import type { ResponseHeaders } from './types'
+
+import { DEFAULT_TIMEOUT } from '../common/constants'
+import { HttpClient, HttpClientResponse } from './HttpClient'
 
 type FetchWithTimeout = (
   url: string,
@@ -108,7 +108,7 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
 
   async makeRequest(
     url: string,
-    { method, headers, requestData, protocol, timeout }: MakeRequestConfig
+    { headers, method, protocol, requestData, timeout }: MakeRequestConfig
   ): Promise<HttpClientResponseInterface> {
     // For methods which expect payloads, we should always pass a body value
     // even when it is empty. Without this, some JS runtimes (eg. Deno) will
@@ -121,11 +121,11 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     const res = await this._fetchFn(
       url,
       {
-        method,
+        // @ts-ignore
+        body,
         // @ts-ignore
         headers,
-        // @ts-ignore
-        body
+        method
       },
       timeout ?? DEFAULT_TIMEOUT
     )

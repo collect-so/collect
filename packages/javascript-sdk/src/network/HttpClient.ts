@@ -1,4 +1,4 @@
-import { RequestData, RequestHeaders, ResponseHeaders } from './types.js'
+import type { RequestData, RequestHeaders, ResponseHeaders } from './types'
 
 type TimeoutError = TypeError & { code?: string }
 
@@ -10,20 +10,20 @@ export interface HttpClientInterface {
 }
 
 export interface MakeRequestConfig {
-  method: string
-  headers?: RequestHeaders
-  requestData?: RequestData
-  protocol?: string
-  timeout?: number
   credentials?: string
+  headers?: RequestHeaders
+  method: string
+  protocol?: string
+  requestData?: RequestData
+  timeout?: number
 }
 
 export interface HttpClientResponseInterface {
-  getStatusCode: () => number
   getHeaders: () => ResponseHeaders
   getRawResponse: () => unknown
-  toStream: (streamCompleteCallback: () => void) => unknown
+  getStatusCode: () => number
   toJSON: () => Promise<any>
+  toStream: (streamCompleteCallback: () => void) => unknown
 }
 
 export class HttpClient implements HttpClientInterface {
@@ -32,7 +32,7 @@ export class HttpClient implements HttpClientInterface {
 
   makeRequest(
     url: string,
-    { method, headers, requestData, protocol, timeout }: MakeRequestConfig
+    { headers, method, protocol, requestData, timeout }: MakeRequestConfig
   ): Promise<HttpClientResponseInterface> {
     throw new Error('makeRequest not implemented.')
   }

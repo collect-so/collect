@@ -4,5 +4,8 @@
     "outDir": "./esm",
     "module": "es2022",
   },
-  "exclude": ["./src/collect.cjs.node.ts", "./src/collect.cjs.worker.ts"],
+  "exclude": [
+    "./src/index.cjs.node.ts",
+    "./src/index.cjs.worker.ts"
+  ],
 }

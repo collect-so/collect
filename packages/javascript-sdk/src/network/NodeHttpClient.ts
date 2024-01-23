@@ -1,12 +1,13 @@
 import * as http_ from 'http'
 import * as https_ from 'https'
-import {
-  HttpClient,
-  HttpClientResponse,
+
+import type {
   HttpClientResponseInterface,
   MakeRequestConfig
-} from './HttpClient.js'
-import { DEFAULT_TIMEOUT } from '../core/constants.js'
+} from './HttpClient'
+
+import { DEFAULT_TIMEOUT } from '../common/constants'
+import { HttpClient, HttpClientResponse } from './HttpClient'
 
 // `import * as http_ from 'http'` creates a "Module Namespace Exotic Object"
 // which is immune to monkey-patching, whereas http_.default (in an ES Module context)
@@ -35,7 +36,7 @@ export class NodeHttpClient extends HttpClient {
 
   makeRequest(
     urlString: string,
-    { method, headers, requestData, protocol, timeout }: MakeRequestConfig
+    { headers, method, protocol, requestData, timeout }: MakeRequestConfig
   ): Promise<HttpClientResponseInterface> {
     const url = new URL(urlString)
 
@@ -48,13 +49,13 @@ export class NodeHttpClient extends HttpClient {
 
     return new Promise<HttpClientResponseInterface>((resolve, reject) => {
       const req = (isInsecureConnection ? http : https).request({
-        host: url.host,
-        port: url.port,
-        path: url.pathname + url.search,
-        method,
         agent,
+        ciphers: 'DEFAULT:!aNULL:!eNULL:!LOW:!EXPORT:!SSLv2:!MD5',
         headers,
-        ciphers: 'DEFAULT:!aNULL:!eNULL:!LOW:!EXPORT:!SSLv2:!MD5'
+        host: url.host,
+        method,
+        path: url.pathname + url.search,
+        port: url.port
       })
 
       req.setTimeout(timeout ?? DEFAULT_TIMEOUT, () => {

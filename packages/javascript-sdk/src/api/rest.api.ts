@@ -1,41 +1,61 @@
-/* eslint-disable prefer-rest-params */
 import type { CollectQuery } from '@collect.so/types'
 
-import type { CollectRestAPI } from '../types.js'
-import type { Label } from '../types/types.js'
+import type { Label } from '../common/types'
+import type { HttpClient } from '../network/HttpClient'
+import type { UserProvidedConfig } from '../sdk/types'
 
-import { extractLabelAndParams } from '../utils/utils.js'
+import { buildUrl, extractLabelAndParams } from '../common/utils/utils'
+import { createFetcher } from '../network'
+import { CollectResult } from '../sdk/result'
+import { createApi } from './api'
 
-// type CreateResult = Omit<Result, 'update'> & {
-//   update(searchParams: CollectQuery, payload: RecordPayload): Promise<Result>
-// }
+export class CollectRestAPI {
+  public api: ReturnType<typeof createApi>
+  public fetcher: ReturnType<typeof createFetcher>
 
-// TODO: refactor
-// const createProxy = (
-//   newResult: Result,
-//   labelOrModelOrPayload: LabelOrModelOrPayload
-// ) => {
-//   return new Proxy(newResult, {
-//     get(_, prop) {
-//       if (prop === 'update' && isLabelOrModel(labelOrModelOrPayload)) {
-//         return (...args: any[]) =>
-//           // @ts-expect-error A spread argument must either have a tuple type or be passed to a rest parameter.
-//           newResult.update(labelOrModelOrPayload, ...args)
-//       }
-//       // @ts-expect-error A spread argument must either have a tuple type or be passed to a rest parameter.
-//       return Reflect.get(...arguments)
-//     }
-//   })
-// }
-
-export class Result<T extends object = object> {
-  readonly data: T
-  readonly api: CollectRestAPI
   constructor(
-    api: CollectRestAPI, 
-    data?: T) {
-    this.data = data as T
-    this.api = api
+    token?: string,
+    config?: UserProvidedConfig & { httpClient: HttpClient }
+  ) {
+    this.fetcher = null as unknown as ReturnType<typeof createFetcher>
+
+    if (token && config?.httpClient) {
+      const url = buildUrl(config) // Assuming buildUrl is a utility function
+      this.fetcher = createFetcher({
+        httpClient: config.httpClient,
+        token,
+        url
+      })
+    }
+    this.api = createApi(this.fetcher)
+  }
+
+  public async find<T extends object = object>(
+    searchParams?: CollectQuery<T>
+  ): Promise<CollectResult<T[]>>
+  public async find<T extends object = object>(
+    label?: Label,
+    searchParams?: CollectQuery<T>
+  ): Promise<CollectResult<T[]>>
+  public async find<T extends object = object>(
+    label?: CollectQuery<T> | Label,
+    searchParams?: CollectQuery<T>
+  ): Promise<CollectResult<T[]>> {
+    const { params } = extractLabelAndParams<T>(
+      label as CollectQuery<T> | Label,
+      searchParams
+    )
+
+    const data = await this.api?.findRecords<T>(params)
+
+    // Create a CollectResult instance and initialize it with the API
+    const result = new CollectResult<T[]>(
+      data.data,
+      searchParams as CollectQuery<T[]>
+    )
+    result.init(this)
+
+    return result
   }
 
   // async create(payload: RecordPayload): Promise<CreateResult>
@@ -85,8 +105,6 @@ export class Result<T extends object = object> {
   //
   //   return new Result(this.api, data)
   // }
-
-
 
   // async delete(searchParams: CollectQuery): Promise<Result>
   // async delete(label: Label, searchParams?: CollectQuery): Promise<Result>

@@ -1,5 +1,5 @@
-import type { AnyObject, Model } from '../types/types.js'
+import type { CollectModel } from '../sdk/model'
 
 export type Validator = (
-  model: Model
-) => (values: AnyObject) => Promise<unknown>
+  model: CollectModel
+) => (values: typeof model.schema) => Promise<unknown>

@@ -15,5 +15,8 @@
     "esModuleInterop": false // This is a viral option, do not enable https://www.semver-ts.org/#module-interop
   },
   "include": ["./src/**/*"],
-  "exclude": ["./src/collect.esm.node.ts", "./src/collect.esm.worker.ts"],
+  "exclude": [
+    "./src/index.esm.node.ts",
+    "./src/index.esm.worker.ts"
+  ],
 }

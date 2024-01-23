@@ -1,8 +1,8 @@
 import fetch, { Response } from 'node-fetch'
 import { number, object, string } from 'yup'
 
-import { createCollect } from '../src/core/sdk'
-import { NodeHttpClient } from '../src/fetcher/NodeHttpClient'
+import { NodeHttpClient } from '../src/network/NodeHttpClient'
+import { createCollect } from '../src/sdk'
 
 const mockedFetch = fetch as jest.MockedFunction<typeof fetch>
 const Collect = createCollect(new NodeHttpClient())

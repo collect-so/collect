@@ -1,15 +1,48 @@
-import type { CollectQuery } from '@collect.so/types'
+import type { CollectQuery, Enumerable } from '@collect.so/types'
 
-import type { createFetcher } from '../fetcher/fetcher.js'
-import type { CollectApiResponse } from '../types/types.js'
+import type { CollectApiResponse } from '../common/types'
+import type { createFetcher } from '../network'
+
+// @TODO's
+// POST API.attach @TODO
+// POST API.detach @TODO
+// POST API.upsert @TODO
+
+// Resources
+// POST API.findMany
+// POST API.findById
+// POST API.findOne
+
+// POST API.create
+// POST API.createMany
+
+// PATCH API.update
+// DELETE API.delete
+// DELETE API.deleteMany
+
+// Metadata
+// POST API.properties
+// POST API.labels
+// GET API.values/:propertyId
+
+export type TImportOptions = {
+  generateLabels?: boolean
+  returnResult?: boolean
+  suggestTypes?: boolean
+}
 
 export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
-  // create(body: RecordPayload) {
-  //   return fetcher<RecordPayload>(`/records`, {
-  //     method: 'POST',
-  //     requestData: body
-  //   })
-  // },
+  create<T extends object = object>(body: {
+    label?: string
+    options?: TImportOptions
+    parentId?: string
+    payload: Enumerable<T>
+  }) {
+    return fetcher<Enumerable<T>>(`/import/json`, {
+      method: 'POST',
+      requestData: body
+    })
+  },
   // createRecord(body: RecordPayload) {
   //   return fetcher<RecordPayload>(`/records`, {
   //     method: 'POST',
