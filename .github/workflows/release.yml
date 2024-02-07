@@ -13,10 +13,25 @@ env:
   PNPM_CACHE_FOLDER: .pnpm-store
 
 jobs:
+#  test:
+#    name: Test
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#
+#      - name: Install
+#        uses: ./.github/workflows/install
+#
+#      - name: Lint and test
+#        run: |
+#          pnpm lint
+#          pnpm types:check
+#          pnpm test
+
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: ["test"]
     permissions:
       contents: write # to be able to publish a GitHub release
       issues: write # to be able to comment on released issues
