@@ -13,22 +13,6 @@ env:
   PNPM_CACHE_FOLDER: .pnpm-store
 
 jobs:
-#  test:
-#    name: Test
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v3
-#
-#      - name: Install
-#        uses: ./.github/workflows/install
-#
-#      - name: Lint and test
-#        run: |
-#          pnpm lint
-#          pnpm types:check
-#          pnpm test
-
   release:
     name: Release
     runs-on: ubuntu-latest
