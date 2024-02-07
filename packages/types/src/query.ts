@@ -21,8 +21,8 @@ export type CollectQueryConditionValue<
   | boolean
   | null
 
-export type CollectQueryLogicalGroupingMap<T extends object = object> = Partial<
-  Record<'AND' | 'NOT' | 'OR' | 'XOR', T>
+export type CollectQueryLogicalGrouping<T extends object = object> = Partial<
+  Record<'AND' | 'NOT' | 'OR' | 'XOR', Enumerable<CollectQueryCondition<T>>>
 >
 export type CollectQueryCommonParams<T extends object = object> = {
   limit?: number
@@ -48,9 +48,7 @@ export type CollectQueryIncludes<T extends object = object> = RequireAtLeastOne<
 
 export type CollectQueryWhere<T extends object = object> =
   | CollectQueryCondition<T>
-  | RequireAtLeastOne<
-      CollectQueryLogicalGroupingMap<Enumerable<CollectQueryCondition<T>>>
-    >
+  | RequireAtLeastOne<CollectQueryLogicalGrouping<T>>
 
 export type CollectQueryWhereClause<T extends object = object> = {
   where?: CollectQueryWhere<T>
