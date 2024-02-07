@@ -11,8 +11,10 @@
     "./package.json"
   ],
   "scripts": {
-    "build": "tsc -d --declarationMap",
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "build": "pnpm clean && tsc -d --declarationMap",
+    "clean": "rm -rf ./dist ./node_modules/.cache",
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "flush": "rm -rf node_modules"
   },
   "dependencies": {},
   "peerDependencies": {},

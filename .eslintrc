@@ -11,7 +11,10 @@
     "allowImportExportEverywhere": true,
     "project": ["**/tsconfig.json"]
   },
-  "plugins": ["@typescript-eslint", "perfectionist"],
+  "plugins": [
+    "@typescript-eslint",
+//    "perfectionist"
+  ],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",

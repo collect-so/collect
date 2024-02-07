@@ -5,20 +5,21 @@
   "version": "0.0.2",
   "type": "module",
   "main": "cjs/stripe.cjs.node.js",
-  "types": "types/index.d.ts",
+  "types": "index.d.ts",
   "scripts": {
-    "build": "pnpm build-esm && pnpm build-cjs",
+    "build": "pnpm clean && pnpm build-esm && pnpm build-cjs",
     "build-esm": "mkdir -p esm && tsc -p tsconfig.esm.json && echo '{\"type\":\"module\",\"name\": \"@collect.so/javascript-sdk\"}' > esm/package.json",
     "build-cjs": "mkdir -p cjs && tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\",\"name\": \"@collect.so/javascript-sdk\"}' > cjs/package.json",
     "dev": "tsup --watch",
     "types:check": "tsc --noEmit",
-    "clean": "rm -rf ./dist ./node_modules/.cache ./coverage ./esm ./cjs"
+    "clean": "rm -rf ./dist ./node_modules/.cache ./coverage ./esm ./cjs",
+    "flush": "rm -rf node_modules"
   },
   "dependencies": {
-    "@collect.so/types": "packages:../types",
     "yup": "1.2.0"
   },
   "devDependencies": {
+    "@collect.so/types": "workspace:*",
     "node-fetch": "3.3.2"
   },
   "peerDependencies": {},
@@ -31,22 +32,22 @@
     "url": "https://github.com/collect-so/collect-toolkit"
   },
   "exports": {
-    "types": "./types/index.d.ts",
+    "types": "./index.d.ts",
     "browser": {
-      "import": "./esm/collect.esm.worker.js",
-      "require": "./cjs/collect.cjs.worker.js"
+      "import": "./esm/index.esm.worker.js",
+      "require": "./cjs/index.cjs.worker.js"
     },
     "deno": {
-      "import": "./esm/collect.esm.worker.js",
-      "require": "./cjs/collect.cjs.worker.js"
+      "import": "./esm/index.esm.worker.js",
+      "require": "./cjs/index.cjs.worker.js"
     },
     "worker": {
-      "import": "./esm/collect.esm.worker.js",
-      "require": "./cjs/collect.cjs.worker.js"
+      "import": "./esm/index.esm.worker.js",
+      "require": "./cjs/index.cjs.worker.js"
     },
     "default": {
-      "import": "./esm/collect.esm.node.js",
-      "require": "./cjs/collect.cjs.node.js"
+      "import": "./esm/index.esm.node.js",
+      "require": "./cjs/index.cjs.node.js"
     }
   }
 }

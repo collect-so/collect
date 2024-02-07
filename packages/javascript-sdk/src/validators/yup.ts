@@ -1,14 +1,15 @@
-import { ValidationError } from 'yup';
-import { Validator } from './types.js'
+import { ValidationError } from 'yup'
+
+import type { Validator } from './types.js'
 
 export const yupValidator: Validator = (schema) => async (values) => {
   try {
-    await schema.validate(values);
+    await schema.validate(values)
   } catch (error) {
     if (error instanceof ValidationError) {
       throw new ValidationError(error.message)
     } else {
-      throw error;
+      throw error
     }
   }
-};
+}

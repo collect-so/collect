@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "pnpm -r run clean",
+    "clean:install": "pnpm -r run flush & pnpm install",
     "dev": "pnpm -r run dev",
     "build": "pnpm -r run build",
     "types:check": "pnpm -r run types:check",
@@ -38,7 +39,7 @@
     "prettier": "2.8.8",
     "rimraf": "5.0.1",
     "tsup": "^7.1.0",
-    "typescript": "5.0.4"
+    "typescript": "5.3.3"
   },
   "prettier": {
     "tabWidth": 2,
@@ -52,5 +53,8 @@
   "engines": {
     "pnpm": "8",
     "node": "^18.x"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
