@@ -9,12 +9,14 @@ export interface HttpClientInterface {
   ) => Promise<HttpClientResponseInterface>
 }
 
-export interface MakeRequestConfig {
+export interface MakeRequestConfig<
+  T extends Record<string, any> = Record<string, any>
+> {
   credentials?: string
   headers?: RequestHeaders
   method: string
   protocol?: string
-  requestData?: RequestData
+  requestData?: any
   timeout?: number
 }
 

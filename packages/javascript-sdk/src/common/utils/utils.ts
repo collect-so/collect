@@ -1,7 +1,6 @@
-import type { CollectQuery } from '@collect.so/types'
+import type { CollectPropertyType, CollectQuery } from '@collect.so/types'
 
 import type { UserProvidedConfig } from '../../sdk/types'
-import type { Label, PropertyType } from '../types'
 
 import {
   ALLOWED_CONFIG_PROPERTIES,
@@ -12,7 +11,7 @@ import {
   ISO_8601_FULL
 } from '../constants'
 
-const suggestType = (value: unknown): PropertyType => {
+const suggestType = (value: unknown): CollectPropertyType => {
   if (typeof value === 'string' && value !== '') {
     if (ISO_8601_FULL.test(value)) {
       return 'datetime'
@@ -50,8 +49,10 @@ export const normalizeData = <T extends object = object>(rawData: T) => {
   } else {
     return Object.keys(rawData).map((name) => ({
       name,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       type: suggestType(rawData[name]),
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       value: rawData[name]
     }))
@@ -80,10 +81,10 @@ export const normalizeData = <T extends object = object>(rawData: T) => {
 // }
 
 export const extractLabelAndParams = <T extends object = object>(
-  labelOrSearchParams: CollectQuery<T> | Label,
+  labelOrSearchParams: CollectQuery<T> | string,
   searchParams?: CollectQuery<T>
-): { label: Label; params: CollectQuery<T> } => {
-  let label: Label = ''
+): { label: string; params: CollectQuery<T> } => {
+  let label = ''
   let params: CollectQuery<T>
 
   if (
@@ -96,7 +97,7 @@ export const extractLabelAndParams = <T extends object = object>(
     params = labelOrSearchParams as CollectQuery<T>
   }
 
-  return { label, params } as { label: Label; params: CollectQuery<T> }
+  return { label, params } as { label: string; params: CollectQuery<T> }
 }
 
 export function validateInteger(

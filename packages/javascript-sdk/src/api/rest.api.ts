@@ -1,6 +1,5 @@
 import type { CollectQuery } from '@collect.so/types'
 
-import type { Label } from '../common/types'
 import type { HttpClient } from '../network/HttpClient'
 import type { UserProvidedConfig } from '../sdk/types'
 
@@ -34,15 +33,15 @@ export class CollectRestAPI {
     searchParams?: CollectQuery<T>
   ): Promise<CollectResult<T[]>>
   public async find<T extends object = object>(
-    label?: Label,
+    label?: string,
     searchParams?: CollectQuery<T>
   ): Promise<CollectResult<T[]>>
   public async find<T extends object = object>(
-    label?: CollectQuery<T> | Label,
+    label?: CollectQuery<T> | string,
     searchParams?: CollectQuery<T>
   ): Promise<CollectResult<T[]>> {
     const { params } = extractLabelAndParams<T>(
-      label as CollectQuery<T> | Label,
+      label as CollectQuery<T> | string,
       searchParams
     )
 

@@ -13,7 +13,7 @@ declare module '@collect.so/javascript-sdk' {
     constructor(token: string, config?: UserProvidedConfig)
     public api: InternalCollectRestAPI
 
-    public registerModel(model: CollectModel): CollectModel
+    public registerModel(model: CollectModel): CollectModel //& Omit<CollectRestAPI, 'find'>
     public getModel(label: string): CollectModel
     public getModels(): Map<string, CollectModel>
     public getInstance(token: string, config?: UserProvidedConfig): Collect

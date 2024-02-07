@@ -16,10 +16,10 @@
     "flush": "rm -rf node_modules"
   },
   "dependencies": {
-    "@collect.so/types": "workspace:*",
     "yup": "1.2.0"
   },
   "devDependencies": {
+    "@collect.so/types": "workspace:*",
     "node-fetch": "3.3.2"
   },
   "peerDependencies": {},

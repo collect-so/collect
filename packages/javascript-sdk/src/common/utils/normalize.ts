@@ -1,6 +1,7 @@
-import type { CollectDateTimeObject, Enumerable } from '@collect.so/types'
-
-import type { TPropertyType } from '../types'
+import type {
+  CollectPropertyType,
+  CollectPropertyValue
+} from '@collect.so/types'
 
 import {
   ISO_8601_FULL,
@@ -10,16 +11,6 @@ import {
   PROPERTY_TYPE_NUMBER,
   PROPERTY_TYPE_STRING
 } from '../constants'
-
-export type TPropertyPrimitiveValue = boolean | null | number | string
-export type TPropertyDatetimeValue = CollectDateTimeObject | string
-
-export type TPropertySingleValue<TType extends TPropertyType = TPropertyType> =
-  TType extends typeof PROPERTY_TYPE_DATETIME
-    ? TPropertyDatetimeValue
-    : TPropertyPrimitiveValue
-
-export type TPropertyValue = Enumerable<TPropertyPrimitiveValue>
 
 export const arrayIsConsistent = (arr: Array<unknown>) => {
   if (arr.length === 0) {
@@ -37,7 +28,7 @@ export const arrayIsConsistent = (arr: Array<unknown>) => {
   return true
 }
 
-export const getValueParameters = (value: TPropertyValue) => {
+export const getValueParameters = (value: CollectPropertyValue) => {
   if (Array.isArray(value)) {
     const isInconsistentArray = !arrayIsConsistent(value)
     const isEmptyArray =
@@ -59,8 +50,8 @@ export const getValueParameters = (value: TPropertyValue) => {
 }
 
 export const suggestPropertyType = (
-  value: TPropertySingleValue
-): TPropertyType => {
+  value: CollectPropertyValue
+): CollectPropertyType => {
   if (typeof value === 'string') {
     return ISO_8601_FULL.test(value)
       ? PROPERTY_TYPE_DATETIME
@@ -87,18 +78,22 @@ export const normalizeRecord = ({
     suggestTypes: boolean
   }
   parentId?: string
-  payload: Record<string, TPropertyValue>
+  payload: Record<string, CollectPropertyValue>
 }) => {
   return {
     label,
     parentId,
     properties: Object.keys(payload).reduce<
-      Array<{ name: string; type?: TPropertyType; value?: TPropertyValue }>
+      Array<{
+        name: string
+        type?: CollectPropertyType
+        value?: CollectPropertyValue
+      }>
     >((acc, name) => {
       const property: {
         name: string
-        type?: TPropertyType
-        value?: TPropertyValue
+        type?: CollectPropertyType
+        value?: CollectPropertyValue
       } = {
         name
       }

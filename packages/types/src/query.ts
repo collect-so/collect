@@ -6,21 +6,21 @@ export type CollectQueryConditionValue<
   K extends keyof T = keyof T
 > =
   | CollectDateTimeObject
+  | Enumerable<number | string>
   | Record<
-    'equals' | 'not',
-    CollectDateTimeObject | boolean | null | number | string
-  >
+      'equals' | 'not',
+      CollectDateTimeObject | boolean | null | number | string
+    >
   | RequireAtLeastOne<
-    Record<'gt' | 'gte' | 'lt' | 'lte', CollectDateTimeObject | number>
-  >
+      Record<'gt' | 'gte' | 'lt' | 'lte', CollectDateTimeObject | number>
+    >
   | RequireAtLeastOne<
-    Record<'in' | 'notIn', Array<CollectDateTimeObject | number | string>>
-  >
+      Record<'in' | 'notIn', Array<CollectDateTimeObject | number | string>>
+    >
   | RequireAtLeastOne<Record<'contains' | 'endsWith' | 'startsWith', string>>
   | boolean
   | null
-  | number
-  | string
+
 export type CollectQueryLogicalGroupingMap<T extends object = object> = Partial<
   Record<'AND' | 'NOT' | 'OR' | 'XOR', T>
 >
@@ -41,25 +41,27 @@ export type CollectQueryIncludes<T extends object = object> = RequireAtLeastOne<
   Record<
     string,
     Partial<CollectQueryIncludesClause<T>> &
-    CollectQueryWhereClause<T> &
-    CollectQueryCommonParams<T>
+      CollectQueryWhereClause<T> &
+      CollectQueryCommonParams<T>
   >
 >
-export type CollectQueryWhereClause<T extends object = object> = {
-  // pick?: '*' | Array<keyof T | string>
-  where?:
+
+export type CollectQueryWhere<T extends object = object> =
   | CollectQueryCondition<T>
   | RequireAtLeastOne<
-    CollectQueryLogicalGroupingMap<Enumerable<CollectQueryCondition<T>>>
-  >
+      CollectQueryLogicalGroupingMap<Enumerable<CollectQueryCondition<T>>>
+    >
+
+export type CollectQueryWhereClause<T extends object = object> = {
+  where?: CollectQueryWhere<T>
 }
+
 // INCLUDES CLAUSE
 export type CollectQueryIncludesClause<T extends object = object> = {
   includes?: CollectQueryIncludes<T>
 }
 export type CollectQuery<T extends object = any> =
   | (CollectQueryCommonParams<T> &
-    CollectQueryWhereClause<T> &
-    CollectQueryWhereParams & { includes?: never })
+      CollectQueryWhereClause<T> &
+      CollectQueryWhereParams & { includes?: never })
   | (CollectQueryIncludesClause<T> & { where?: never })
-

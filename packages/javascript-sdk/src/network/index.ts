@@ -14,16 +14,15 @@ export const createFetcher =
     token: string
     url: string
   }) =>
-  async <Data>(
+  async <Data extends Record<string, any> = Record<string, any>>(
     input: URL | string,
-    { headers: initHeaders, ...init }: MakeRequestConfig
+    { headers: initHeaders, ...init }: MakeRequestConfig<Data>
   ): Promise<Data> => {
     const response = await httpClient.makeRequest(`${url}${input}`, {
       credentials: 'omit',
       headers: {
         ...defaultHeaders,
         ...initHeaders,
-
         token
       },
       ...init

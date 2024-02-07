@@ -1,44 +1,95 @@
-import type { CollectQuery, Enumerable } from '@collect.so/types'
+import type {
+  CollectApiImportJsonRequest,
+  CollectApiResponse,
+  CollectCreateRecordRequest,
+  CollectGetRecordResponse,
+  CollectQuery,
+  CollectRecordPlain,
+  Enumerable
+} from '@collect.so/types'
 
-import type { CollectApiResponse } from '../common/types'
 import type { createFetcher } from '../network'
+
+// .findUnique(): Retrieve a single record by its unique identifier.
+//
+// .findMany(): Retrieve multiple records that match specific criteria.
+//
+// .create(): Create a new record in the database.
+//
+// .update(): Update an existing record in the database.
+//
+// .delete(): Delete a record from the database.
+//
+// .upsert(): Update or insert a record depending on whether it already exists.
+//
+// .count(): Count the number of records that match specific criteria.
+//
+// .groupBy(): Group records based on specific fields.
+//
+// .orderBy(): Sort records based on specific fields and sorting criteria.
+//
+// .select(): Specify which fields to retrieve from the database.
+//
+// .include(): Eagerly load related records from other tables.
+//
+// .transaction(): Perform multiple database operations within a single transaction.
+//
+// .raw(): Execute raw SQL queries if needed.
+//
+// .join(): Perform inner and outer joins between tables.
+//
+// .where(): Apply filtering conditions to query results.
 
 // @TODO's
 // POST API.attach @TODO
 // POST API.detach @TODO
 // POST API.upsert @TODO
+// System
+// POST API.beginTransaction
+// POST API.commitTransaction
+// POST API.rollbackTransaction
 
 // Resources
-// POST API.findMany
-// POST API.findById
-// POST API.findOne
+// POST API.find({ searchparams })
+// POST API.findById(id)
+// POST API.findOne({ searchparams })
 
 // POST API.create
-// POST API.createMany
 
 // PATCH API.update
-// DELETE API.delete
-// DELETE API.deleteMany
+
+// DELETE API.delete([ids...] | { searchparams })
+// DELETE API.deleteById(id)
 
 // Metadata
 // POST API.properties
+// POST API.relations
 // POST API.labels
 // GET API.values/:propertyId
+type FetcherResponseType<T> = T extends
+  | CollectApiImportJsonRequest
+  | Enumerable<CollectRecordPlain>
+  ? Enumerable<CollectGetRecordResponse>
+  : T extends CollectCreateRecordRequest
+  ? CollectGetRecordResponse
+  : never
 
-export type TImportOptions = {
-  generateLabels?: boolean
-  returnResult?: boolean
-  suggestTypes?: boolean
-}
+// POST /api/v1/import/json
+// GET /api/v1/records/:id
+// POST /api/v1/records/ /api/v1/records/:id
+// PUT /api/v1/records/:id
+// DELETE /api/v1/records
+// DELETE /api/v1/records/:id
+// POST /api/v1/records/properties /api/v1/records/:id/properties
 
 export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
-  create<T extends object = object>(body: {
-    label?: string
-    options?: TImportOptions
-    parentId?: string
-    payload: Enumerable<T>
-  }) {
-    return fetcher<Enumerable<T>>(`/import/json`, {
+  create<
+    T extends
+      | CollectApiImportJsonRequest
+      | CollectCreateRecordRequest
+      | Enumerable<CollectRecordPlain>
+  >(body: T) {
+    return fetcher<FetcherResponseType<T>>(`/import/json`, {
       method: 'POST',
       requestData: body
     })

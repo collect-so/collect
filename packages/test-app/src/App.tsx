@@ -3,7 +3,8 @@ import './App.css'
 import SDK, { CollectModel, CollectResult } from '@collect.so/javascript-sdk'
 
 const Collect = new SDK(
-  '43b84068213703baa55765e5dd8d8d28ieZ61XVy8JnfsvqpU+fzRKKOHrgFdiZ0Q1njyIfwBO91iZkme9Wqcr3iGd8eqYsS'
+  '43b84068213703baa55765e5dd8d8d28ieZ61XVy8JnfsvqpU+fzRKKOHrgFdiZ0Q1njyIfwBO91iZkme9Wqcr3iGd8eqYsS',
+  { url: 'http://localhost' }
 )
 
 const User = new CollectModel<{ id: string }>('user', { id: 'string' })
@@ -21,6 +22,7 @@ function App() {
       const users = await UserRepo.find({})
       setUsers(users)
     }
+    console.log(UserRepo)
     find()
   }, [])
 

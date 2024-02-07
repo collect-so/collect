@@ -16,7 +16,7 @@ export class CollectRestApiProxy {
     })
   }
 
-  init(api: CollectRestAPI) {
+  init(api: CollectRestAPI, methodsWhiteList?: []) {
     this.apiProxy = api
   }
 }

@@ -39,7 +39,7 @@ export const createCollect = (httpClient: HttpClient) => {
       return Collect.instance
     }
 
-    registerModel(model: CollectModel): CollectModel {
+    registerModel(model: CollectModel) {
       const label = model.getLabel()
 
       // Inject the API into the model
@@ -47,7 +47,7 @@ export const createCollect = (httpClient: HttpClient) => {
       model.init(this)
 
       this.models.set(label, model)
-      return model
+      return model as CollectModel & Omit<CollectRestAPI, 'find'>
     }
 
     public getModels(): Map<string, CollectModel> {
