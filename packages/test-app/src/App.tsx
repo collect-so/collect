@@ -1,28 +1,74 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import SDK, { CollectModel, CollectResult } from '@collect.so/javascript-sdk'
+import CollectSDK, {
+  CollectModel,
+  type CollectSDKResult,
+  type CollectArrayResult
+} from '@collect.so/javascript-sdk'
 
-const Collect = new SDK(
-  '43b84068213703baa55765e5dd8d8d28ieZ61XVy8JnfsvqpU+fzRKKOHrgFdiZ0Q1njyIfwBO91iZkme9Wqcr3iGd8eqYsS',
+const Collect = new CollectSDK(
+  'd73d1449bd4900867c769bb9113d6b08jiVO5MCNivxFobp23sYOflCghabVoJ0SJJfzTDMp4VNV4iqF2HXTCGdJdyKtsEa+',
   { url: 'http://localhost' }
 )
 
-const User = new CollectModel<{ id: string }>('user', { id: 'string' })
+const User = new CollectModel(
+  'user',
+  {
+    name: { type: 'string' },
+    id: { type: 'number' },
+    dateOfBirth: { type: 'datetime', required: false }
+  },
+  {
+    orders: {
+      modelName: 'order',
+      direction: 'out',
+      type: 'HAS_ORDER'
+    }
+  }
+)
 
 const UserRepo = Collect.registerModel(User)
 
 function App() {
-  const [records, setRecords] = useState<CollectResult<{ id: string }[]>>()
-  const [users, setUsers] = useState<CollectResult<{ id: string }[]>>()
+  const [records, setRecords] = useState<CollectArrayResult>()
+  const [users, setUsers] = useState<CollectSDKResult<typeof UserRepo.find>>()
 
   useEffect(() => {
     const find = async () => {
-      const records = await Collect.find<{ id: string }>({ limit: 4, skip: 3 })
+      const records = await Collect.find({
+        where: {
+          XOR: {
+            avgIncome: {
+              gt: 20000
+            },
+            favoriteCategory: {
+              contains: 'Ethnic'
+            },
+            eyeColor: {
+              contains: 'green'
+            },
+            birthday: {
+              day: 28,
+              month: 1,
+              year: 1994
+            }
+          }
+        }
+      })
       setRecords(records)
-      const users = await UserRepo.find({})
+      const users = await UserRepo.find({
+        where: {
+          id: {
+            startsWith: '098'
+          },
+          name: ';',
+          dateOfBirth: {
+            year: 1994
+          }
+        }
+      })
       setUsers(users)
     }
-    console.log(UserRepo)
     find()
   }, [])
 
@@ -39,7 +85,7 @@ function App() {
       <div>
         <p>Users</p>
         <ol>
-          {users?.data?.map(({ id }) => (
+          {users?.data?.map(({ id, name, dateOfBirth }) => (
             <li key={id}>{id}</li>
           ))}
         </ol>

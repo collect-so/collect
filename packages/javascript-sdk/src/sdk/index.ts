@@ -5,7 +5,7 @@ import type { CollectState, UserProvidedConfig } from './types'
 
 import { CollectRestAPI } from '../api/rest.api'
 import { DEFAULT_TIMEOUT } from '../common/constants'
-import { parseConfig, validateInteger } from '../common/utils/utils'
+import { parseConfig, validateInteger } from '../utils/utils'
 import { yupValidator } from '../validators/yup'
 
 export const createCollect = (httpClient: HttpClient) => {
@@ -39,7 +39,7 @@ export const createCollect = (httpClient: HttpClient) => {
       return Collect.instance
     }
 
-    registerModel(model: CollectModel) {
+    registerModel<T extends CollectModel>(model: T): CollectModel<T['schema']> {
       const label = model.getLabel()
 
       // Inject the API into the model
@@ -47,7 +47,8 @@ export const createCollect = (httpClient: HttpClient) => {
       model.init(this)
 
       this.models.set(label, model)
-      return model as CollectModel & Omit<CollectRestAPI, 'find'>
+      return model as unknown as CollectModel<T['schema']> &
+        Omit<CollectRestAPI, 'find'>
     }
 
     public getModels(): Map<string, CollectModel> {

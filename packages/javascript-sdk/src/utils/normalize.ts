@@ -10,7 +10,7 @@ import {
   PROPERTY_TYPE_NULL,
   PROPERTY_TYPE_NUMBER,
   PROPERTY_TYPE_STRING
-} from '../constants'
+} from '../common/constants'
 
 export const arrayIsConsistent = (arr: Array<unknown>) => {
   if (arr.length === 0) {

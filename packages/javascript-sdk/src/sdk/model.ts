@@ -1,21 +1,28 @@
 import type { CollectQuery } from '@collect.so/types'
 
 import type { Validator } from '../validators/types'
-import type { CollectResult } from './result'
+import type { CollectArrayResult } from './result'
+import type { CollectRelations, CollectSchema, InferSchemaType } from './types'
 
 import { CollectRestApiProxy } from '../api/rest-api-proxy'
 
 export class CollectModel<
-  T extends object = object
+  T extends CollectSchema = CollectSchema
 > extends CollectRestApiProxy {
   private readonly label: string
   public schema: T
+  public relationships: CollectRelations
   private validator?: Validator
 
-  constructor(modelName: string, schema: T) {
+  constructor(
+    modelName: string,
+    schema: T,
+    relationships: CollectRelations = {}
+  ) {
     super()
     this.label = modelName
     this.schema = schema
+    this.relationships = relationships
   }
 
   setValidator(validator?: Validator) {
@@ -26,16 +33,23 @@ export class CollectModel<
     return this.label
   }
 
-  async find<T extends object = object>(
-    params?: CollectQuery<T>
-  ): Promise<CollectResult<T[]>> {
-    const modifiedParams = { label: this.label, ...params }
-    return this.apiProxy?.find(modifiedParams as CollectQuery<T>) as Promise<
-      CollectResult<T[]>
-    >
+  async find(
+    params?: CollectQuery<InferSchemaType<T>>
+  ): Promise<CollectArrayResult<InferSchemaType<T>>> {
+    const modifiedParams = { labels: [this.label], ...params }
+    return this.apiProxy?.find<InferSchemaType<T>>(
+      modifiedParams as CollectQuery<InferSchemaType<T>>
+    ) as Promise<CollectArrayResult<InferSchemaType<T>>>
   }
 
-  async validate(data: object) {
-    return this.validator?.(this)(this.schema)
+  async validate(data: InferSchemaType<T>) {
+    return this.validator?.(this)(data)
   }
+}
+
+export function createCollectModel<T extends CollectSchema>(
+  modelName: string,
+  schema: T
+): CollectModel<T> {
+  return new CollectModel<T>(modelName, schema)
 }

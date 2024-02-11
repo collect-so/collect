@@ -1,11 +1,11 @@
-import type { CollectQuery } from '@collect.so/types'
+import type { CollectObject, CollectQuery } from '@collect.so/types'
 
 import type { HttpClient } from '../network/HttpClient'
 import type { UserProvidedConfig } from '../sdk/types'
 
-import { buildUrl, extractLabelAndParams } from '../common/utils/utils'
 import { createFetcher } from '../network'
-import { CollectResult } from '../sdk/result'
+import { CollectArrayResult } from '../sdk/result'
+import { buildUrl, extractLabelAndParams } from '../utils/utils'
 import { createApi } from './api'
 
 export class CollectRestAPI {
@@ -29,29 +29,30 @@ export class CollectRestAPI {
     this.api = createApi(this.fetcher)
   }
 
-  public async find<T extends object = object>(
+  public async find<T extends CollectObject = CollectObject>(
     searchParams?: CollectQuery<T>
-  ): Promise<CollectResult<T[]>>
-  public async find<T extends object = object>(
+  ): Promise<CollectArrayResult<T>>
+  public async find<T extends CollectObject = CollectObject>(
     label?: string,
     searchParams?: CollectQuery<T>
-  ): Promise<CollectResult<T[]>>
-  public async find<T extends object = object>(
+  ): Promise<CollectArrayResult<T>>
+  public async find<T extends CollectObject = CollectObject>(
     label?: CollectQuery<T> | string,
     searchParams?: CollectQuery<T>
-  ): Promise<CollectResult<T[]>> {
+  ): Promise<CollectArrayResult<T>> {
     const { params } = extractLabelAndParams<T>(
       label as CollectQuery<T> | string,
       searchParams
     )
 
-    const data = await this.api?.findRecords<T>(params)
+    const response = await this.api?.findRecords<T>(params)
 
-    // Create a CollectResult instance and initialize it with the API
-    const result = new CollectResult<T[]>(
-      data.data,
-      searchParams as CollectQuery<T[]>
+    // Wrap a CollectResult instance and initialize it with the API
+    const result = new CollectArrayResult<T>(
+      response.data,
+      searchParams as CollectQuery<T>
     )
+    // Expose API methods to result descendants
     result.init(this)
 
     return result
