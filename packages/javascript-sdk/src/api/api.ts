@@ -84,7 +84,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       | CollectCreateRecordRequest
       | Enumerable<CollectRecordPlain>
   >(body: T) {
-    return fetcher<FetcherResponseType<T>>(`/import/json`, {
+    return fetcher<CollectApiResponse<T>>(`/import/json`, {
       method: 'POST',
       requestData: body
     })

@@ -1,6 +1,7 @@
-import type { CollectModel } from '../sdk/model'
-import type { InferSchemaType } from '../sdk/types'
+import type { CollectSchema, InferSchemaType } from '@collect.so/types'
 
-export type Validator = (
-  model: CollectModel
+import type { CollectModel } from '../sdk/model'
+
+export type Validator<T extends CollectSchema = CollectSchema> = (
+  model: CollectModel<T>
 ) => (values: InferSchemaType<typeof model.schema>) => Promise<unknown>

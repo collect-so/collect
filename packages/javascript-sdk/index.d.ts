@@ -1,8 +1,4 @@
-import type {
-  CollectRelations,
-  CollectSDKResult,
-  CollectSchema
-} from './src/sdk/types'
+import type { CollectSDKResult } from './src/sdk/types'
 import type { UserProvidedConfig } from './src/sdk/types'
 
 import { CollectRestAPI } from './src/api/rest.api'
@@ -30,11 +26,9 @@ declare module '@collect.so/javascript-sdk' {
   export {
     CollectArrayResult,
     CollectModel,
-    CollectRelations,
     CollectRestAPI,
     CollectResult,
     CollectSDKResult,
-    CollectSchema,
     createCollectModel
   }
 

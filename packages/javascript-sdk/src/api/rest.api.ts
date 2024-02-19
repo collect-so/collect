@@ -5,6 +5,7 @@ import type { UserProvidedConfig } from '../sdk/types'
 
 import { createFetcher } from '../network'
 import { CollectArrayResult } from '../sdk/result'
+import { CollectResult } from '../sdk/result'
 import { buildUrl, extractLabelAndParams } from '../utils/utils'
 import { createApi } from './api'
 
@@ -58,22 +59,22 @@ export class CollectRestAPI {
     return result
   }
 
-  // async create(payload: RecordPayload): Promise<CreateResult>
-  // async create(
-  //   labelOrModel: LabelOrModel,
-  //   payload: RecordPayload
-  // ): Promise<CreateResult>
-  // async create(
-  //   labelOrModelOrPayload: LabelOrModelOrPayload,
-  //   payload?: RecordPayload
-  // ): Promise<CreateResult> {
-  //   // await this.api.validate(labelOrModelOrPayload, payload)
-  //
-  //   const body = createBody(labelOrModelOrPayload, payload)
-  //   const data = await this.api?.createRecord(body)
-  //
-  //   return createProxy(new Result(this.api, data), labelOrModelOrPayload)
-  // }
+  async create<T extends CollectObject = CollectObject>(
+    payload?: T
+  ): Promise<CollectResult<T>>
+  async create<T extends CollectObject = CollectObject>(
+    label?: string,
+    payload?: T
+  ): Promise<CollectResult<T>>
+  async create<T extends CollectObject = CollectObject>(
+    label?: string,
+    payload?: T
+  ): Promise<CollectResult<T>> {
+    const response = await this.api?.create<T>(payload as T)
+    const result = new CollectResult<T>(response.data)
+    result.init(this)
+    return result
+  }
 
   // async update(
   //   searchParams: CollectQuery,

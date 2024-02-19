@@ -7,7 +7,7 @@ import CollectSDK, {
 } from '@collect.so/javascript-sdk'
 
 const Collect = new CollectSDK(
-  'd73d1449bd4900867c769bb9113d6b08jiVO5MCNivxFobp23sYOflCghabVoJ0SJJfzTDMp4VNV4iqF2HXTCGdJdyKtsEa+',
+  '071fe6b3a94d1cc23e18a7cdc0131f926RDjUjkBtYNLnkWNG21TEXcvwjbm4GD9ZN05A0LIR7g3Cr0yuuQGau3gJaLIpPcT',
   { url: 'http://localhost' }
 )
 
@@ -16,6 +16,9 @@ const User = new CollectModel(
   {
     name: { type: 'string' },
     id: { type: 'number' },
+    jobTitle: { type: 'string' },
+    age: { type: 'number' },
+    married: { type: 'boolean' },
     dateOfBirth: { type: 'datetime', required: false }
   },
   {
@@ -58,12 +61,14 @@ function App() {
       setRecords(records)
       const users = await UserRepo.find({
         where: {
+          jobTitle: '11',
           id: {
-            startsWith: '098'
+            lt: 1
           },
           name: ';',
           dateOfBirth: {
-            year: 1994
+            year: 1993,
+            day: 1
           }
         }
       })
@@ -77,19 +82,33 @@ function App() {
       <div>
         <p>Data</p>
         <ol>
-          {records?.data?.map(({ id }) => (
-            <li key={id}>{id}</li>
+          {records?.data?.map(({ id }, index) => (
+            <li key={`${id}-${index}`}>{id}</li>
           ))}
         </ol>
       </div>
       <div>
         <p>Users</p>
         <ol>
-          {users?.data?.map(({ id, name, dateOfBirth }) => (
+          {users?.data?.map(({ id }) => (
             <li key={id}>{id}</li>
           ))}
         </ol>
       </div>
+      <button
+        onClick={async () =>
+          await UserRepo.create({
+            dateOfBirth: '',
+            name: '1',
+            id: 5,
+            jobTitle: 'manager',
+            age: 40,
+            married: false
+          })
+        }
+      >
+        create user
+      </button>
     </div>
   )
 }
