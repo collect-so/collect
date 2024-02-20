@@ -1,5 +1,13 @@
 # test-app
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies [701d80c]
+  - @collect.so/javascript-sdk@0.2.0
+  - @collect.so/types@0.3.0
+
 ## 0.0.1
 
 ### Patch Changes
