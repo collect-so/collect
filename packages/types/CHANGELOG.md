@@ -1,5 +1,11 @@
 # @collect.so/types
 
+## 0.3.0
+
+### Minor Changes
+
+- 701d80c: Type inference from model declarations
+
 ## 0.2.0
 
 ### Minor Changes
