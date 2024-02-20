@@ -1,28 +1,79 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import SDK, { CollectModel, CollectResult } from '@collect.so/javascript-sdk'
+import CollectSDK, {
+  CollectModel,
+  type CollectSDKResult,
+  type CollectArrayResult
+} from '@collect.so/javascript-sdk'
 
-const Collect = new SDK(
-  '43b84068213703baa55765e5dd8d8d28ieZ61XVy8JnfsvqpU+fzRKKOHrgFdiZ0Q1njyIfwBO91iZkme9Wqcr3iGd8eqYsS',
+const Collect = new CollectSDK(
+  '071fe6b3a94d1cc23e18a7cdc0131f926RDjUjkBtYNLnkWNG21TEXcvwjbm4GD9ZN05A0LIR7g3Cr0yuuQGau3gJaLIpPcT',
   { url: 'http://localhost' }
 )
 
-const User = new CollectModel<{ id: string }>('user', { id: 'string' })
+const User = new CollectModel(
+  'user',
+  {
+    name: { type: 'string' },
+    id: { type: 'number' },
+    jobTitle: { type: 'string' },
+    age: { type: 'number' },
+    married: { type: 'boolean' },
+    dateOfBirth: { type: 'datetime', required: false }
+  },
+  {
+    orders: {
+      modelName: 'order',
+      direction: 'out',
+      type: 'HAS_ORDER'
+    }
+  }
+)
 
 const UserRepo = Collect.registerModel(User)
 
 function App() {
-  const [records, setRecords] = useState<CollectResult<{ id: string }[]>>()
-  const [users, setUsers] = useState<CollectResult<{ id: string }[]>>()
+  const [records, setRecords] = useState<CollectArrayResult>()
+  const [users, setUsers] = useState<CollectSDKResult<typeof UserRepo.find>>()
 
   useEffect(() => {
     const find = async () => {
-      const records = await Collect.find<{ id: string }>({ limit: 4, skip: 3 })
+      const records = await Collect.find({
+        where: {
+          XOR: {
+            avgIncome: {
+              gt: 20000
+            },
+            favoriteCategory: {
+              contains: 'Ethnic'
+            },
+            eyeColor: {
+              contains: 'green'
+            },
+            birthday: {
+              day: 28,
+              month: 1,
+              year: 1994
+            }
+          }
+        }
+      })
       setRecords(records)
-      const users = await UserRepo.find({})
+      const users = await UserRepo.find({
+        where: {
+          jobTitle: '11',
+          id: {
+            lt: 1
+          },
+          name: ';',
+          dateOfBirth: {
+            year: 1993,
+            day: 1
+          }
+        }
+      })
       setUsers(users)
     }
-    console.log(UserRepo)
     find()
   }, [])
 
@@ -31,8 +82,8 @@ function App() {
       <div>
         <p>Data</p>
         <ol>
-          {records?.data?.map(({ id }) => (
-            <li key={id}>{id}</li>
+          {records?.data?.map(({ id }, index) => (
+            <li key={`${id}-${index}`}>{id}</li>
           ))}
         </ol>
       </div>
@@ -44,6 +95,20 @@ function App() {
           ))}
         </ol>
       </div>
+      <button
+        onClick={async () =>
+          await UserRepo.create({
+            dateOfBirth: { year: 1994 },
+            name: '1',
+            id: 5,
+            jobTitle: 'manager',
+            age: 40,
+            married: false
+          })
+        }
+      >
+        create user
+      </button>
     </div>
   )
 }

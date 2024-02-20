@@ -3,6 +3,7 @@ import type {
   CollectApiResponse,
   CollectCreateRecordRequest,
   CollectGetRecordResponse,
+  CollectObject,
   CollectQuery,
   CollectRecordPlain,
   Enumerable
@@ -24,8 +25,6 @@ import type { createFetcher } from '../network'
 //
 // .count(): Count the number of records that match specific criteria.
 //
-// .groupBy(): Group records based on specific fields.
-//
 // .orderBy(): Sort records based on specific fields and sorting criteria.
 //
 // .select(): Specify which fields to retrieve from the database.
@@ -33,10 +32,6 @@ import type { createFetcher } from '../network'
 // .include(): Eagerly load related records from other tables.
 //
 // .transaction(): Perform multiple database operations within a single transaction.
-//
-// .raw(): Execute raw SQL queries if needed.
-//
-// .join(): Perform inner and outer joins between tables.
 //
 // .where(): Apply filtering conditions to query results.
 
@@ -89,7 +84,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       | CollectCreateRecordRequest
       | Enumerable<CollectRecordPlain>
   >(body: T) {
-    return fetcher<FetcherResponseType<T>>(`/import/json`, {
+    return fetcher<CollectApiResponse<T>>(`/import/json`, {
       method: 'POST',
       requestData: body
     })
@@ -109,7 +104,9 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
   //     method: 'DELETE'
   //   })
 
-  findRecords<T extends object = object>(searchParams: CollectQuery<T>) {
+  findRecords<T extends CollectObject = CollectObject>(
+    searchParams: CollectQuery<T>
+  ) {
     return fetcher<CollectApiResponse<T[]>>(`/records/search`, {
       method: 'POST',
       requestData: searchParams

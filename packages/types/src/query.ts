@@ -1,65 +1,117 @@
-import type { CollectDateTimeObject } from './core'
+import type {
+  CollectDateTimeObject,
+  CollectObject,
+  CollectSchema
+} from './core'
 import type { Enumerable, RequireAtLeastOne } from './utils'
 
-export type CollectQueryConditionValue<
-  T extends object = object,
-  K extends keyof T = keyof T
-> =
+type DatetimeValue =
   | CollectDateTimeObject
-  | Enumerable<number | string>
-  | Record<
-      'equals' | 'not',
-      CollectDateTimeObject | boolean | null | number | string
+  | RequireAtLeastOne<
+      Record<
+        'gt' | 'gte' | 'lt' | 'lte' | 'not',
+        CollectDateTimeObject | string
+      >
     >
   | RequireAtLeastOne<
-      Record<'gt' | 'gte' | 'lt' | 'lte', CollectDateTimeObject | number>
+      Record<'in' | 'notIn', Array<CollectDateTimeObject | string>>
     >
+  | string
+type BooleanValue = RequireAtLeastOne<Record<'not', boolean>> | boolean
+type NullValue = RequireAtLeastOne<Record<'not', null>> | null
+type NumberValue =
+  | RequireAtLeastOne<Record<'gt' | 'gte' | 'lt' | 'lte' | 'not', number>>
+  | RequireAtLeastOne<Record<'in' | 'notIn', Array<number>>>
+  | number
+type StringValue =
   | RequireAtLeastOne<
-      Record<'in' | 'notIn', Array<CollectDateTimeObject | number | string>>
+      Record<'contains' | 'endsWith' | 'not' | 'startsWith', string>
     >
-  | RequireAtLeastOne<Record<'contains' | 'endsWith' | 'startsWith', string>>
-  | boolean
-  | null
+  | RequireAtLeastOne<Record<'in' | 'notIn', Array<string>>>
+  | string
 
-export type CollectQueryLogicalGrouping<T extends object = object> = Partial<
+type CollectWhereValue =
+  | BooleanValue
+  | DatetimeValue
+  | NullValue
+  | NumberValue
+  | StringValue
+
+type CollectWhereValueByType = {
+  boolean: BooleanValue
+  datetime: DatetimeValue
+  null: NullValue
+  number: NumberValue
+  string: StringValue
+}
+
+export type CollectQueryLogicalGrouping<
+  T extends CollectObject | CollectSchema = CollectSchema
+> = Partial<
   Record<'AND' | 'NOT' | 'OR' | 'XOR', Enumerable<CollectQueryCondition<T>>>
 >
-export type CollectQueryCommonParams<T extends object = object> = {
-  limit?: number
-  orderBy?: Partial<Record<keyof T, 'asc' | 'desc'>>
-  skip?: number
-}
-export type CollectQueryWhereParams = {
+export type CollectQueryCommonParams<
+  T extends CollectObject | CollectSchema = CollectSchema
+> = {
   depth?: '*' | number
   labels?: string[]
+  limit?: number
+  orderBy?: 'asc' | 'desc' | Partial<Record<keyof T, 'asc' | 'desc'>>
+  skip?: number
 }
-export type CollectQueryCondition<T extends object = object> =
-  RequireAtLeastOne<{
-    [K in keyof T]?: CollectQueryConditionValue<T, K>
-  }>
-export type CollectQueryIncludes<T extends object = object> = RequireAtLeastOne<
+
+export type CollectQueryCondition<
+  T extends CollectObject | CollectSchema = CollectSchema
+> = {
+  [K in keyof T]?: T extends CollectSchema
+    ? CollectWhereValueByType[T[K]['type']]
+    : T[K] extends number
+    ? CollectWhereValueByType['number']
+    : T[K] extends boolean
+    ? CollectWhereValueByType['boolean']
+    : T[K] extends string
+    ? CollectWhereValueByType['datetime'] | CollectWhereValueByType['string']
+    : T[K] extends null
+    ? CollectWhereValueByType['null']
+    : CollectWhereValue
+}
+
+// @TODO: implement inferring relation type from schema
+export type CollectQueryIncludesRelation = {
+  relation: string
+}
+
+export type CollectQueryIncludes<
+  T extends CollectObject | CollectSchema = CollectSchema
+> = RequireAtLeastOne<
   Record<
     string,
     Partial<CollectQueryIncludesClause<T>> &
       CollectQueryWhereClause<T> &
-      CollectQueryCommonParams<T>
+      CollectQueryCommonParams<T> &
+      Partial<CollectQueryIncludesRelation>
   >
 >
 
-export type CollectQueryWhere<T extends object = object> =
-  | CollectQueryCondition<T>
-  | RequireAtLeastOne<CollectQueryLogicalGrouping<T>>
+export type CollectQueryWhere<
+  T extends CollectObject | CollectSchema = CollectSchema
+> = CollectQueryCondition<T> | RequireAtLeastOne<CollectQueryLogicalGrouping<T>>
 
-export type CollectQueryWhereClause<T extends object = object> = {
+export type CollectQueryWhereClause<
+  T extends CollectObject | CollectSchema = CollectSchema
+> = {
   where?: CollectQueryWhere<T>
 }
 
 // INCLUDES CLAUSE
-export type CollectQueryIncludesClause<T extends object = object> = {
+export type CollectQueryIncludesClause<
+  T extends CollectObject | CollectSchema = CollectSchema
+> = {
   includes?: CollectQueryIncludes<T>
 }
-export type CollectQuery<T extends object = any> =
+export type CollectQuery<
+  T extends CollectObject | CollectSchema = CollectSchema
+> =
   | (CollectQueryCommonParams<T> &
-      CollectQueryWhereClause<T> &
-      CollectQueryWhereParams & { includes?: never })
+      CollectQueryWhereClause<T> & { includes?: never })
   | (CollectQueryIncludesClause<T> & { where?: never })

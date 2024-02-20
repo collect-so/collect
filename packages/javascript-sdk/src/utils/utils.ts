@@ -1,6 +1,10 @@
-import type { CollectPropertyType, CollectQuery } from '@collect.so/types'
+import type {
+  CollectObject,
+  CollectPropertyType,
+  CollectQuery
+} from '@collect.so/types'
 
-import type { UserProvidedConfig } from '../../sdk/types'
+import type { UserProvidedConfig } from '../sdk/types'
 
 import {
   ALLOWED_CONFIG_PROPERTIES,
@@ -9,7 +13,7 @@ import {
   DEFAULT_PORT,
   DEFAULT_PROTOCOL,
   ISO_8601_FULL
-} from '../constants'
+} from '../common/constants'
 
 const suggestType = (value: unknown): CollectPropertyType => {
   if (typeof value === 'string' && value !== '') {
@@ -36,7 +40,9 @@ const suggestType = (value: unknown): CollectPropertyType => {
   }
 }
 
-export const normalizeData = <T extends object = object>(rawData: T) => {
+export const normalizeData = <T extends CollectObject = CollectObject>(
+  rawData: T
+) => {
   if (Array.isArray(rawData)) {
     return rawData.map((property) => {
       const normalizedProperty = { ...property }
@@ -80,7 +86,7 @@ export const normalizeData = <T extends object = object>(rawData: T) => {
 //   return body
 // }
 
-export const extractLabelAndParams = <T extends object = object>(
+export const extractLabelAndParams = <T extends CollectObject = CollectObject>(
   labelOrSearchParams: CollectQuery<T> | string,
   searchParams?: CollectQuery<T>
 ): { label: string; params: CollectQuery<T> } => {
@@ -182,4 +188,12 @@ export const parseConfig = (
   }
 
   return config as UserProvidedConfig
+}
+
+export const isObjectFlat = (object: Record<string, any>): boolean => {
+  return Object.keys(object).every((key) => {
+    const value = object[key]
+    // Check if the value is a non-null object or an array
+    return !(value && (typeof value === 'object' || Array.isArray(value)))
+  })
 }

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@collect.so/javascript-sdk": "workspace:*",
+    "@collect.so/types": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

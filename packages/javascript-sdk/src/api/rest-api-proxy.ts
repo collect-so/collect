@@ -1,7 +1,7 @@
 import type { CollectRestAPI } from './rest.api'
 
 export class CollectRestApiProxy {
-  protected apiProxy: CollectRestAPI | null = null
+  protected apiProxy: CollectRestAPI = {} as CollectRestAPI
 
   constructor() {
     return new Proxy(this, {
