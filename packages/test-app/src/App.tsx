@@ -98,7 +98,7 @@ function App() {
       <button
         onClick={async () =>
           await UserRepo.create({
-            dateOfBirth: '',
+            dateOfBirth: { year: 1994 },
             name: '1',
             id: 5,
             jobTitle: 'manager',
