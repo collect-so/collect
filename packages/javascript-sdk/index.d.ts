@@ -1,7 +1,7 @@
 import type { CollectSDKResult } from './src/sdk/types'
 import type { UserProvidedConfig } from './src/sdk/types'
 
-import { CollectRestAPI } from './src/api/rest.api'
+import { CollectRestAPI } from './src/api/api'
 import { CollectModel } from './src/sdk/model'
 import { createCollectModel } from './src/sdk/model'
 import { CollectArrayResult, CollectResult } from './src/sdk/result'

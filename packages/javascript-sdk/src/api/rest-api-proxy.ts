@@ -1,4 +1,4 @@
-import type { CollectRestAPI } from './rest.api'
+import type { CollectRestAPI } from './api'
 
 export class CollectRestApiProxy {
   protected apiProxy: CollectRestAPI = {} as CollectRestAPI

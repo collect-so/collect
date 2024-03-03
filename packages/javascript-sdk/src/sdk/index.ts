@@ -3,7 +3,7 @@ import type { Validator } from '../validators/types'
 import type { CollectModel } from './model'
 import type { CollectState, UserProvidedConfig } from './types'
 
-import { CollectRestAPI } from '../api/rest.api'
+import { CollectRestAPI } from '../api/api'
 import { DEFAULT_TIMEOUT } from '../common/constants'
 import { parseConfig, validateInteger } from '../utils/utils'
 import { yupValidator } from '../validators/yup'

@@ -1,6 +1,7 @@
 import type {
   CollectObject,
   CollectPropertyType,
+  CollectPropertyValue,
   CollectQuery
 } from '@collect.so/types'
 
@@ -190,10 +191,27 @@ export const parseConfig = (
   return config as UserProvidedConfig
 }
 
-export const isObjectFlat = (object: Record<string, any>): boolean => {
-  return Object.keys(object).every((key) => {
-    const value = object[key]
-    // Check if the value is a non-null object or an array
-    return !(value && (typeof value === 'object' || Array.isArray(value)))
+export const isArray = (item: any): item is any[] =>
+  typeof item === 'object' && Array.isArray(item) && item !== null
+
+export const isObject = (input: unknown): input is object =>
+  input !== null && Object.prototype.toString.call(input) === '[object Object]'
+
+export const isObjectFlat = (input: Record<string, any>): boolean => {
+  return Object.keys(input).every((key) => {
+    const value = input[key]
+    // Check if the value is an array
+    if (Array.isArray(value)) {
+      // Check if every element in the array is of an allowed type (string, number, boolean, or null)
+      return value.every(
+        (element) =>
+          typeof element === 'string' ||
+          typeof element === 'number' ||
+          typeof element === 'boolean' ||
+          element === null
+      )
+    }
+    // Check if the value is a non-null object (excluding arrays, which are also typeof 'object')
+    return !(value && typeof value === 'object')
   })
 }

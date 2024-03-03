@@ -1,4 +1,5 @@
-export type CollectApiResponse<T, P = Record<string, any>> = {
+export type CollectApiResponse<T, E = Record<string, any>> = {
   data: T
   success: boolean
-} & P
+  total?: number
+} & E
