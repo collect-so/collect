@@ -1,5 +1,11 @@
 # @collect.so/types
 
+## 0.4.0
+
+### Minor Changes
+
+- 0c1ecac: Kept only where clause
+
 ## 0.3.0
 
 ### Minor Changes

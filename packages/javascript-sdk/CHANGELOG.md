@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.3.0
+
+### Minor Changes
+
+- 0c1ecac: Kept only where clause
+
 ## 0.2.0
 
 ### Minor Changes
