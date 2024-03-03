@@ -1,9 +1,13 @@
-import type { CollectObject, CollectQuery } from '@collect.so/types'
+import type {
+  CollectObject,
+  CollectQuery,
+  CollectSchema
+} from '@collect.so/types'
 
 import { CollectRestApiProxy } from '../api/rest-api-proxy'
 
 export class CollectResult<
-  T extends CollectObject = CollectObject
+  T extends CollectObject
 > extends CollectRestApiProxy {
   data: T
   requestData?: CollectQuery<T>

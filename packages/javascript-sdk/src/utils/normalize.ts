@@ -1,7 +1,10 @@
 import type {
   CollectPropertyType,
-  CollectPropertyValue
+  CollectPropertyValue,
+  CollectPropertyWithValue
 } from '@collect.so/types'
+
+import { CollectProperty } from '@collect.so/types'
 
 import {
   ISO_8601_FULL,
@@ -69,12 +72,14 @@ export const suggestPropertyType = (
 
 export const normalizeRecord = ({
   label,
-  options,
+  options = {
+    suggestTypes: true
+  },
   parentId,
   payload
 }: {
   label?: string
-  options: {
+  options?: {
     suggestTypes: boolean
   }
   parentId?: string
@@ -131,6 +136,6 @@ export const normalizeRecord = ({
         }
       }
       return [...acc, property]
-    }, [])
+    }, []) as CollectPropertyWithValue[]
   }
 }

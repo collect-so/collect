@@ -25,8 +25,9 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
-  min-width: 320px;
+  text-align: left;
+  place-items: flex-start;
+  width: 100lvw;
   min-height: 100vh;
 }
 
@@ -65,4 +66,11 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.card {
+  font-size: 12px;
+  border-radius: 8px;
+  padding: 8px;
+  background: #393939;
 }

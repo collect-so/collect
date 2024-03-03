@@ -23,7 +23,7 @@ const User = new CollectModel(
   },
   {
     orders: {
-      modelName: 'order',
+      model: 'order',
       direction: 'out',
       type: 'HAS_ORDER'
     }
@@ -59,57 +59,85 @@ function App() {
         }
       })
       setRecords(records)
-      const users = await UserRepo.find({
-        where: {
-          jobTitle: '11',
-          id: {
-            lt: 1
-          },
-          name: ';',
-          dateOfBirth: {
-            year: 1993,
-            day: 1
-          }
-        }
-      })
-      setUsers(users)
     }
     find()
   }, [])
 
+  const createUser = async () => {
+    const user = await UserRepo.create({
+      dateOfBirth: '2024-02-20T22:28:56+0000',
+      name: '1',
+      id: 5,
+      jobTitle: 'manager',
+      age: 40,
+      married: false
+    })
+
+    console.log(user)
+    findUsers()
+  }
+
+  const createMultipleUsers = async () => {
+    const users = await UserRepo.createMany([
+      {
+        dateOfBirth: '2024-02-20T22:28:56+0000',
+        name: '1',
+        id: 5,
+        jobTitle: 'manager',
+        age: 40,
+        married: false
+      },
+      {
+        dateOfBirth: '2024-02-20T22:28:56+0000',
+        name: '1',
+        id: 5,
+        jobTitle: 'manager',
+        age: 40,
+        married: false
+      }
+    ])
+    console.log(users)
+    findUsers()
+  }
+
+  const findUsers = async () => {
+    const users = await UserRepo.find()
+    setUsers(users)
+  }
+
+  useEffect(() => {
+    findUsers()
+  }, [])
+
   return (
-    <div style={{ display: 'flex' }}>
-      <div>
-        <p>Data</p>
-        <ol>
-          {records?.data?.map(({ id }, index) => (
-            <li key={`${id}-${index}`}>{id}</li>
-          ))}
-        </ol>
+    <>
+      <header>
+        <button onClick={createUser}>create user</button>
+        <button onClick={createMultipleUsers}>create multiple users</button>
+      </header>
+      <div style={{ display: 'flex' }}>
+        <div>
+          <p>Data</p>
+          <ol>{records?.data?.map(({ id }, index) => <li key={`${id}-${index}`}>{id}</li>)}</ol>
+        </div>
       </div>
       <div>
         <p>Users</p>
-        <ol>
-          {users?.data?.map(({ id }) => (
-            <li key={id}>{id}</li>
+        <div style={{ display: 'grid' }}>
+          {users?.data?.map((user) => (
+            <div key={user.id} style={{ textAlign: 'left' }} className="card">
+              {Object.entries(user)
+                .filter(([key]) => key !== '_collect_propsMetadata')
+                .map(([key, value]) => (
+                  <li key={key}>
+                    {key}: <span>{JSON.stringify(value)}</span>
+                  </li>
+                ))}
+            </div>
           ))}
-        </ol>
+        </div>
       </div>
-      <button
-        onClick={async () =>
-          await UserRepo.create({
-            dateOfBirth: { year: 1994 },
-            name: '1',
-            id: 5,
-            jobTitle: 'manager',
-            age: 40,
-            married: false
-          })
-        }
-      >
-        create user
-      </button>
-    </div>
+    </>
   )
 }
 
