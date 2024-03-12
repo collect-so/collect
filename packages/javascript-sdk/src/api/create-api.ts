@@ -4,44 +4,27 @@ import type {
   CollectObject,
   CollectProperty,
   CollectQuery,
+  CollectRecordsRelationsRequest,
+  CollectRecordsRelationsResponse,
   Enumerable
 } from '@collect.so/types'
 
 import type { createFetcher } from '../network'
 
+import { CollectTransaction } from '../sdk/transaction'
+import { CollectImportRecordsObject, CollectRecordObject } from '../sdk/utils'
 import { isArray, isObject } from '../utils/utils'
-import { CollectImportRecordsObject, CollectRecordObject } from './utils'
+import { buildTransactionHeader } from './utils'
 
 // @TODO's
 // POST API.attach @TODO
 // POST API.detach @TODO
 // POST API.upsert @TODO
-// System
-// POST API.beginTransaction
-// POST API.commitTransaction
-// POST API.rollbackTransaction
-
-// Resources
-// POST API.find({ searchparams })
-// POST API.findById(id)
-// POST API.findOne({ searchparams })
-
-// POST API.create
-
-// PATCH API.update
-
-// DELETE API.delete([ids...] | { searchparams })
-// DELETE API.deleteById(id)
-
-// Metadata
-// POST API.properties
-// POST API.relations
-// POST API.labels
+// PATCH /api/v1/records/:id @TODO
+// POST API.labels @TODO
 // GET API.values/:propertyId
 
-// POST /api/v1/import/json
-// GET /api/v1/records/:id
-// POST /api/v1/records/ /api/v1/records/:id
+// POST /api/v1/records/:id @TODO
 // PUT /api/v1/records/:id
 // DELETE /api/v1/records
 // DELETE /api/v1/records/:id
@@ -55,14 +38,23 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     get() {
       // @TODO
     },
-    list() {
-      // @TODO
+    list(transaction?: CollectTransaction | string) {
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
       return fetcher<CollectApiResponse<CollectFile[]>>(`/files`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'GET'
       })
     },
-    update<T extends CollectObject>(id: string, data: T) {
+    update<T extends CollectObject>(
+      id: string,
+      data: T,
+      transaction?: CollectTransaction | string
+    ) {
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
       return fetcher<CollectApiResponse<T>>(`/records/${id}`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'PATCH',
         requestData: JSON.stringify(data)
       })
@@ -71,19 +63,56 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       // @TODO
     }
   },
-  labels: {},
-  properties: {
-    // @TODO
+  labels: {
+    async find<T extends CollectObject = CollectObject>(
+      searchParams: CollectQuery<T>,
+      transaction?: CollectTransaction | string
+    ) {
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
+      return fetcher<CollectApiResponse<Record<string, number>>>(`/labels`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
+        method: 'POST',
+        requestData: searchParams
+      })
+    }
   },
-  records: {
-    attach() {
+  properties: {
+    delete: () => {
       // @TODO
     },
+    find: <T extends CollectObject = CollectObject>(
+      searchParams: CollectQuery<T>,
+      transaction?: CollectTransaction | string
+    ) => {
+      // @TODO
+    },
+    findById: (id: string, transaction?: CollectTransaction | string) => {
+      // @TODO
+    },
+    update: () => {
+      // @TODO
+    },
+    updateValues: (id: string, transaction?: CollectTransaction | string) => {
+      // @TODO
+    },
+    values: (id: string, transaction?: CollectTransaction | string) => {
+      // @TODO
+    }
+  },
+  records: {
+    // attach() {
+    //   // @TODO
+    // },
     async create<T extends CollectObject = CollectObject>(
-      data: CollectRecordObject | T
+      data: CollectRecordObject | T,
+      transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<T | undefined>> {
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
       if (data instanceof CollectRecordObject) {
         return fetcher<CollectApiResponse<T>>(`/records`, {
+          headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'POST',
           requestData: data.toJson()
         })
@@ -92,10 +121,14 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       return { data: undefined, success: false }
     },
     async createMany<T extends CollectObject = CollectObject>(
-      data: CollectImportRecordsObject | T[]
+      data: CollectImportRecordsObject | T[],
+      transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<T[]>> {
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
       if (data instanceof CollectImportRecordsObject) {
         return fetcher<CollectApiResponse<T[]>>(`/import/json`, {
+          headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'POST',
           requestData: data.toJson()
         })
@@ -104,97 +137,166 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       return { data: [], success: false }
     },
     delete<T extends CollectObject = CollectObject>(
-      searchParams: CollectQuery<T>
+      searchParams: CollectQuery<T>,
+      transaction?: CollectTransaction | string
     ) {
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
       return fetcher<CollectApiResponse<{ message: string }>>(`/records`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'DELETE',
         requestData: searchParams
       })
     },
-    deleteById(id: Enumerable<string>) {
-      if (isArray(id)) {
+    deleteById(ids: Enumerable<string>, transaction?: CollectTransaction | string) {
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
+      if (isArray(ids)) {
         return fetcher<CollectApiResponse<{ message: string }>>(`/records`, {
+          headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'DELETE',
-          requestData: { ids: id }
+          requestData: { ids: ids }
         })
       } else {
-        return fetcher<CollectApiResponse<{ message: string }>>(
-          `/records/${id}`,
-          {
-            method: 'DELETE'
-          }
-        )
+        return fetcher<CollectApiResponse<{ message: string }>>(`/records/${ids}`, {
+          headers: Object.assign({}, buildTransactionHeader(txId)),
+          method: 'DELETE'
+        })
       }
     },
-    detach() {
-      // @TODO
-    },
-    find<T extends CollectObject = CollectObject>(
-      searchParams: CollectQuery<T>
+    // detach() {
+    //   // @TODO
+    export<T extends CollectObject = CollectObject>(
+      searchParams: CollectQuery<T>,
+      transaction?: CollectTransaction | string
     ) {
-      return fetcher<CollectApiResponse<T[]>>(`/records/search`, {
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
+      return fetcher<CollectApiResponse<string>>(`/records/export/csv`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'POST',
         requestData: searchParams
       })
     },
-    findById<T extends CollectObject = CollectObject>(id: string) {
-      return fetcher<CollectApiResponse<T[]>>(`/records/${id}`, {
+
+    // },
+    find<T extends CollectObject = CollectObject>(
+      searchParams: CollectQuery<T>,
+      transaction?: CollectTransaction | string
+    ) {
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
+      return fetcher<CollectApiResponse<T[]>>(`/records/search`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
+        method: 'POST',
+        requestData: searchParams
+      })
+    },
+    findById<T extends CollectObject = CollectObject>(
+      id: string,
+      transaction?: CollectTransaction | string
+    ) {
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
+      return fetcher<CollectApiResponse<T>>(`/records/${id}`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'GET'
       })
     },
     async findOne<T extends CollectObject = CollectObject>(
-      searchParams: CollectQuery<T>
+      searchParams: CollectQuery<T>,
+      transaction?: CollectTransaction | string
     ) {
-      const response = await fetcher<CollectApiResponse<T[]>>(
-        `/records/search`,
-        {
-          method: 'POST',
-          requestData: searchParams
-        }
-      )
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
+      // @TODO: create distinct API method to fetch single record
+      const response = await fetcher<CollectApiResponse<T[]>>(`/records/search`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
+        method: 'POST',
+        requestData: { ...searchParams, limit: 1, skip: 0 } as CollectQuery<T>
+      })
       const [record] = response.data
       return { ...response, data: record } as CollectApiResponse<T>
     },
+
     properties<T extends CollectObject = CollectObject>(
       idOrSearchParams: CollectQuery<T> | string,
-      searchParams?: CollectQuery<T>
+      searchParams?: CollectQuery<T>,
+      transaction?: CollectTransaction | string
     ) {
       const url =
-        typeof idOrSearchParams === 'string'
-          ? `/api/v1/records/${idOrSearchParams}/properties`
-          : `/api/v1/records/properties`
+        typeof idOrSearchParams === 'string' ?
+          `/api/v1/records/${idOrSearchParams}/properties`
+        : `/api/v1/records/properties`
 
-      const requestData = isObject(idOrSearchParams)
-        ? idOrSearchParams
-        : searchParams ?? {}
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
+      const requestData = isObject(idOrSearchParams) ? idOrSearchParams : searchParams ?? {}
 
       return fetcher<CollectApiResponse<CollectProperty>>(url, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'POST',
         requestData
       })
     },
+
+    relations: async (
+      id: string,
+      searchParams: CollectRecordsRelationsRequest = {},
+      transaction?: CollectTransaction | string
+    ) => {
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
+      return fetcher<CollectApiResponse<CollectRecordsRelationsResponse>>(
+        `/records/${id}/relations`,
+        {
+          headers: Object.assign({}, buildTransactionHeader(txId)),
+          method: 'POST',
+          requestData: searchParams
+        }
+      )
+    },
+
     update<T extends CollectObject = CollectObject>(
-      data: CollectRecordObject | T
+      id: string,
+      data: CollectRecordObject | T,
+      transaction?: CollectTransaction | string
     ) {
-      // @TODO
-      return fetcher<CollectApiResponse<T>>(`/records`, {
-        method: 'PATCH',
+      const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
+
+      return fetcher<CollectApiResponse<T>>(`/records/${id}`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
+        method: 'PUT',
         requestData: data
       })
-    },
-    upsert() {
-      // @TODO
     }
+    // upsert() {
+    //   // @TODO
+    // }
   },
   tx: {
-    begin() {
-      // @TODO
+    begin(config: Partial<{ ttl: number }> = {}) {
+      return fetcher<CollectApiResponse<{ id: string }>>(`/tx`, {
+        method: 'POST',
+        requestData: config
+      })
     },
-    commit() {
-      // @TODO
+    commit(id: string) {
+      return fetcher<CollectApiResponse<{ message: string }>>(`/tx/${id}/commit`, {
+        method: 'POST',
+        requestData: {}
+      })
     },
-    rollback() {
-      // @TODO
+    get(id: string) {
+      return fetcher<CollectApiResponse<{ id: string }>>(`/tx/${id}`, {
+        method: 'GET'
+      })
+    },
+    rollback(id: string) {
+      return fetcher<CollectApiResponse<{ message: string }>>(`/tx/${id}/rollback`, {
+        method: 'POST',
+        requestData: {}
+      })
     }
   }
 })

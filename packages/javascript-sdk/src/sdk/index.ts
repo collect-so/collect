@@ -3,7 +3,7 @@ import type { Validator } from '../validators/types'
 import type { CollectModel } from './model'
 import type { CollectState, UserProvidedConfig } from './types'
 
-import { CollectRestAPI } from '../api/api'
+import { CollectRestAPI } from '../api'
 import { DEFAULT_TIMEOUT } from '../common/constants'
 import { parseConfig, validateInteger } from '../utils/utils'
 import { yupValidator } from '../validators/yup'
@@ -29,10 +29,7 @@ export const createCollect = (httpClient: HttpClient) => {
       this.models = new Map()
     }
 
-    public static getInstance(
-      token: string,
-      config?: UserProvidedConfig
-    ): Collect {
+    public static getInstance(token: string, config?: UserProvidedConfig): Collect {
       if (!Collect.instance) {
         Collect.instance = new Collect(token, config)
       }
@@ -47,8 +44,7 @@ export const createCollect = (httpClient: HttpClient) => {
       model.init(this)
 
       this.models.set(label, model)
-      return model as unknown as CollectModel<T['schema']> &
-        Omit<CollectRestAPI, 'find'>
+      return model as unknown as CollectModel<T['schema']> & Omit<CollectRestAPI, 'find'>
     }
 
     public getModels(): Map<string, CollectModel> {

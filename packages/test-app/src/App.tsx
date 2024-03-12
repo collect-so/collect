@@ -38,7 +38,7 @@ function App() {
 
   useEffect(() => {
     const find = async () => {
-      const records = await Collect.find({
+      const records = await Collect.records.find({
         where: {
           XOR: {
             avgIncome: {
@@ -64,17 +64,35 @@ function App() {
   }, [])
 
   const createUser = async () => {
-    const user = await UserRepo.create({
-      dateOfBirth: '2024-02-20T22:28:56+0000',
-      name: '1',
-      id: 5,
-      jobTitle: 'manager',
-      age: 40,
-      married: false
-    })
+    const tx = await Collect.tx.begin({ ttl: 5000 })
 
-    console.log(user)
-    findUsers()
+    // const labels = await Collect.c
+    await UserRepo.create(
+      {
+        dateOfBirth: '2024-02-20T22:28:56+0000',
+        name: '1',
+        id: 5,
+        jobTitle: 'manager',
+        age: 40,
+        married: false
+      },
+      tx
+    )
+    await UserRepo.create(
+      {
+        dateOfBirth: '2024-02-20T22:28:56+0000',
+        name: '1',
+        id: 6,
+        jobTitle: 'programmer',
+        age: 40,
+        married: false
+      },
+      tx
+    )
+
+    await tx.commit()
+
+    await findUsers()
   }
 
   const createMultipleUsers = async () => {
