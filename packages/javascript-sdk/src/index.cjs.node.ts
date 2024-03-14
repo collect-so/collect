@@ -2,7 +2,7 @@ import { CollectImportRecordsObject, CollectRecordObject } from './api'
 import { NodeHttpClient } from './network/NodeHttpClient'
 import { createCollect } from './sdk'
 import { CollectModel } from './sdk/model'
-import { CollectResult } from './sdk/result'
+import { CollectRecordResult } from './sdk/result'
 import { CollectTransaction } from './sdk/transaction'
 
 const Collect = createCollect(new NodeHttpClient())
@@ -12,7 +12,7 @@ module.exports = {
   CollectImportRecordsObject,
   CollectModel,
   CollectRecordObject,
-  CollectResult,
+  CollectRecordResult,
   CollectTransaction,
   default: Collect
 }

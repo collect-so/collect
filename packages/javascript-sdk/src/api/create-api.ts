@@ -4,6 +4,7 @@ import type {
   CollectObject,
   CollectProperty,
   CollectQuery,
+  CollectRecord,
   CollectRecordsRelationsRequest,
   CollectRecordsRelationsResponse,
   Enumerable
@@ -107,11 +108,11 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     async create<T extends CollectObject = CollectObject>(
       data: CollectRecordObject | T,
       transaction?: CollectTransaction | string
-    ): Promise<CollectApiResponse<T | undefined>> {
+    ): Promise<CollectApiResponse<CollectRecord<T> | undefined>> {
       const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
 
       if (data instanceof CollectRecordObject) {
-        return fetcher<CollectApiResponse<T>>(`/records`, {
+        return fetcher<CollectApiResponse<CollectRecord<T>>>(`/records`, {
           headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'POST',
           requestData: data.toJson()
@@ -123,11 +124,11 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     async createMany<T extends CollectObject = CollectObject>(
       data: CollectImportRecordsObject | T[],
       transaction?: CollectTransaction | string
-    ): Promise<CollectApiResponse<T[]>> {
+    ): Promise<CollectApiResponse<CollectRecord<T>[]>> {
       const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
 
       if (data instanceof CollectImportRecordsObject) {
-        return fetcher<CollectApiResponse<T[]>>(`/import/json`, {
+        return fetcher<CollectApiResponse<CollectRecord<T>[]>>(`/import/json`, {
           headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'POST',
           requestData: data.toJson()
@@ -186,7 +187,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     ) {
       const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
 
-      return fetcher<CollectApiResponse<T[]>>(`/records/search`, {
+      return fetcher<CollectApiResponse<CollectRecord<T>[]>>(`/records/search`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'POST',
         requestData: searchParams
@@ -198,7 +199,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     ) {
       const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
 
-      return fetcher<CollectApiResponse<T>>(`/records/${id}`, {
+      return fetcher<CollectApiResponse<CollectRecord<T>>>(`/records/${id}`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'GET'
       })
@@ -210,13 +211,13 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
 
       // @TODO: create distinct API method to fetch single record
-      const response = await fetcher<CollectApiResponse<T[]>>(`/records/search`, {
+      const response = await fetcher<CollectApiResponse<CollectRecord<T>[]>>(`/records/search`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'POST',
         requestData: { ...searchParams, limit: 1, skip: 0 } as CollectQuery<T>
       })
       const [record] = response.data
-      return { ...response, data: record } as CollectApiResponse<T>
+      return { ...response, data: record } as CollectApiResponse<CollectRecord<T>>
     },
 
     properties<T extends CollectObject = CollectObject>(
@@ -264,7 +265,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     ) {
       const txId = transaction instanceof CollectTransaction ? transaction.id : transaction
 
-      return fetcher<CollectApiResponse<T>>(`/records/${id}`, {
+      return fetcher<CollectApiResponse<CollectRecord<T>>>(`/records/${id}`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'PUT',
         requestData: data

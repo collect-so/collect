@@ -3,7 +3,7 @@ import type { UserProvidedConfig } from './src/sdk/types'
 
 import { CollectImportRecordsObject, CollectRecordObject, CollectRestAPI } from './src/api'
 import { CollectModel, createCollectModel } from './src/sdk/model'
-import { CollectArrayResult, CollectResult } from './src/sdk/result'
+import { CollectRecordResult, CollectRecordsArrayResult } from './src/sdk/result'
 import { CollectTrasaction } from './src/sdk/transaction'
 
 declare module '@collect.so/javascript-sdk' {
@@ -22,12 +22,12 @@ declare module '@collect.so/javascript-sdk' {
   }
 
   export {
-    CollectArrayResult,
     CollectImportRecordsObject,
     CollectModel,
     CollectRecordObject,
+    CollectRecordResult,
+    CollectRecordsArrayResult,
     CollectRestAPI,
-    CollectResult,
     CollectSDKResult,
     CollectTrasaction,
     createCollectModel
