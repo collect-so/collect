@@ -16,51 +16,51 @@ import {
   ISO_8601_FULL
 } from '../common/constants'
 
-const suggestType = (value: unknown): CollectPropertyType => {
-  if (typeof value === 'string' && value !== '') {
-    if (ISO_8601_FULL.test(value)) {
-      return 'datetime'
-    }
-    if (!isNaN(Number(value))) {
-      return 'number'
-    }
-    return 'string'
-  } else if (typeof value === 'boolean') {
-    return 'boolean'
-  } else if (typeof value === 'number') {
-    return 'number'
-  } else if (Array.isArray(value)) {
-    if (value.every((value) => suggestType(value) === 'datetime')) return 'datetime'
-    if (value.every((value) => suggestType(value) === 'number')) return 'number'
-    if (value.every((value) => suggestType(value) === 'boolean')) return 'boolean'
-    return 'string'
-  } else {
-    return 'string'
-  }
-}
+// const suggestType = (value: unknown): CollectPropertyType => {
+//   if (typeof value === 'string' && value !== '') {
+//     if (ISO_8601_FULL.test(value)) {
+//       return 'datetime'
+//     }
+//     if (!isNaN(Number(value))) {
+//       return 'number'
+//     }
+//     return 'string'
+//   } else if (typeof value === 'boolean') {
+//     return 'boolean'
+//   } else if (typeof value === 'number') {
+//     return 'number'
+//   } else if (Array.isArray(value)) {
+//     if (value.every((value) => suggestType(value) === 'datetime')) return 'datetime'
+//     if (value.every((value) => suggestType(value) === 'number')) return 'number'
+//     if (value.every((value) => suggestType(value) === 'boolean')) return 'boolean'
+//     return 'string'
+//   } else {
+//     return 'string'
+//   }
+// }
 
-export const normalizeData = <T extends CollectObject = CollectObject>(rawData: T) => {
-  if (Array.isArray(rawData)) {
-    return rawData.map((property) => {
-      const normalizedProperty = { ...property }
-
-      if (!Object.prototype.hasOwnProperty.call(property, 'type')) {
-        normalizedProperty.type = suggestType(property.value)
-      }
-      return normalizedProperty
-    })
-  } else {
-    return Object.keys(rawData).map((name) => ({
-      name,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      type: suggestType(rawData[name]),
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      value: rawData[name]
-    }))
-  }
-}
+// export const normalizeData = <T extends CollectObject = CollectObject>(rawData: T) => {
+//   if (Array.isArray(rawData)) {
+//     return rawData.map((property) => {
+//       const normalizedProperty = { ...property }
+//
+//       if (!Object.prototype.hasOwnProperty.call(property, 'type')) {
+//         normalizedProperty.type = suggestType(property.value)
+//       }
+//       return normalizedProperty
+//     })
+//   } else {
+//     return Object.keys(rawData).map((name) => ({
+//       name,
+//       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//       // @ts-ignore
+//       type: suggestType(rawData[name]),
+//       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//       // @ts-ignore
+//       value: rawData[name]
+//     }))
+//   }
+// }
 
 // export const createBody = <T extends object = object>(
 //   labelOrModelOrPayload: string,
@@ -132,14 +132,11 @@ export const buildUrl = (props: UserProvidedConfig): string => {
   return `${protocol}://${host}${portString}${basePath}`
 }
 export const parseConfig = (config?: Record<string, unknown>): UserProvidedConfig => {
-  // If config is null or undefined, just bail early with no props
   if (!config) {
     return {} as UserProvidedConfig
   }
 
-  const isObject = config === Object(config) && !Array.isArray(config)
-
-  if (!isObject) {
+  if (!isObject(config)) {
     throw new Error('Config must be an object')
   }
 
@@ -181,3 +178,5 @@ export const isObjectFlat = (input: any): input is object => {
     })
   )
 }
+
+export const isString = (input: any): input is string => typeof input === 'string'

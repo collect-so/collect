@@ -1,6 +1,7 @@
 import type {
   CollectApiResponse,
   CollectObject,
+  CollectProperty,
   CollectPropertyValue,
   CollectQuery,
   CollectRecord,
@@ -17,8 +18,9 @@ import { CollectRecordResult, CollectRecordsArrayResult } from '../sdk/result'
 import { CollectTransaction } from '../sdk/transaction'
 import { CollectImportRecordsObject, CollectRecordObject } from '../sdk/utils'
 import { normalizeRecord } from '../utils/normalize'
-import { buildUrl, isArray, isObject, isObjectFlat } from '../utils/utils'
+import { buildUrl, isArray, isObject, isObjectFlat, isString } from '../utils/utils'
 import { createApi } from './create-api'
+import { isTransaction, pickTransaction } from './utils'
 
 export class CollectRestAPI {
   public api: ReturnType<typeof createApi>
@@ -105,9 +107,23 @@ export class CollectRestAPI {
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordResult<T>>
 
+    properties<T extends CollectObject = CollectObject>(
+      id: string,
+      searchParamsOrTransaction?: CollectQuery<T> | CollectTransaction | string
+    ): Promise<CollectApiResponse<CollectProperty[]>>
+    properties<T extends CollectObject = CollectObject>(
+      id: string,
+      searchParamsOrTransaction?: CollectQuery<T> | CollectTransaction | string,
+      transaction?: CollectTransaction | string
+    ): Promise<CollectApiResponse<CollectProperty[]>>
+
     relations(
       id: string,
-      searchParams: CollectRecordsRelationsRequest,
+      searchParamsOrTransaction?: CollectRecordsRelationsRequest | CollectTransaction | string
+    ): Promise<CollectApiResponse<CollectRecordsRelationsResponse>>
+    relations(
+      id: string,
+      searchParamsOrTransaction?: CollectRecordsRelationsRequest | CollectTransaction | string,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<CollectRecordsRelationsResponse>>
 
@@ -140,15 +156,10 @@ export class CollectRestAPI {
         let response
 
         if (labelOrData instanceof CollectRecordObject) {
-          const txId =
-            (
-              typeof maybeDataOrTransaction === 'string' ||
-              maybeDataOrTransaction instanceof CollectTransaction
-            ) ?
-              maybeDataOrTransaction
-            : undefined
-
-          response = await this.api?.records.create<T>(labelOrData, txId)
+          response = await this.api?.records.create<T>(
+            labelOrData,
+            pickTransaction(maybeDataOrTransaction)
+          )
         }
 
         if (isObjectFlat(labelOrData)) {
@@ -156,22 +167,15 @@ export class CollectRestAPI {
             payload: labelOrData as Record<string, CollectPropertyValue>
           })
 
-          const txId =
-            (
-              typeof maybeDataOrTransaction === 'string' ||
-              maybeDataOrTransaction instanceof CollectTransaction
-            ) ?
-              maybeDataOrTransaction
-            : undefined
           response = await this.api?.records.create<T>(
             new CollectRecordObject(normalizedRecord),
-            txId
+            pickTransaction(maybeDataOrTransaction)
           )
         } else if (isObject(labelOrData)) {
           throw Error('Provided data is not a flat object. Consider to use `createMany` method.')
         }
 
-        if (typeof labelOrData === 'string') {
+        if (isString(labelOrData)) {
           if (isObjectFlat(maybeDataOrTransaction)) {
             const normalizedRecord = normalizeRecord({
               label: labelOrData,
@@ -204,25 +208,25 @@ export class CollectRestAPI {
         let response
 
         if (labelOrData instanceof CollectImportRecordsObject) {
-          response = await this.api?.records.createMany<T>(labelOrData)
+          response = await this.api?.records.createMany<T>(
+            labelOrData,
+            pickTransaction(maybeDataOrTransaction)
+          )
         }
 
         if (isArray(labelOrData) || isObject(labelOrData)) {
           const data = new CollectImportRecordsObject({
             payload: labelOrData
           })
-          const txId =
-            (
-              typeof maybeDataOrTransaction === 'string' ||
-              maybeDataOrTransaction instanceof CollectTransaction
-            ) ?
-              maybeDataOrTransaction
-            : undefined
-          response = await this.api?.records.createMany<T>(data, txId)
+
+          response = await this.api?.records.createMany<T>(
+            data,
+            pickTransaction(maybeDataOrTransaction)
+          )
         }
 
         if (
-          typeof labelOrData === 'string' &&
+          isString(labelOrData) &&
           (isArray(maybeDataOrTransaction) || isObject(maybeDataOrTransaction))
         ) {
           const data = new CollectImportRecordsObject({
@@ -266,11 +270,8 @@ export class CollectRestAPI {
       ): Promise<CollectRecordsArrayResult<T>> => {
         let response
 
-        const secondArgumentIsTransaction =
-          searchParamsOrTransaction instanceof CollectTransaction ||
-          typeof searchParamsOrTransaction === 'string'
-
-        const firstArgumentIsLabel = typeof labelOrSearchParams === 'string'
+        const secondArgumentIsTransaction = isTransaction(searchParamsOrTransaction)
+        const firstArgumentIsLabel = isString(labelOrSearchParams)
 
         // Label provided
         if (firstArgumentIsLabel) {
@@ -333,11 +334,8 @@ export class CollectRestAPI {
       ): Promise<CollectRecordResult<T>> => {
         let response
 
-        const secondArgumentIsTransaction =
-          searchParamsOrTransaction instanceof CollectTransaction ||
-          typeof searchParamsOrTransaction === 'string'
-
-        const firstArgumentIsLabel = typeof labelOrSearchParams === 'string'
+        const secondArgumentIsTransaction = isTransaction(searchParamsOrTransaction)
+        const firstArgumentIsLabel = isString(labelOrSearchParams)
 
         // Label provided
         if (firstArgumentIsLabel) {
@@ -382,12 +380,42 @@ export class CollectRestAPI {
         return result
       },
 
-      relations: async (
+      properties: async <T extends CollectObject = CollectObject>(
         id: string,
-        searchParams: CollectRecordsRelationsRequest,
+        searchParamsOrTransaction: CollectQuery<T> | CollectTransaction | string,
         transaction?: CollectTransaction | string
       ) => {
-        return await this.api.records.relations(id, searchParams, transaction)
+        const maybeTransaction = pickTransaction(searchParamsOrTransaction)
+
+        if (maybeTransaction) {
+          return await this.api.records.properties(id, {}, maybeTransaction)
+        }
+
+        return await this.api.records.properties(
+          id,
+          isObject(searchParamsOrTransaction) ? (searchParamsOrTransaction as CollectQuery<T>) : {},
+          transaction
+        )
+      },
+
+      relations: async (
+        id: string,
+        searchParamsOrTransaction: CollectRecordsRelationsRequest | CollectTransaction | string,
+        transaction?: CollectTransaction | string
+      ) => {
+        const maybeTransaction = pickTransaction(searchParamsOrTransaction)
+
+        if (maybeTransaction) {
+          return await this.api.records.relations(id, {}, maybeTransaction)
+        }
+
+        return await this.api.records.relations(
+          id,
+          isObject(searchParamsOrTransaction) ?
+            (searchParamsOrTransaction as CollectRecordsRelationsRequest)
+          : {},
+          transaction
+        )
       },
 
       update: async <T extends CollectObject = CollectObject>(
