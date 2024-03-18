@@ -2,12 +2,11 @@ import type {
   CollectQuery,
   CollectRelations,
   CollectSchema,
-  Enumerable,
   InferTypesFromSchema
 } from '@collect.so/types'
 
 import type { Validator } from '../validators/types'
-import type { CollectArrayResult, CollectResult } from './result'
+import type { CollectTransaction } from './transaction'
 
 import { CollectRestApiProxy } from '../api/rest-api-proxy'
 
@@ -35,23 +34,27 @@ export class CollectModel<
     return this.label
   }
 
-  async find(params?: CollectQuery<InferTypesFromSchema<S>>) {
-    const modifiedParams = { labels: [this.label], ...params }
-    return this.apiProxy?.find<InferTypesFromSchema<S>>(modifiedParams)
+  async find(params?: Omit<CollectQuery<InferTypesFromSchema<S>>, 'labels'>) {
+    const modifiedParams = { ...params, labels: [this.label] }
+    return this.apiProxy?.records.find<InferTypesFromSchema<S>>(modifiedParams)
   }
 
   async create<T extends InferTypesFromSchema<S> = InferTypesFromSchema<S>>(
-    record: T
+    record: T,
+    transaction?: CollectTransaction | string,
+    options: { validate: boolean } = { validate: true }
   ) {
-    return (await this.apiProxy.create<T>(
-      this.label,
-      record
-    )) as CollectResult<T>
+    return await this.apiProxy.records.create<T>(this.label, record, transaction)
   }
-  async createMany(records: InferTypesFromSchema<S>[]) {
-    return await this.apiProxy.createMany<InferTypesFromSchema<S>>(
+  async createMany(
+    records: InferTypesFromSchema<S>[],
+    transaction?: CollectTransaction | string,
+    options: { validate: boolean } = { validate: true }
+  ) {
+    return await this.apiProxy.records.createMany<InferTypesFromSchema<S>>(
       this.label,
-      records
+      records,
+      transaction
     )
   }
 

@@ -1,94 +1,20 @@
-import type {
-  AnyObject,
-  CollectProperty,
-  CollectPropertyType,
-  CollectPropertyValue,
-  CollectPropertyWithValue,
-  Enumerable
-} from '@collect.so/types'
+import { CollectTransaction } from '../sdk/transaction'
+import { isString } from '../utils/utils'
 
-export class CollectImportRecordsObject {
-  label?: string
-  options?: {
-    generateLabels?: boolean
-    returnResult?: boolean
-    suggestTypes?: boolean
-  }
-  parentId?: string
-  payload: Enumerable<AnyObject>
-
-  constructor({
-    label,
-    options = {
-      generateLabels: true,
-      returnResult: true,
-      suggestTypes: true
-    },
-    parentId,
-    payload
-  }: {
-    label?: string
-    options?: {
-      generateLabels?: boolean
-      returnResult?: boolean
-      suggestTypes?: boolean
+export const buildTransactionHeader = (txId?: string) =>
+  txId ?
+    {
+      ['x-transaction-id']: txId
     }
-    parentId?: string
-    payload: AnyObject
-  }) {
-    this.label = label
-    this.options = options
-    this.parentId = parentId
-    this.payload = payload
-  }
+  : undefined
 
-  public toJson() {
-    return {
-      label: this.label,
-      options: this.options,
-      parentId: this.parentId,
-      payload: this.payload
-    }
-  }
-}
+export const isTransaction = (input: any): input is CollectTransaction | string =>
+  isString(input) || input instanceof CollectTransaction
 
-export class CollectRecordObject {
-  label?: string
-  parentId?: string
-  properties?: Array<{
-    metadata?: string
-    name: string
-    type: CollectPropertyType
-    value: CollectPropertyValue
-    valueMetadata?: string
-    valueSeparator?: string
-  }>
-
-  constructor({
-    label,
-    parentId,
-    properties = []
-  }: {
-    label?: string
-    parentId?: string
-    properties?: Array<
-      CollectPropertyWithValue & {
-        metadata?: string
-        valueMetadata?: string
-        valueSeparator?: string
-      }
-    >
-  }) {
-    this.label = label
-    this.parentId = parentId
-    this.properties = properties
-  }
-
-  public toJson() {
-    return {
-      label: this.label,
-      parentId: this.parentId,
-      properties: this.properties
-    }
-  }
-}
+export const pickTransaction = (input: any) => (isTransaction(input) ? input : undefined)
+export const pickTransactionId = (input: any) =>
+  isTransaction(input) ?
+    input instanceof CollectTransaction ?
+      input.id
+    : input
+  : undefined

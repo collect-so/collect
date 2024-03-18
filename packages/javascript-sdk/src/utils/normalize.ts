@@ -4,8 +4,6 @@ import type {
   CollectPropertyWithValue
 } from '@collect.so/types'
 
-import { CollectProperty } from '@collect.so/types'
-
 import {
   ISO_8601_FULL,
   PROPERTY_TYPE_BOOLEAN,
@@ -34,8 +32,7 @@ export const arrayIsConsistent = (arr: Array<unknown>) => {
 export const getValueParameters = (value: CollectPropertyValue) => {
   if (Array.isArray(value)) {
     const isInconsistentArray = !arrayIsConsistent(value)
-    const isEmptyArray =
-      !value.length || value.every((v) => typeof v === 'undefined')
+    const isEmptyArray = !value.length || value.every((v) => typeof v === 'undefined')
     const isEmptyStringsArray = value.every((v) => v === '')
 
     return {
@@ -52,13 +49,9 @@ export const getValueParameters = (value: CollectPropertyValue) => {
   }
 }
 
-export const suggestPropertyType = (
-  value: CollectPropertyValue
-): CollectPropertyType => {
+export const suggestPropertyType = (value: CollectPropertyValue): CollectPropertyType => {
   if (typeof value === 'string') {
-    return ISO_8601_FULL.test(value)
-      ? PROPERTY_TYPE_DATETIME
-      : PROPERTY_TYPE_STRING
+    return ISO_8601_FULL.test(value) ? PROPERTY_TYPE_DATETIME : PROPERTY_TYPE_STRING
   } else if (typeof value === 'number') {
     return PROPERTY_TYPE_NUMBER
   } else if (typeof value === 'boolean') {
@@ -111,15 +104,13 @@ export const normalizeRecord = ({
 
           // @TODO: Refactor this messy shit out
           // Always fallback to STRING type if array of values is inconsistent
-          property.value = isEmptyArray
-            ? [''] // @TODO: Figure out how to store empty array without '' as value. Now it returns as "" instead of []
-            : isInconsistentArray
-            ? value.map(String)
+          property.value =
+            isEmptyArray ?
+              [''] // @TODO: Figure out how to store empty array without '' as value. Now it returns as "" instead of []
+            : isInconsistentArray ? value.map(String)
             : value
 
-          property.type = isInconsistentArray
-            ? PROPERTY_TYPE_STRING
-            : suggestPropertyType(value[0])
+          property.type = isInconsistentArray ? PROPERTY_TYPE_STRING : suggestPropertyType(value[0])
         } else {
           property.value = value.map(String)
           property.type = PROPERTY_TYPE_STRING

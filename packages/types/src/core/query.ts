@@ -64,6 +64,22 @@ export type CollectQueryCondition<T extends CollectObject | CollectSchema = Coll
   : CollectWhereValue
 }
 
+export type CollectQueryWhere<T extends CollectObject | CollectSchema = CollectSchema> =
+  | CollectQueryCondition<T>
+  | RequireAtLeastOne<CollectQueryLogicalGrouping<T>>
+
+export type CollectQueryWhereClause<T extends CollectObject | CollectSchema = CollectSchema> = {
+  where?: CollectQueryWhere<T>
+}
+
+export type CollectQuery<T extends CollectObject | CollectSchema = CollectSchema> =
+  CollectQueryCommonParams<T> & CollectQueryWhereClause<T> & { includes?: never }
+// | (CollectQueryIncludesClause<T> & { where?: never })
+
+// INCLUDES CLAUSE
+// export type CollectQueryIncludesClause<T extends CollectObject | CollectSchema = CollectSchema> = {
+//   includes?: CollectQueryIncludes<T>
+// }
 // @TODO: implement inferring relation type from schema
 // export type CollectQueryIncludesRelation = {
 //   relation: string
@@ -79,19 +95,3 @@ export type CollectQueryCondition<T extends CollectObject | CollectSchema = Coll
 //         Partial<CollectQueryIncludesRelation>
 //     >
 //   >
-
-export type CollectQueryWhere<T extends CollectObject | CollectSchema = CollectSchema> =
-  | CollectQueryCondition<T>
-  | RequireAtLeastOne<CollectQueryLogicalGrouping<T>>
-
-export type CollectQueryWhereClause<T extends CollectObject | CollectSchema = CollectSchema> = {
-  where?: CollectQueryWhere<T>
-}
-
-// INCLUDES CLAUSE
-// export type CollectQueryIncludesClause<T extends CollectObject | CollectSchema = CollectSchema> = {
-//   includes?: CollectQueryIncludes<T>
-// }
-export type CollectQuery<T extends CollectObject | CollectSchema = CollectSchema> =
-  CollectQueryCommonParams<T> & CollectQueryWhereClause<T> & { includes?: never }
-// | (CollectQueryIncludesClause<T> & { where?: never })
