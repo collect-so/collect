@@ -3,4 +3,4 @@
 "@collect.so/types": minor
 ---
 
-More API methods and typings
+More API methods and typings for SDK
