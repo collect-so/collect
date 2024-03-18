@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.4.0
+
+### Minor Changes
+
+- bf4aff9: More API methods and typings for SDK
+
 ## 0.3.0
 
 ### Minor Changes

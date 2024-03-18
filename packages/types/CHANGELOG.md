@@ -1,5 +1,11 @@
 # @collect.so/types
 
+## 0.5.0
+
+### Minor Changes
+
+- bf4aff9: More API methods and typings for SDK
+
 ## 0.4.0
 
 ### Minor Changes
