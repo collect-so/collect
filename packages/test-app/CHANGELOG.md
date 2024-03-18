@@ -1,5 +1,13 @@
 # test-app
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies [bf4aff9]
+  - @collect.so/javascript-sdk@0.4.0
+  - @collect.so/types@0.5.0
+
 ## 0.0.3
 
 ### Patch Changes
