@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.5.0
+
+### Minor Changes
+
+- 56f5f12: Improved HTTP Client for better customization
+
 ## 0.4.0
 
 ### Minor Changes
