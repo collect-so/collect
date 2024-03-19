@@ -137,7 +137,7 @@ export class CollectRestAPI {
   constructor(token?: string, config?: UserProvidedConfig & { httpClient: HttpClient }) {
     this.fetcher = null as unknown as ReturnType<typeof createFetcher>
 
-    if (token && config?.httpClient) {
+    if (config?.httpClient) {
       const url = buildUrl(config)
       this.fetcher = createFetcher({
         httpClient: config.httpClient,

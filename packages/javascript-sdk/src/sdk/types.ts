@@ -6,7 +6,7 @@ import type { Validator } from '../validators/types'
 export type CollectState = {
   debug: boolean
   timeout: number
-  token: string
+  token?: string
 }
 
 type CommonUserProvidedConfig = {

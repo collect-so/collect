@@ -3,20 +3,15 @@ import type { RequestData, RequestHeaders, ResponseHeaders } from './types'
 type TimeoutError = TypeError & { code?: string }
 
 export interface HttpClientInterface {
-  makeRequest: (
-    url: string,
-    config: MakeRequestConfig
-  ) => Promise<HttpClientResponseInterface>
+  makeRequest: (url: string, config: MakeRequestConfig) => Promise<HttpClientResponseInterface>
 }
 
-export interface MakeRequestConfig<
-  T extends Record<string, any> = Record<string, any>
-> {
-  credentials?: string
+export interface MakeRequestConfig<T extends Record<string, any> = Record<string, any>> {
+  credentials?: RequestCredentials
   headers?: RequestHeaders
   method: string
   protocol?: string
-  requestData?: any
+  requestData?: RequestData
   timeout?: number
 }
 
@@ -40,9 +35,7 @@ export class HttpClient implements HttpClientInterface {
   }
 
   static makeTimeoutError(): TimeoutError {
-    const timeoutErr: TimeoutError = new TypeError(
-      HttpClient.TIMEOUT_ERROR_CODE
-    )
+    const timeoutErr: TimeoutError = new TypeError(HttpClient.TIMEOUT_ERROR_CODE)
     timeoutErr.code = HttpClient.TIMEOUT_ERROR_CODE
     return timeoutErr
   }
@@ -51,7 +44,7 @@ export class HttpClient implements HttpClientInterface {
 HttpClient.CONNECTION_CLOSED_ERROR_CODES = ['ECONNRESET', 'EPIPE']
 HttpClient.TIMEOUT_ERROR_CODE = 'ETIMEDOUT'
 
-export class HttpClientResponse implements HttpClientResponseInterface {
+export class HttpClientGenericResponse implements HttpClientResponseInterface {
   _statusCode: number
   _headers: ResponseHeaders
 
@@ -66,6 +59,34 @@ export class HttpClientResponse implements HttpClientResponseInterface {
 
   getHeaders(): ResponseHeaders {
     return this._headers
+  }
+
+  getRawResponse(): unknown {
+    throw new Error('getRawResponse not implemented.')
+  }
+
+  toStream(streamCompleteCallback: () => void): unknown {
+    throw new Error('toStream not implemented.')
+  }
+
+  toJSON(): any {
+    throw new Error('toJSON not implemented.')
+  }
+}
+
+export class HttpClientResponse<T = unknown> implements HttpClientResponseInterface {
+  _res: T
+
+  constructor(response: T) {
+    this._res = response
+  }
+
+  getStatusCode(): number {
+    throw new Error('getStatusCode not implemented.')
+  }
+
+  getHeaders(): ResponseHeaders {
+    throw new Error('getHeaders not implemented.')
   }
 
   getRawResponse(): unknown {

@@ -1,30 +1,25 @@
 import type { HttpClient, MakeRequestConfig } from './HttpClient'
+import type { RequestHeaders } from './types'
 
 const defaultHeaders = {
   'Content-Type': 'application/json'
 }
 
 export const createFetcher =
-  ({
-    httpClient,
-    token,
-    url
-  }: {
-    httpClient: HttpClient
-    token: string
-    url: string
-  }) =>
+  ({ httpClient, token, url }: { httpClient: HttpClient; token?: string; url: string }) =>
   async <Data extends Record<string, any> = Record<string, any>>(
     input: URL | string,
     { headers: initHeaders, ...init }: MakeRequestConfig<Data>
   ): Promise<Data> => {
     const response = await httpClient.makeRequest(`${url}${input}`, {
       credentials: 'omit',
-      headers: {
-        ...defaultHeaders,
-        ...initHeaders,
-        token
-      },
+      headers: Object.assign(
+        {
+          ...defaultHeaders,
+          ...initHeaders
+        },
+        typeof token !== 'undefined' ? { token } : {}
+      ) as RequestHeaders,
       ...init
     })
 

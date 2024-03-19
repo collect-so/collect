@@ -6,13 +6,9 @@ import type {
 import type { ResponseHeaders } from './types'
 
 import { DEFAULT_TIMEOUT } from '../common/constants'
-import { HttpClient, HttpClientResponse } from './HttpClient'
+import { HttpClient, HttpClientGenericResponse } from './HttpClient'
 
-type FetchWithTimeout = (
-  url: string,
-  init: RequestInit,
-  timeout: number
-) => Promise<Response>
+type FetchWithTimeout = (url: string, init: RequestInit, timeout: number) => Promise<Response>
 
 /**
  * HTTP client which uses a `fetch` function to issue requests.
@@ -53,9 +49,7 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     }
   }
 
-  private static makeFetchWithRaceTimeout(
-    fetchFn: typeof fetch
-  ): FetchWithTimeout {
+  private static makeFetchWithRaceTimeout(fetchFn: typeof fetch): FetchWithTimeout {
     return (url, init, timeout): Promise<Response> => {
       let pendingTimeoutId: NodeJS.Timeout | null
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -74,9 +68,7 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     }
   }
 
-  private static makeFetchWithAbortTimeout(
-    fetchFn: typeof fetch
-  ): FetchWithTimeout {
+  private static makeFetchWithAbortTimeout(fetchFn: typeof fetch): FetchWithTimeout {
     return async (url, init, timeout): Promise<Response> => {
       // Use AbortController because AbortSignal.timeout() was added later in Node v17.3.0, v16.14.0
       const abort = new AbortController()
@@ -113,16 +105,16 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
     // For methods which expect payloads, we should always pass a body value
     // even when it is empty. Without this, some JS runtimes (eg. Deno) will
     // inject a second Content-Length header.
-    const methodHasPayload =
-      method == 'POST' || method == 'PUT' || method == 'PATCH'
-    const body =
-      JSON.stringify(requestData) || (methodHasPayload ? '' : undefined)
+    const methodHasPayload = method == 'POST' || method == 'PUT' || method == 'PATCH'
+    const body = JSON.stringify(requestData) || (methodHasPayload ? '' : undefined)
 
     const res = await this._fetchFn(
       url,
       {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         body,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         headers,
         method
@@ -134,16 +126,13 @@ export class FetchHttpClient extends HttpClient implements HttpClientInterface {
 }
 
 export class FetchHttpClientResponse
-  extends HttpClientResponse
+  extends HttpClientGenericResponse
   implements HttpClientResponseInterface
 {
   _res: Response
 
   constructor(res: Response) {
-    super(
-      res.status,
-      FetchHttpClientResponse._transformHeadersToObject(res.headers)
-    )
+    super(res.status, FetchHttpClientResponse._transformHeadersToObject(res.headers))
     this._res = res
   }
 
@@ -151,9 +140,7 @@ export class FetchHttpClientResponse
     return this._res
   }
 
-  toStream(
-    streamCompleteCallback: () => void
-  ): ReadableStream<Uint8Array> | null {
+  toStream(streamCompleteCallback: () => void): ReadableStream<Uint8Array> | null {
     // Unfortunately `fetch` does not have event handlers for when the stream is
     // completely read. We therefore invoke the streamCompleteCallback right
     // away. This callback emits a response event with metadata and completes
