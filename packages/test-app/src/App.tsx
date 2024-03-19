@@ -3,13 +3,57 @@ import './App.css'
 import CollectSDK, {
   CollectModel,
   type CollectSDKResult,
-  type CollectRecordsArrayResult
+  type CollectRecordsArrayResult,
+  HttpClient,
+  HttpClientResponse
 } from '@collect.so/javascript-sdk'
 
-const Collect = new CollectSDK(
-  '071fe6b3a94d1cc23e18a7cdc0131f926RDjUjkBtYNLnkWNG21TEXcvwjbm4GD9ZN05A0LIR7g3Cr0yuuQGau3gJaLIpPcT',
-  { url: 'http://localhost' }
-)
+class CustomHttpClientResponse extends HttpClientResponse {
+  _res: Response
+  constructor(response: Response) {
+    super(response)
+    this._res = response
+  }
+
+  getStatusCode() {
+    return this._res.status
+  }
+
+  toJSON() {
+    return this._res.json()
+  }
+}
+
+class CustomHttpClient extends HttpClient {
+  headers: HeadersInit = {}
+  constructor(headers: HeadersInit = {} as HeadersInit) {
+    super()
+    this.headers = headers
+  }
+
+  async makeRequest(url: string, { ...init }) {
+    const res = await fetch(url, {
+      ...init,
+      body: JSON.stringify(init.requestData),
+      headers: {
+        ...init.headers,
+        ...this.headers
+      }
+    })
+
+    return new CustomHttpClientResponse(res)
+  }
+}
+
+const Collect = new CollectSDK(undefined, {
+  url: 'http://localhost',
+  httpClient: new CustomHttpClient({
+    Authorization:
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtaXkudmVyZXNoY2hpbnNraXlAZ21haWwuY29tIiwiaWQiOiIwMThkYWRmMy1jNzA0LTdlYTctOWY0YS0zZTBjZmRjOGVlYTUiLCJlbWFpbENvbmZpcm1lZCI6dHJ1ZSwiZmlyc3ROYW1lIjoiQXJ0ZW1peSIsImxhc3ROYW1lIjoiVmVyZXNoY2hpbnNraXkiLCJpYXQiOjE3MTA4MTE0NTUsImV4cCI6MTcxMzQwMzQ1NX0.Ghyq5u1Gl-YDQO1sTY5RJSscLV14VV6k_kEBfPMUsrU',
+    'X-Project-Id': '018dadf3-d4fc-779e-8c88-9d9212e18610',
+    'X-Workspace-Id': '018dadf3-c748-76c2-b701-40a002b3861e'
+  })
+})
 
 const User = new CollectModel(
   'user',

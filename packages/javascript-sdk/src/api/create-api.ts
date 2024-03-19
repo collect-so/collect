@@ -57,7 +57,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       return fetcher<CollectApiResponse<T>>(`/records/${id}`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'PATCH',
-        requestData: JSON.stringify(data)
+        requestData: data
       })
     },
     upload() {

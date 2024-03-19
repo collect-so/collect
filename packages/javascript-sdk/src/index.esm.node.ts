@@ -1,4 +1,5 @@
 import { CollectImportRecordsObject, CollectRecordObject } from './api'
+import { HttpClient, HttpClientResponse } from './network/HttpClient'
 import { NodeHttpClient } from './network/NodeHttpClient'
 import { createCollect } from './sdk'
 import { CollectModel } from './sdk/model'
@@ -12,6 +13,8 @@ export {
   CollectModel,
   CollectRecordObject,
   CollectRecordResult,
-  CollectTransaction
+  CollectTransaction,
+  HttpClient,
+  HttpClientResponse
 }
 export default Collect

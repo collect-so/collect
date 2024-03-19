@@ -1,13 +1,10 @@
 import * as http_ from 'http'
 import * as https_ from 'https'
 
-import type {
-  HttpClientResponseInterface,
-  MakeRequestConfig
-} from './HttpClient'
+import type { HttpClientResponseInterface, MakeRequestConfig } from './HttpClient'
 
 import { DEFAULT_TIMEOUT } from '../common/constants'
-import { HttpClient, HttpClientResponse } from './HttpClient'
+import { HttpClient, HttpClientGenericResponse } from './HttpClient'
 
 // `import * as http_ from 'http'` creates a "Module Namespace Exotic Object"
 // which is immune to monkey-patching, whereas http_.default (in an ES Module context)
@@ -16,8 +13,7 @@ import { HttpClient, HttpClientResponse } from './HttpClient'
 // suites might be using a library like "nock" which relies on the ability
 // to monkey-patch and intercept calls to http.request.
 const http = (http_ as unknown as { default: typeof http_ }).default || http_
-const https =
-  (https_ as unknown as { default: typeof https_ }).default || https_
+const https = (https_ as unknown as { default: typeof https_ }).default || https_
 
 const defaultHttpAgent = new http.Agent({ keepAlive: true })
 const defaultHttpsAgent = new https.Agent({ keepAlive: true })
@@ -72,14 +68,11 @@ export class NodeHttpClient extends HttpClient {
 
       req.once('socket', (socket) => {
         if (socket.connecting) {
-          socket.once(
-            isInsecureConnection ? 'connect' : 'secureConnect',
-            () => {
-              // Send payload; we're safe:
-              req.write(JSON.stringify(requestData))
-              req.end()
-            }
-          )
+          socket.once(isInsecureConnection ? 'connect' : 'secureConnect', () => {
+            // Send payload; we're safe:
+            req.write(JSON.stringify(requestData))
+            req.end()
+          })
         } else {
           // we're already connected
           req.write(JSON.stringify(requestData))
@@ -91,12 +84,13 @@ export class NodeHttpClient extends HttpClient {
 }
 
 export class NodeHttpClientResponse
-  extends HttpClientResponse
+  extends HttpClientGenericResponse
   implements HttpClientResponseInterface
 {
   _res: http_.IncomingMessage
 
   constructor(res: http_.IncomingMessage) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     super(res.statusCode, res.headers || {})
     this._res = res

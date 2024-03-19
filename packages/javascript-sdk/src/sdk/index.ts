@@ -16,9 +16,9 @@ export const createCollect = (httpClient: HttpClient) => {
     public models: Map<string, CollectModel>
     public validator: Validator
 
-    constructor(token: string, config?: UserProvidedConfig) {
+    constructor(token?: string, config?: UserProvidedConfig) {
       const props = parseConfig(config)
-      super(token, { ...props, httpClient })
+      super(token, { ...props, httpClient: props.httpClient ?? httpClient })
 
       this._state = {
         debug: false,
