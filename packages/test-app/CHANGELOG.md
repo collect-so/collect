@@ -1,5 +1,13 @@
 # test-app
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies [cf86e10]
+  - @collect.so/javascript-sdk@0.6.0
+  - @collect.so/types@0.6.0
+
 ## 0.0.5
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.6.0
+
+### Minor Changes
+
+- cf86e10: Improved bundling and added more API methods
+
 ## 0.5.0
 
 ### Minor Changes
