@@ -10,8 +10,8 @@ import { yupValidator } from '../validators/yup'
 
 export const createCollect = (httpClient: HttpClient) => {
   class Collect extends CollectRestAPI {
-    private static instance: Collect
-    private _state: CollectState
+    static instance: Collect
+    state: CollectState
 
     public models: Map<string, CollectModel>
     public validator: Validator
@@ -20,7 +20,7 @@ export const createCollect = (httpClient: HttpClient) => {
       const props = parseConfig(config)
       super(token, { ...props, httpClient: props.httpClient ?? httpClient })
 
-      this._state = {
+      this.state = {
         debug: false,
         timeout: validateInteger('timeout', props.timeout, DEFAULT_TIMEOUT),
         token

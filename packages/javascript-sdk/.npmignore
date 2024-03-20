@@ -9,7 +9,6 @@
 !/README.md
 !/VERSION
 !/package.json
-!/index.d.ts
 !/cjs/**/*
 !/esm/**/*
 !/types/**/*
