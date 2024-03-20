@@ -20,7 +20,7 @@ import { CollectImportRecordsObject, CollectRecordObject } from '../sdk/utils'
 import { normalizeRecord } from '../utils/normalize'
 import { buildUrl, isArray, isObject, isObjectFlat, isString } from '../utils/utils'
 import { createApi } from './create-api'
-import { isTransaction, pickTransaction } from './utils'
+import { createSearchParams, isTransaction, pickTransaction } from './utils'
 
 export class CollectRestAPI {
   public api: ReturnType<typeof createApi>
@@ -70,7 +70,7 @@ export class CollectRestAPI {
     export<T extends CollectObject = CollectObject>(
       searchParams?: CollectQuery<T>,
       transaction?: CollectTransaction | string
-    ): Promise<CollectApiResponse<string>>
+    ): Promise<CollectApiResponse<{ dateTime: string; fileContent: string }>>
 
     find<T extends CollectObject = CollectObject>(
       label?: string,
@@ -107,13 +107,8 @@ export class CollectRestAPI {
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordResult<T>>
 
-    properties<T extends CollectObject = CollectObject>(
+    properties(
       id: string,
-      searchParamsOrTransaction?: CollectQuery<T> | CollectTransaction | string
-    ): Promise<CollectApiResponse<CollectProperty[]>>
-    properties<T extends CollectObject = CollectObject>(
-      id: string,
-      searchParamsOrTransaction?: CollectQuery<T> | CollectTransaction | string,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<CollectProperty[]>>
 
@@ -268,45 +263,10 @@ export class CollectRestAPI {
         searchParamsOrTransaction?: CollectQuery<T> | CollectTransaction | string,
         transaction?: CollectTransaction | string
       ): Promise<CollectRecordsArrayResult<T>> => {
-        let response
-
-        const secondArgumentIsTransaction = isTransaction(searchParamsOrTransaction)
-        const firstArgumentIsLabel = isString(labelOrSearchParams)
-
-        // Label provided
-        if (firstArgumentIsLabel) {
-          if (!secondArgumentIsTransaction) {
-            // CollectQuery provided
-            if (isObject(searchParamsOrTransaction)) {
-              response = await this.api?.records.find<T>(
-                {
-                  ...searchParamsOrTransaction,
-                  labels: [...(searchParamsOrTransaction?.labels ?? []), labelOrSearchParams]
-                },
-                transaction
-              )
-            }
-            // CollectQuery not provided
-            else {
-              response = await this.api?.records.find<T>(
-                {
-                  labels: [labelOrSearchParams]
-                },
-                transaction
-              )
-            }
-          } else {
-            response = await this.api?.records.find<T>(
-              {
-                labels: [labelOrSearchParams]
-              },
-              searchParamsOrTransaction
-            )
-          }
-        } else {
-          const tx = secondArgumentIsTransaction ? searchParamsOrTransaction : undefined
-          response = await this.api?.records.find<T>(labelOrSearchParams ?? {}, tx)
-        }
+        const isTransactionParam = isTransaction(searchParamsOrTransaction)
+        const searchParams = createSearchParams<T>(labelOrSearchParams, searchParamsOrTransaction)
+        const tx = isTransactionParam ? searchParamsOrTransaction : transaction
+        const response = await this.api?.records.find<T>(searchParams, tx)
 
         const result = new CollectRecordsArrayResult<T>(
           response.data,
@@ -332,45 +292,10 @@ export class CollectRestAPI {
         searchParamsOrTransaction?: CollectQuery<T> | CollectTransaction | string,
         transaction?: CollectTransaction | string
       ): Promise<CollectRecordResult<T>> => {
-        let response
-
-        const secondArgumentIsTransaction = isTransaction(searchParamsOrTransaction)
-        const firstArgumentIsLabel = isString(labelOrSearchParams)
-
-        // Label provided
-        if (firstArgumentIsLabel) {
-          if (!secondArgumentIsTransaction) {
-            // CollectQuery provided
-            if (isObject(searchParamsOrTransaction)) {
-              response = await this.api?.records.findOne<T>(
-                {
-                  ...searchParamsOrTransaction,
-                  labels: [...(searchParamsOrTransaction?.labels ?? []), labelOrSearchParams]
-                },
-                transaction
-              )
-            }
-            // CollectQuery not provided
-            else {
-              response = await this.api?.records.findOne<T>(
-                {
-                  labels: [labelOrSearchParams]
-                },
-                transaction
-              )
-            }
-          } else {
-            response = await this.api?.records.findOne<T>(
-              {
-                labels: [labelOrSearchParams]
-              },
-              searchParamsOrTransaction
-            )
-          }
-        } else {
-          const tx = secondArgumentIsTransaction ? searchParamsOrTransaction : undefined
-          response = await this.api?.records.findOne<T>(labelOrSearchParams ?? {}, tx)
-        }
+        const isTransactionParam = isTransaction(searchParamsOrTransaction)
+        const searchParams = createSearchParams<T>(labelOrSearchParams, searchParamsOrTransaction)
+        const tx = isTransactionParam ? searchParamsOrTransaction : transaction
+        const response = await this.api?.records.findOne<T>(searchParams, tx)
 
         const result = new CollectRecordResult<T>(
           response.data,
@@ -380,22 +305,8 @@ export class CollectRestAPI {
         return result
       },
 
-      properties: async <T extends CollectObject = CollectObject>(
-        id: string,
-        searchParamsOrTransaction: CollectQuery<T> | CollectTransaction | string,
-        transaction?: CollectTransaction | string
-      ) => {
-        const maybeTransaction = pickTransaction(searchParamsOrTransaction)
-
-        if (maybeTransaction) {
-          return await this.api.records.properties(id, {}, maybeTransaction)
-        }
-
-        return await this.api.records.properties(
-          id,
-          isObject(searchParamsOrTransaction) ? (searchParamsOrTransaction as CollectQuery<T>) : {},
-          transaction
-        )
+      properties: async (id: string, transaction?: CollectTransaction | string) => {
+        return this.api?.records.properties(id, transaction)
       },
 
       relations: async (
@@ -451,7 +362,34 @@ export class CollectRestAPI {
     }
   }
 
-  tx = {
+  public properties = {
+    delete: async (id: string, transaction?: CollectTransaction | string) => {
+      return this.api?.properties.delete(id, transaction)
+    },
+    find: async <T extends CollectObject = CollectObject>(
+      searchParams: CollectQuery<T>,
+      transaction?: CollectTransaction | string
+    ) => {
+      return this.api?.properties.find<T>(searchParams, transaction)
+    },
+    findById: async (id: string, transaction?: CollectTransaction | string) => {
+      return this.api?.properties.values(id, transaction)
+    },
+    values: async (id: string, transaction?: CollectTransaction | string) => {
+      return this.api?.properties.values(id, transaction)
+    }
+  }
+
+  public labels = {
+    find: async <T extends CollectObject = CollectObject>(
+      searchParams: CollectQuery<T>,
+      transaction?: CollectTransaction | string
+    ) => {
+      return this.api.labels.find(searchParams, transaction)
+    }
+  }
+
+  public tx = {
     begin: async (config?: Partial<{ ttl: number }>) => {
       const transaction = await this.api?.tx.begin(config)
 

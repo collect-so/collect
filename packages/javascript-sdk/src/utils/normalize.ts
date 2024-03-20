@@ -12,40 +12,20 @@ import {
   PROPERTY_TYPE_NUMBER,
   PROPERTY_TYPE_STRING
 } from '../common/constants'
+import { isArray } from './utils'
 
-export const arrayIsConsistent = (arr: Array<unknown>) => {
-  if (arr.length === 0) {
-    return true
-  }
-
-  const firstElementType = typeof arr[0]
-
-  for (let i = 1; i < arr.length; i++) {
-    if (typeof arr[i] !== firstElementType) {
-      return false
-    }
-  }
-
-  return true
-}
+export const arrayIsConsistent = (arr: Array<unknown>): boolean =>
+  arr.every((item) => typeof item === typeof arr[0])
 
 export const getValueParameters = (value: CollectPropertyValue) => {
   if (Array.isArray(value)) {
-    const isInconsistentArray = !arrayIsConsistent(value)
-    const isEmptyArray = !value.length || value.every((v) => typeof v === 'undefined')
-    const isEmptyStringsArray = value.every((v) => v === '')
-
     return {
-      isEmptyArray,
-      isEmptyStringsArray,
-      isInconsistentArray
+      isEmptyArray: value.length === 0,
+      isEmptyStringsArray: value.every((v) => v === ''),
+      isInconsistentArray: !arrayIsConsistent(value)
     }
   } else {
-    const isEmptyString = value === ''
-
-    return {
-      isEmptyString
-    }
+    return { isEmptyString: value === '' }
   }
 }
 
@@ -63,70 +43,42 @@ export const suggestPropertyType = (value: CollectPropertyValue): CollectPropert
   }
 }
 
+const processArrayValue = (value: any[], suggestTypes: boolean) => {
+  const { isEmptyArray, isInconsistentArray } = getValueParameters(value)
+  if (isEmptyArray) {
+    return { type: PROPERTY_TYPE_STRING, value: [] }
+  }
+  if (isInconsistentArray || !suggestTypes) {
+    return { type: PROPERTY_TYPE_STRING, value: value.map(String) }
+  }
+  return { type: suggestPropertyType(value[0]), value }
+}
+
+const processNonArrayValue = (value: CollectPropertyValue, suggestTypes: boolean) => {
+  if (!suggestTypes) {
+    return { type: PROPERTY_TYPE_STRING, value: String(value) }
+  }
+  const type = suggestPropertyType(value)
+  return { type, value: type === PROPERTY_TYPE_NULL ? null : value }
+}
+
 export const normalizeRecord = ({
   label,
-  options = {
-    suggestTypes: true
-  },
-  parentId,
+  options = { suggestTypes: true },
   payload
 }: {
   label?: string
-  options?: {
-    suggestTypes: boolean
-  }
+  options?: { suggestTypes: boolean }
   parentId?: string
   payload: Record<string, CollectPropertyValue>
-}) => {
-  return {
-    label,
-    parentId,
-    properties: Object.keys(payload).reduce<
-      Array<{
-        name: string
-        type?: CollectPropertyType
-        value?: CollectPropertyValue
-      }>
-    >((acc, name) => {
-      const property: {
-        name: string
-        type?: CollectPropertyType
-        value?: CollectPropertyValue
-      } = {
-        name
-      }
-      const value = payload[name]
-      const valueParameters = getValueParameters(value)
+}) => ({
+  label,
+  properties: Object.entries(payload).map(([name, value]) => {
+    const { type, value: processedValue } =
+      isArray(value) ?
+        processArrayValue(value, options.suggestTypes)
+      : processNonArrayValue(value, options.suggestTypes)
 
-      if (Array.isArray(value)) {
-        if (options.suggestTypes) {
-          const { isEmptyArray, isInconsistentArray } = valueParameters
-
-          // @TODO: Refactor this messy shit out
-          // Always fallback to STRING type if array of values is inconsistent
-          property.value =
-            isEmptyArray ?
-              [''] // @TODO: Figure out how to store empty array without '' as value. Now it returns as "" instead of []
-            : isInconsistentArray ? value.map(String)
-            : value
-
-          property.type = isInconsistentArray ? PROPERTY_TYPE_STRING : suggestPropertyType(value[0])
-        } else {
-          property.value = value.map(String)
-          property.type = PROPERTY_TYPE_STRING
-        }
-      } else {
-        if (options.suggestTypes) {
-          const valueType = suggestPropertyType(value)
-
-          property.value = valueType === PROPERTY_TYPE_NULL ? null : value
-          property.type = valueType
-        } else {
-          property.value = String(value)
-          property.type = PROPERTY_TYPE_STRING
-        }
-      }
-      return [...acc, property]
-    }, []) as CollectPropertyWithValue[]
-  }
-}
+    return { name, type, value: processedValue }
+  }) as CollectPropertyWithValue[]
+})

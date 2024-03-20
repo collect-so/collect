@@ -1,10 +1,3 @@
-import type {
-  CollectObject,
-  CollectPropertyType,
-  CollectPropertyValue,
-  CollectQuery
-} from '@collect.so/types'
-
 import type { UserProvidedConfig } from '../sdk/types'
 
 import {
@@ -12,76 +5,8 @@ import {
   DEFAULT_BASE_PATH,
   DEFAULT_HOST,
   DEFAULT_PORT,
-  DEFAULT_PROTOCOL,
-  ISO_8601_FULL
+  DEFAULT_PROTOCOL
 } from '../common/constants'
-
-// const suggestType = (value: unknown): CollectPropertyType => {
-//   if (typeof value === 'string' && value !== '') {
-//     if (ISO_8601_FULL.test(value)) {
-//       return 'datetime'
-//     }
-//     if (!isNaN(Number(value))) {
-//       return 'number'
-//     }
-//     return 'string'
-//   } else if (typeof value === 'boolean') {
-//     return 'boolean'
-//   } else if (typeof value === 'number') {
-//     return 'number'
-//   } else if (Array.isArray(value)) {
-//     if (value.every((value) => suggestType(value) === 'datetime')) return 'datetime'
-//     if (value.every((value) => suggestType(value) === 'number')) return 'number'
-//     if (value.every((value) => suggestType(value) === 'boolean')) return 'boolean'
-//     return 'string'
-//   } else {
-//     return 'string'
-//   }
-// }
-
-// export const normalizeData = <T extends CollectObject = CollectObject>(rawData: T) => {
-//   if (Array.isArray(rawData)) {
-//     return rawData.map((property) => {
-//       const normalizedProperty = { ...property }
-//
-//       if (!Object.prototype.hasOwnProperty.call(property, 'type')) {
-//         normalizedProperty.type = suggestType(property.value)
-//       }
-//       return normalizedProperty
-//     })
-//   } else {
-//     return Object.keys(rawData).map((name) => ({
-//       name,
-//       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//       // @ts-ignore
-//       type: suggestType(rawData[name]),
-//       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//       // @ts-ignore
-//       value: rawData[name]
-//     }))
-//   }
-// }
-
-// export const createBody = <T extends object = object>(
-//   labelOrModelOrPayload: string,
-//   payload?: RecordPayload
-// ) => {
-//   let body = {
-//     label: '',
-//     properties: []
-//   }
-//
-//   if (payload) {
-//     if (typeof labelOrModelOrPayload === 'string') {
-//       body['label'] = labelOrModelOrPayload
-//     }
-//     body['properties'] = normalizeData(payload)
-//   } else {
-//     body['properties'] = normalizeData(labelOrModelOrPayload)
-//   }
-//
-//   return body
-// }
 
 export function validateInteger(name: string, n: unknown, defaultVal?: number): number {
   if (!Number.isInteger(n)) {

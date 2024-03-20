@@ -3,6 +3,8 @@
   "compilerOptions": {
     "outDir": "./esm",
     "module": "es2022",
+    "declaration": true,
+    "declarationDir": "./types"
   },
   "exclude": [
     "./src/index.cjs.node.ts",

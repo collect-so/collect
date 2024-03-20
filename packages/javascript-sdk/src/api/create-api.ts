@@ -3,6 +3,7 @@ import type {
   CollectFile,
   CollectObject,
   CollectProperty,
+  CollectPropertyValuesData,
   CollectQuery,
   CollectRecord,
   CollectRecordsRelationsRequest,
@@ -14,7 +15,7 @@ import type { createFetcher } from '../network'
 import type { CollectTransaction } from '../sdk/transaction'
 
 import { CollectImportRecordsObject, CollectRecordObject } from '../sdk/utils'
-import { isArray, isObject, isString } from '../utils/utils'
+import { isArray } from '../utils/utils'
 import { buildTransactionHeader, pickTransactionId } from './utils'
 
 // @TODO's
@@ -22,14 +23,8 @@ import { buildTransactionHeader, pickTransactionId } from './utils'
 // POST API.detach @TODO
 // POST API.upsert @TODO
 // PATCH /api/v1/records/:id @TODO
-// POST API.labels @TODO
-// GET API.values/:propertyId
 
 // POST /api/v1/records/:id @TODO
-// PUT /api/v1/records/:id
-// DELETE /api/v1/records
-// DELETE /api/v1/records/:id
-// POST /api/v1/records/properties /api/v1/records/:id/properties
 
 export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
   files: {
@@ -47,18 +42,8 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
         method: 'GET'
       })
     },
-    update<T extends CollectObject>(
-      id: string,
-      data: T,
-      transaction?: CollectTransaction | string
-    ) {
-      const txId = pickTransactionId(transaction)
-
-      return fetcher<CollectApiResponse<T>>(`/records/${id}`, {
-        headers: Object.assign({}, buildTransactionHeader(txId)),
-        method: 'PATCH',
-        requestData: data
-      })
+    update() {
+      // @TODO
     },
     upload() {
       // @TODO
@@ -79,17 +64,33 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     }
   },
   properties: {
-    delete: () => {
-      // @TODO
+    delete: (id: string, transaction?: CollectTransaction | string) => {
+      const txId = pickTransactionId(transaction)
+
+      return fetcher<CollectApiResponse<CollectProperty>>(`/properties/${id}`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
+        method: 'DELETE'
+      })
     },
     find: <T extends CollectObject = CollectObject>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) => {
-      // @TODO
+      const txId = pickTransactionId(transaction)
+
+      return fetcher<CollectApiResponse<CollectProperty[]>>(`/properties`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
+        method: 'POST',
+        requestData: searchParams
+      })
     },
     findById: (id: string, transaction?: CollectTransaction | string) => {
-      // @TODO
+      const txId = pickTransactionId(transaction)
+
+      return fetcher<CollectApiResponse<CollectProperty>>(`/properties/${id}`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
+        method: 'GET'
+      })
     },
     update: () => {
       // @TODO
@@ -98,7 +99,15 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       // @TODO
     },
     values: (id: string, transaction?: CollectTransaction | string) => {
-      // @TODO
+      const txId = pickTransactionId(transaction)
+
+      return fetcher<CollectApiResponse<CollectProperty & CollectPropertyValuesData>>(
+        `/properties/${id}/values`,
+        {
+          headers: Object.assign({}, buildTransactionHeader(txId)),
+          method: 'GET'
+        }
+      )
     }
   },
   records: {
@@ -172,11 +181,14 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     ) {
       const txId = pickTransactionId(transaction)
 
-      return fetcher<CollectApiResponse<string>>(`/records/export/csv`, {
-        headers: Object.assign({}, buildTransactionHeader(txId)),
-        method: 'POST',
-        requestData: searchParams
-      })
+      return fetcher<CollectApiResponse<{ dateTime: string; fileContent: string }>>(
+        `/records/export/csv`,
+        {
+          headers: Object.assign({}, buildTransactionHeader(txId)),
+          method: 'POST',
+          requestData: searchParams
+        }
+      )
     },
 
     find<T extends CollectObject = CollectObject>(
@@ -220,23 +232,12 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       return { ...response, data: record } as CollectApiResponse<CollectRecord<T>>
     },
 
-    properties<T extends CollectObject = CollectObject>(
-      idOrSearchParams: CollectQuery<T> | string,
-      searchParams: CollectQuery<T> = {},
-      transaction?: CollectTransaction | string
-    ) {
-      const url =
-        isString(idOrSearchParams) ?
-          `/api/v1/records/${idOrSearchParams}/properties`
-        : `/api/v1/records/properties`
-
+    properties(id: string, transaction?: CollectTransaction | string) {
       const txId = pickTransactionId(transaction)
-      const requestData = isObject(idOrSearchParams) ? idOrSearchParams : searchParams
 
-      return fetcher<CollectApiResponse<CollectProperty[]>>(url, {
+      return fetcher<CollectApiResponse<CollectProperty[]>>(`/records/${id}/properties`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
-        method: 'POST',
-        requestData
+        method: 'GET'
       })
     },
 
