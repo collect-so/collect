@@ -1,80 +1,8 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import CollectSDK, {
-  CollectModel,
-  type CollectSDKResult,
-  type CollectRecordsArrayResult,
-  HttpClient,
-  HttpClientResponse
-} from '@collect.so/javascript-sdk'
-
-class CustomHttpClientResponse extends HttpClientResponse {
-  _res: Response
-  constructor(response: Response) {
-    super(response)
-    this._res = response
-  }
-
-  getStatusCode() {
-    return this._res.status
-  }
-
-  toJSON() {
-    return this._res.json()
-  }
-}
-
-class CustomHttpClient extends HttpClient {
-  headers: HeadersInit = {}
-  constructor(headers: HeadersInit = {} as HeadersInit) {
-    super()
-    this.headers = headers
-  }
-
-  async makeRequest(url: string, { ...init }) {
-    const res = await fetch(url, {
-      ...init,
-      body: JSON.stringify(init.requestData),
-      headers: {
-        ...init.headers,
-        ...this.headers
-      }
-    })
-
-    return new CustomHttpClientResponse(res)
-  }
-}
-
-const Collect = new CollectSDK(undefined, {
-  url: 'http://localhost',
-  httpClient: new CustomHttpClient({
-    Authorization:
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtaXkudmVyZXNoY2hpbnNraXlAZ21haWwuY29tIiwiaWQiOiIwMThkYWRmMy1jNzA0LTdlYTctOWY0YS0zZTBjZmRjOGVlYTUiLCJlbWFpbENvbmZpcm1lZCI6dHJ1ZSwiZmlyc3ROYW1lIjoiQXJ0ZW1peSIsImxhc3ROYW1lIjoiVmVyZXNoY2hpbnNraXkiLCJpYXQiOjE3MTA4MTE0NTUsImV4cCI6MTcxMzQwMzQ1NX0.Ghyq5u1Gl-YDQO1sTY5RJSscLV14VV6k_kEBfPMUsrU',
-    'X-Project-Id': '018dadf3-d4fc-779e-8c88-9d9212e18610',
-    'X-Workspace-Id': '018dadf3-c748-76c2-b701-40a002b3861e'
-  })
-})
-
-const User = new CollectModel(
-  'user',
-  {
-    name: { type: 'string' },
-    id: { type: 'number' },
-    jobTitle: { type: 'string' },
-    age: { type: 'number' },
-    married: { type: 'boolean' },
-    dateOfBirth: { type: 'datetime', required: false }
-  },
-  {
-    orders: {
-      model: 'order',
-      direction: 'out',
-      type: 'HAS_ORDER'
-    }
-  }
-)
-
-const UserRepo = Collect.registerModel(User)
+import { Collect, UserRepo } from './api'
+import { CollectRecordsArrayResult, CollectSDKResult } from '@collect.so/javascript-sdk'
+import { PropertiesList } from './PropertiesList.tsx'
 
 function App() {
   const [records, setRecords] = useState<CollectRecordsArrayResult>()
@@ -82,7 +10,7 @@ function App() {
 
   useEffect(() => {
     const find = async () => {
-      const records = await Collect.records.find<{ avgIncome: number; age: number }>({
+      const records = await Collect.records.find<{ avgIncome: number; age: number }>('CUSTOMER', {
         where: {
           XOR: [
             {
@@ -95,6 +23,14 @@ function App() {
           ]
         }
       })
+      const other = await Collect.records.find('ORDER')
+      const other1 = await Collect.records.findOne('ORDER')
+      const other2 = await Collect.records.find({ where: { key: 'value' } })
+      const other3 = await Collect.records.findOne({ where: { key: 'value' } })
+
+      const many = await Collect.records.createMany('ORDER', [{ key: 'value' }])
+
+      console.log(many.data, other.data, other1.data, other2.data, other3.data)
       setRecords(records)
     }
     find()
@@ -114,6 +50,7 @@ function App() {
       },
       tx
     )
+
     await UserRepo.create(
       {
         dateOfBirth: '2024-02-20T22:28:56+0000',
@@ -169,6 +106,9 @@ function App() {
         <button onClick={createUser}>create user</button>
         <button onClick={createMultipleUsers}>create multiple users</button>
       </header>
+      <main>
+        <PropertiesList />
+      </main>
       <div style={{ display: 'flex' }}>
         <div>
           <p>Data</p>

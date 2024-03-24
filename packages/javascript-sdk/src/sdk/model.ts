@@ -34,9 +34,11 @@ export class CollectModel<
     return this.label
   }
 
-  async find(params?: Omit<CollectQuery<InferTypesFromSchema<S>>, 'labels'>) {
+  async find<T extends InferTypesFromSchema<S> = InferTypesFromSchema<S>>(
+    params?: Omit<CollectQuery<T>, 'labels'>
+  ) {
     const modifiedParams = { ...params, labels: [this.label] }
-    return this.apiProxy?.records.find<InferTypesFromSchema<S>>(modifiedParams)
+    return this.apiProxy?.records.find<T>(modifiedParams)
   }
 
   async create<T extends InferTypesFromSchema<S> = InferTypesFromSchema<S>>(
@@ -46,16 +48,12 @@ export class CollectModel<
   ) {
     return await this.apiProxy.records.create<T>(this.label, record, transaction)
   }
-  async createMany(
-    records: InferTypesFromSchema<S>[],
+  async createMany<T extends InferTypesFromSchema<S> = InferTypesFromSchema<S>>(
+    records: T[],
     transaction?: CollectTransaction | string,
     options: { validate: boolean } = { validate: true }
   ) {
-    return await this.apiProxy.records.createMany<InferTypesFromSchema<S>>(
-      this.label,
-      records,
-      transaction
-    )
+    return await this.apiProxy.records.createMany<T>(this.label, records, transaction)
   }
 
   async validate(data: InferTypesFromSchema<S>) {

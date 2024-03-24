@@ -192,25 +192,32 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     },
 
     find<T extends CollectObject = CollectObject>(
-      searchParams: CollectQuery<T>,
+      params?: { id?: string; searchParams: CollectQuery<T> },
       transaction?: CollectTransaction | string
     ) {
       const txId = pickTransactionId(transaction)
+      const url = params?.id ? `/records/${params?.id}/search` : `/records/search`
 
-      return fetcher<CollectApiResponse<CollectRecord<T>[]>>(`/records/search`, {
+      return fetcher<CollectApiResponse<CollectRecord<T>[]>>(url, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'POST',
-        requestData: searchParams
+        requestData: params?.searchParams
       })
     },
 
     findById<T extends CollectObject = CollectObject>(
-      id: string,
+      ids: Enumerable<string>,
       transaction?: CollectTransaction | string
     ) {
       const txId = pickTransactionId(transaction)
-
-      return fetcher<CollectApiResponse<CollectRecord<T>>>(`/records/${id}`, {
+      if (isArray(ids)) {
+        return fetcher<CollectApiResponse<CollectRecord<T>[]>>(`/records`, {
+          headers: Object.assign({}, buildTransactionHeader(txId)),
+          method: 'POST',
+          requestData: { ids }
+        })
+      }
+      return fetcher<CollectApiResponse<CollectRecord<T>>>(`/records/${ids}`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'GET'
       })

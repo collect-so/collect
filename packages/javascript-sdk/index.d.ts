@@ -6,6 +6,7 @@ import { HttpClient, HttpClientResponse } from './src/network/HttpClient'
 import { CollectModel, createCollectModel } from './src/sdk/model'
 import { CollectRecordResult, CollectRecordsArrayResult } from './src/sdk/result'
 import { CollectTrasaction } from './src/sdk/transaction'
+import { CollectInferType } from './src/sdk/types'
 
 declare module '@collect.so/javascript-sdk' {
   export namespace Collect {}
@@ -24,6 +25,7 @@ declare module '@collect.so/javascript-sdk' {
 
   export {
     CollectImportRecordsObject,
+    CollectInferType,
     CollectModel,
     CollectRecordObject,
     CollectRecordResult,
