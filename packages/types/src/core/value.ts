@@ -12,11 +12,13 @@ export type CollectDatetimeObject = {
   second?: number
   year: number
 }
+
 export type CollectPrimitiveValue = boolean | null | number | string
+
 export type CollectDatetimeValue = CollectDatetimeObject | string
-export type TPropertySingleValue<
-  TType extends CollectPropertyType = CollectPropertyType
-> = TType extends 'datetime' ? CollectDatetimeValue : CollectPrimitiveValue
-export type CollectPropertyValue<
-  TType extends CollectPropertyType = CollectPropertyType
-> = Enumerable<TPropertySingleValue<TType>>
+
+export type CollectPropertySingleValue<TType extends CollectPropertyType = CollectPropertyType> =
+  TType extends 'datetime' ? CollectDatetimeValue : CollectPrimitiveValue
+
+export type CollectPropertyValue<TType extends CollectPropertyType = CollectPropertyType> =
+  Enumerable<CollectPropertySingleValue<TType>>

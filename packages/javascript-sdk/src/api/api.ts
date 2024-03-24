@@ -73,17 +73,16 @@ export class CollectRestAPI {
     ): Promise<CollectApiResponse<{ dateTime: string; fileContent: string }>>
 
     find<T extends CollectObject = CollectObject>(
-      label?: string,
-      searchParams?: CollectQuery<T>,
+      label: string,
+      searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordsArrayResult<T>>
     find<T extends CollectObject = CollectObject>(
-      labelOrSearchParams?: CollectQuery<T> | string,
-      searchParamsOrTransaction?: CollectQuery<T> | CollectTransaction | string,
+      labelOrSearchParams: CollectQuery<T> | string,
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordsArrayResult<T>>
     find<T extends CollectObject = CollectObject>(
-      searchParams?: CollectQuery<T>,
+      searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordsArrayResult<T>>
 
@@ -91,19 +90,22 @@ export class CollectRestAPI {
       id: string,
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordResult<T>>
+    findById<T extends CollectObject = CollectObject>(
+      ids: string[],
+      transaction?: CollectTransaction | string
+    ): Promise<CollectRecordsArrayResult<T>>
 
     findOne<T extends CollectObject = CollectObject>(
-      label?: string,
-      searchParams?: CollectQuery<T>,
+      label: string,
+      searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordResult<T>>
     findOne<T extends CollectObject = CollectObject>(
-      labelOrSearchParams?: CollectQuery<T> | string,
-      searchParamsOrTransaction?: CollectQuery<T> | CollectTransaction | string,
+      labelOrSearchParams: CollectQuery<T> | string,
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordResult<T>>
     findOne<T extends CollectObject = CollectObject>(
-      searchParams?: CollectQuery<T>,
+      searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordResult<T>>
 
@@ -264,9 +266,12 @@ export class CollectRestAPI {
         transaction?: CollectTransaction | string
       ): Promise<CollectRecordsArrayResult<T>> => {
         const isTransactionParam = isTransaction(searchParamsOrTransaction)
-        const searchParams = createSearchParams<T>(labelOrSearchParams, searchParamsOrTransaction)
+        const { id, searchParams } = createSearchParams<T>(
+          labelOrSearchParams,
+          searchParamsOrTransaction
+        )
         const tx = isTransactionParam ? searchParamsOrTransaction : transaction
-        const response = await this.api?.records.find<T>(searchParams, tx)
+        const response = await this.api?.records.find<T>({ id, searchParams }, tx)
 
         const result = new CollectRecordsArrayResult<T>(
           response.data,
@@ -276,15 +281,31 @@ export class CollectRestAPI {
         return result
       },
 
-      findById: async <T extends CollectObject = CollectObject>(
-        id: string,
+      findById: async <
+        T extends CollectObject = CollectObject,
+        Arg extends Enumerable<string> = Enumerable<string>,
+        R = Arg extends string[] ? CollectRecordsArrayResult<T> : CollectRecordResult<T>
+      >(
+        idOrIds: Arg,
         transaction?: CollectTransaction | string
-      ): Promise<CollectRecordResult<T>> => {
-        const response = await this.api?.records.findById<T>(id, transaction)
-
-        const result = new CollectRecordResult<T>(response.data)
-        result.init(this)
-        return result
+      ): Promise<R> => {
+        if (isArray(idOrIds)) {
+          const response = (await this.api?.records.findById<T>(
+            idOrIds,
+            transaction
+          )) as CollectApiResponse<CollectRecord<T>[]>
+          const result = new CollectRecordsArrayResult<T>(response.data)
+          result.init(this)
+          return result as R
+        } else {
+          const response = (await this.api?.records.findById<T>(
+            idOrIds,
+            transaction
+          )) as CollectApiResponse<CollectRecord<T>>
+          const result = new CollectRecordResult<T>(response.data)
+          result.init(this)
+          return result as R
+        }
       },
 
       findOne: async <T extends CollectObject = CollectObject>(
@@ -293,7 +314,10 @@ export class CollectRestAPI {
         transaction?: CollectTransaction | string
       ): Promise<CollectRecordResult<T>> => {
         const isTransactionParam = isTransaction(searchParamsOrTransaction)
-        const searchParams = createSearchParams<T>(labelOrSearchParams, searchParamsOrTransaction)
+        const { searchParams } = createSearchParams<T>(
+          labelOrSearchParams,
+          searchParamsOrTransaction
+        )
         const tx = isTransactionParam ? searchParamsOrTransaction : transaction
         const response = await this.api?.records.findOne<T>(searchParams, tx)
 
@@ -385,7 +409,7 @@ export class CollectRestAPI {
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) => {
-      return this.api.labels.find(searchParams, transaction)
+      return this.api.labels.find<T>(searchParams, transaction)
     }
   }
 

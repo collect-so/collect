@@ -1,14 +1,5 @@
-import type {
-  CollectObject,
-  CollectProperty,
-  CollectPropertyType,
-  CollectPropertyValue,
-  CollectRecord,
-  CollectSchema
-} from '../core'
+import type { CollectObject, CollectProperty, CollectRecord, CollectSchema } from '../core'
 import type { CollectApiResponse } from './common'
-
-// POST /api/v1/import/json
 
 // GET /api/v1/records/:id
 export type CollectGetRecordResponse<T extends CollectObject | CollectSchema = CollectSchema> =
@@ -23,14 +14,12 @@ export type CollectUpdateRecordResponse = CollectApiResponse<CollectRecord>
 export type CollectUpdateRecordRequest = {
   label?: string
   parentId?: string
-  properties?: Array<{
-    metadata?: string
-    name: string
-    type: CollectPropertyType
-    value: CollectPropertyValue
-    valueMetadata?: string
-    valueSeparator?: string
-  }>
+  properties?: Array<
+    CollectProperty & {
+      valueMetadata?: string
+      valueSeparator?: string
+    }
+  >
 }
 
 // DELETE /api/v1/records
@@ -42,7 +31,7 @@ export type CollectDeleteRecordByIdResponse = CollectApiResponse<{
 }>
 
 // POST /api/v1/records/properties /api/v1/records/:id/properties
-export type CollectRecordsPropertiesResponse = CollectApiResponse<Omit<CollectProperty, 'value'>[]>
+export type CollectRecordsPropertiesResponse = CollectApiResponse<CollectProperty[]>
 
 // POST /api/v1/records/:id/relations
 export type CollectRecordsRelationsRequest = {

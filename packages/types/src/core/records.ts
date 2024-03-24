@@ -1,4 +1,4 @@
-import type { Enumerable } from '../utils'
+// import type { Enumerable } from '../utils'
 import type { CollectObject, CollectSchema, InferTypesFromSchema } from './common'
 import type { CollectPropertyType } from './properties'
 
