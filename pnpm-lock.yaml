@@ -69,7 +69,7 @@ importers:
         specifier: 5.3.3
         version: 5.3.3
 
-  examples/test-app:
+  examples/react-example:
     dependencies:
       '@collect.so/javascript-sdk':
         specifier: workspace:*
