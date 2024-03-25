@@ -1,5 +1,15 @@
 # @collect.so/types
 
+## 0.7.0
+
+### Minor Changes
+
+- ace267b: Updated APIs and typings
+
+### Patch Changes
+
+- 0c4c2c7: Update lock file
+
 ## 0.6.0
 
 ### Minor Changes
