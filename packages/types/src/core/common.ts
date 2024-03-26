@@ -1,15 +1,17 @@
-import type { CollectDatetimeObject, CollectPropertyType } from './index'
+import type { MaybePromise } from '../utils'
+import type { CollectDatetimeObject, CollectPropertyType, CollectPropertyValue } from './index'
 
-export type CollectObject = Record<
-  string,
-  boolean | null | number | string | undefined
->
+export type CollectObject = Record<string, boolean | null | number | string | undefined>
+
+export type CollectSchemaDefaultValue = MaybePromise<CollectPropertyValue>
 
 export type CollectSchema = Record<
   string,
   {
+    default?: CollectSchemaDefaultValue
     required?: boolean
     type: CollectPropertyType
+    uniq?: boolean
   }
 >
 
@@ -31,11 +33,15 @@ type TypeMapping = {
 }
 
 type OptionalKeys<S extends CollectSchema = CollectSchema> = {
-  [P in keyof S]: S[P]['required'] extends false ? P : never
+  [P in keyof S]: S[P]['required'] extends false ? P
+  : S[P]['default'] extends CollectSchemaDefaultValue ? P
+  : never
 }[keyof S]
 
 type RequiredKeys<S extends CollectSchema = CollectSchema> = {
-  [P in keyof S]: S[P]['required'] extends false ? never : P
+  [P in keyof S]: S[P]['required'] extends false ? never
+  : S[P]['default'] extends CollectSchemaDefaultValue ? never
+  : P
 }[keyof S]
 
 export type InferTypesFromSchema<S extends CollectSchema = CollectSchema> = {

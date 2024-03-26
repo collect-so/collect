@@ -7,13 +7,19 @@ export const Collect = new CollectSDK(
   }
 )
 
+const asyncRandomNumber = async () =>
+  await new Promise<number>((resolve) => {
+    setTimeout(() => resolve(Math.random()), 150)
+  })
+
 const User = new CollectModel('user', {
   name: { type: 'string' },
-  id: { type: 'number' },
+  email: { type: 'string', uniq: true },
+  id: { type: 'number', default: asyncRandomNumber },
   jobTitle: { type: 'string' },
   age: { type: 'number' },
   married: { type: 'boolean' },
-  dateOfBirth: { type: 'datetime', required: false }
+  dateOfBirth: { type: 'datetime', default: () => new Date().toISOString() }
 })
 
 export const UserRepo = Collect.registerModel(User)

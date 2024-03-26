@@ -1,8 +1,4 @@
-# PNPM monorepo example
-
-## Workflow
-
-[Publish to registry](https://adevait.com/software/publish-private-npm-packages-with-github-package-registry)
+# Collect
 
 ### Adding new changesets
 
@@ -15,13 +11,3 @@ To generate a new changeset, run `pnpm changeset` in the root of the repository.
    Commit the changes.
 3. Run `pnpm run publish`. This command will publish all packages that have bumped versions not yet present in the registry.
 
-### Consuming registry
-
-1. Create `.pnpmrc` file with following contents
-
-```
-@kumomiX:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_AUTH_TOKEN}
-```
-
-2. Run `pnpm i @kumomix/ui-kit-a`.
