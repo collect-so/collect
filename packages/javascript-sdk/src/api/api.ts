@@ -159,7 +159,7 @@ export class CollectRestAPI {
           )
         }
 
-        if (isObjectFlat(labelOrData)) {
+        if (!response && isObjectFlat(labelOrData)) {
           const normalizedRecord = normalizeRecord({
             payload: labelOrData as Record<string, CollectPropertyValue>
           })
@@ -172,7 +172,7 @@ export class CollectRestAPI {
           throw Error('Provided data is not a flat object. Consider to use `createMany` method.')
         }
 
-        if (isString(labelOrData)) {
+        if (!response && isString(labelOrData)) {
           if (isObjectFlat(maybeDataOrTransaction)) {
             const normalizedRecord = normalizeRecord({
               label: labelOrData,
@@ -211,7 +211,7 @@ export class CollectRestAPI {
           )
         }
 
-        if (isArray(labelOrData) || isObject(labelOrData)) {
+        if (!response && (isArray(labelOrData) || isObject(labelOrData))) {
           const data = new CollectImportRecordsObject({
             payload: labelOrData
           })
@@ -223,6 +223,7 @@ export class CollectRestAPI {
         }
 
         if (
+          !response &&
           isString(labelOrData) &&
           (isArray(maybeDataOrTransaction) || isObject(maybeDataOrTransaction))
         ) {

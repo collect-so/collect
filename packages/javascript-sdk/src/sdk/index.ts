@@ -6,7 +6,6 @@ import type { CollectState, UserProvidedConfig } from './types'
 import { CollectRestAPI } from '../api'
 import { DEFAULT_TIMEOUT } from '../common/constants'
 import { parseConfig, validateInteger } from '../utils/utils'
-import { yupValidator } from '../validators/yup'
 
 export const createCollect = (httpClient: HttpClient) => {
   class Collect extends CollectRestAPI {
@@ -14,7 +13,7 @@ export const createCollect = (httpClient: HttpClient) => {
     state: CollectState
 
     public models: Map<string, CollectModel>
-    public validator: Validator
+    public validator?: Validator
 
     constructor(token?: string, config?: UserProvidedConfig) {
       const props = parseConfig(config)
@@ -25,7 +24,7 @@ export const createCollect = (httpClient: HttpClient) => {
         timeout: validateInteger('timeout', props.timeout, DEFAULT_TIMEOUT),
         token
       }
-      this.validator = props.validator ?? yupValidator
+      this.validator = props.validator
       this.models = new Map()
     }
 

@@ -2,15 +2,23 @@
 
 ```ts
 // lib/db.js
-export const collect = new Collect().init({ token: env.token })
+import Collect, { CollectModel } from '@collect.so/sdk'
 
-collect.registerModel('Movie', object({ name: string() }))
+const collect = new Collect(YOUR_API_TOKEN)
 
-// features/movies.js
-import { collect } from 'lib/db'
+// Define your model schema
+const TaskModel = new CollectModel({
+    title: { type: 'string' },
+    completed: { type: 'boolean', default: false }
+})
 
-const createMovie = async () => {
-  const movie = await collect.create('Movie', { name: 'Forrest Gump' })
-  await movie.update('Movie', {})
-}
+// Register the model with the SDK
+const TaskRepo = collect.registerModel('Task', TaskSchema)
+
+// Create a new task
+const newTask = await Task.create({title: 'Finish the report'})
+
+// Find all completed tasks
+const completedTasks = await Task.find({where: {completed: true}})
+
 ```

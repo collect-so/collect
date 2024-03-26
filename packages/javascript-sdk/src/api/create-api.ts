@@ -21,9 +21,7 @@ import { buildTransactionHeader, pickTransactionId } from './utils'
 // @TODO's
 // POST API.attach @TODO
 // POST API.detach @TODO
-// POST API.upsert @TODO
 // PATCH /api/v1/records/:id @TODO
-
 // POST /api/v1/records/:id @TODO
 
 export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
@@ -135,7 +133,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       const txId = pickTransactionId(transaction)
 
       if (data instanceof CollectImportRecordsObject) {
-        return fetcher<CollectApiResponse<CollectRecord<T>[]>>(`/import/json`, {
+        return fetcher<CollectApiResponse<CollectRecord<T>[]>>(`/records/import/json`, {
           headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'POST',
           requestData: data.toJson()
