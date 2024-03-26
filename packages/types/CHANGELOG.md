@@ -1,5 +1,15 @@
 # @collect.so/types
 
+## 0.8.0
+
+### Minor Changes
+
+- 05f7968: Add uniq and default params to CollectSchema
+
+### Patch Changes
+
+- 4906e6c: Update pnpm-lock.yaml
+
 ## 0.7.0
 
 ### Minor Changes
