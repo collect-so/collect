@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.9.0
+
+### Minor Changes
+
+- 41dc648: Add total and few more api methods to Result
+
 ## 0.8.0
 
 ### Minor Changes
