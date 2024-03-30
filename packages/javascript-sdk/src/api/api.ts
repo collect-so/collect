@@ -235,7 +235,7 @@ export class CollectRestAPI {
         }
 
         if (response?.success && response?.data) {
-          const result = new CollectRecordsArrayResult<T>(response.data)
+          const result = new CollectRecordsArrayResult<T>(response.data, response.total)
           result.init(this)
           return result
         }
@@ -276,6 +276,7 @@ export class CollectRestAPI {
 
         const result = new CollectRecordsArrayResult<T>(
           response.data,
+          response.total,
           searchParamsOrTransaction as CollectQuery<T>
         )
         result.init(this)
@@ -295,7 +296,7 @@ export class CollectRestAPI {
             idOrIds,
             transaction
           )) as CollectApiResponse<CollectRecord<T>[]>
-          const result = new CollectRecordsArrayResult<T>(response.data)
+          const result = new CollectRecordsArrayResult<T>(response.data, response.total)
           result.init(this)
           return result as R
         } else {
