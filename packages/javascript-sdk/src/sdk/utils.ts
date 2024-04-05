@@ -6,7 +6,7 @@ import type {
   CollectPropertyWithValue,
   CollectSchema,
   Enumerable,
-  InferTypesFromSchema
+  InferSchemaTypesWrite
 } from '@collect.so/types'
 
 import { UniquenessError } from './errors'
@@ -99,13 +99,13 @@ export class CollectRecordObject {
 
 export const mergeDefaultsWithPayload = async <T extends CollectSchema = CollectSchema>(
   schema: T,
-  payload: Partial<InferTypesFromSchema<T>>
-): Promise<InferTypesFromSchema<T>> => {
+  payload: Partial<InferSchemaTypesWrite<T>>
+): Promise<InferSchemaTypesWrite<T>> => {
   const defaultPromises = Object.entries(schema).map(async ([key, prop]) => {
     if (
       prop.default &&
       typeof prop.default === 'function' &&
-      typeof payload[key as keyof Partial<InferTypesFromSchema<T>>] === 'undefined'
+      typeof payload[key as keyof Partial<InferSchemaTypesWrite<T>>] === 'undefined'
     ) {
       return { key, value: await prop.default() }
     } else {
@@ -125,12 +125,12 @@ export const mergeDefaultsWithPayload = async <T extends CollectSchema = Collect
     {} as Record<string, CollectPropertyValue>
   )
 
-  return { ...defaults, ...payload } as InferTypesFromSchema<T>
+  return { ...defaults, ...payload } as InferSchemaTypesWrite<T>
 }
 
 export const pickUniqFields = <T extends CollectSchema = CollectSchema>(
   schema: T,
-  data: Partial<InferTypesFromSchema<T>>
+  data: Partial<InferSchemaTypesWrite<T>>
 ) => {
   return Object.entries(data)
     .filter(([key, value]) => schema[key]?.uniq)
@@ -146,7 +146,7 @@ export const pickUniqFields = <T extends CollectSchema = CollectSchema>(
 }
 
 export const checkForInternalDuplicates = <T extends CollectSchema = CollectSchema>(
-  records: InferTypesFromSchema<T>[],
+  records: InferSchemaTypesWrite<T>[],
   schema: T,
   label: string
 ) => {

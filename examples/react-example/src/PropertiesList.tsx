@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Collect } from './api'
-import { CollectProperty } from '@collect.so/types'
+import { CollectSDKResult } from '@collect.so/javascript-sdk'
 
 export const PropertiesList = () => {
-  const [properties, setProperties] = useState<CollectProperty[]>([])
+  const [properties, setProperties] =
+    useState<CollectSDKResult<typeof Collect.properties.find>['data']>()
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -16,7 +17,7 @@ export const PropertiesList = () => {
 
   return (
     <ol style={{ fontFamily: 'monospace' }}>
-      {properties.map(({ name, type }, index) => (
+      {properties?.map(({ name, type }, index) => (
         <li key={`${name}-${index}`}>
           {name}: {type}
         </li>

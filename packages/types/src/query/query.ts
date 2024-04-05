@@ -1,41 +1,15 @@
-import type { Enumerable, RequireAtLeastOne } from '../utils'
-import type { CollectObject, CollectSchema } from './common'
-import type { CollectDatetimeObject } from './index'
-
-type DatetimeValue =
-  | CollectDatetimeObject
-  | RequireAtLeastOne<
-      Record<'gt' | 'gte' | 'lt' | 'lte' | 'not', CollectDatetimeObject | string> &
-        Record<'in' | 'notIn', Array<CollectDatetimeObject | string>>
-    >
-  | string
-
-type BooleanValue = RequireAtLeastOne<Record<'not', boolean>> | boolean
-
-type NullValue = RequireAtLeastOne<Record<'not', null>> | null
-
-type NumberValue =
-  | RequireAtLeastOne<
-      Record<'gt' | 'gte' | 'lt' | 'lte' | 'not', number> & Record<'in' | 'notIn', Array<number>>
-    >
-  | number
-
-type StringValue =
-  | RequireAtLeastOne<
-      Record<'contains' | 'endsWith' | 'not' | 'startsWith', string> &
-        Record<'in' | 'notIn', Array<string>>
-    >
-  | string
-
-type CollectWhereValue = BooleanValue | DatetimeValue | NullValue | NumberValue | StringValue
-
-type CollectWhereValueByType = {
-  boolean: BooleanValue
-  datetime: DatetimeValue
-  null: NullValue
-  number: NumberValue
-  string: StringValue
-}
+import type {
+  BooleanValue,
+  CollectObject,
+  CollectSchema,
+  CollectValueByType,
+  CollectWhereValue,
+  DatetimeValue,
+  NullValue,
+  NumberValue,
+  StringValue
+} from '../core'
+import type { Enumerable } from '../utils'
 
 export type CollectQueryLogicalGrouping<T extends CollectObject | CollectSchema = CollectSchema> =
   Record<'AND' | 'NOT' | 'OR' | 'XOR', Enumerable<CollectQueryCondition<T>>>
@@ -56,26 +30,36 @@ export type CollectQueryCommonParams<T extends CollectObject | CollectSchema = C
 }
 
 export type CollectQueryCondition<T extends CollectObject | CollectSchema = CollectSchema> = {
-  [K in keyof T]?: T extends CollectSchema ? CollectWhereValueByType[T[K]['type']]
+  [K in keyof T]?: T extends CollectSchema ? CollectValueByType[T[K]['type']]
   : T[K] extends number ? NumberValue
   : T[K] extends boolean ? BooleanValue
   : T[K] extends string ? DatetimeValue | StringValue
   : T[K] extends null ? NullValue
   : CollectWhereValue
+} & {
+  [K in keyof CollectModels]?: CollectQueryWhere<CollectModels[K]>
 }
+
+export type CollectRelatedQuery<K extends keyof CollectModels = keyof CollectModels> =
+  CollectQueryCondition<CollectModels[K]>
 
 export type CollectQueryWhere<T extends CollectObject | CollectSchema = CollectSchema> =
   | CollectQueryCondition<T>
-  | RequireAtLeastOne<CollectQueryLogicalGrouping<T>>
+  | Partial<CollectQueryLogicalGrouping<T>>
 
 export type CollectQueryWhereClause<T extends CollectObject | CollectSchema = CollectSchema> = {
   where?: CollectQueryWhere<T>
 }
 
-export type CollectQuery<T extends CollectObject | CollectSchema = CollectSchema> =
-  CollectQueryCommonParams<T> & CollectQueryWhereClause<T> & { includes?: never }
-// | (CollectQueryIncludesClause<T> & { where?: never })
+export type CollectQuery<T extends CollectObject | CollectSchema = any> =
+  CollectQueryCommonParams<T> & CollectQueryWhereClause<T>
 
+/* Extent this typ*/
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface CollectModels {}
+
+//& { includes?: never }
+// | (CollectQueryIncludesClause<T> & { where?: never })
 // INCLUDES CLAUSE
 // export type CollectQueryIncludesClause<T extends CollectObject | CollectSchema = CollectSchema> = {
 //   includes?: CollectQueryIncludes<T>

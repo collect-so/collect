@@ -10,7 +10,7 @@ function App() {
 
   useEffect(() => {
     const find = async () => {
-      const records = await Collect.records.find<{ avgIncome: number; age: number }>('CUSTOMER', {
+      const records = await Collect.records.find('CUSTOMER', {
         where: {
           XOR: [
             {
@@ -23,6 +23,7 @@ function App() {
           ]
         }
       })
+
       setRecords(records)
     }
     find()
@@ -61,13 +62,13 @@ function App() {
   }
 
   const createMultipleUsers = async () => {
-    const users = await UserRepo.createMany([
+    /*const users = */ await UserRepo.createMany([
       {
         name: '1',
         email: 'test@example.com',
         jobTitle: 'manager',
         age: 40,
-        married: false
+        married: true
       },
       {
         name: '1',
@@ -77,12 +78,26 @@ function App() {
         married: false
       }
     ])
-    console.log(users)
     findUsers()
   }
 
   const findUsers = async () => {
-    const users = await UserRepo.find()
+    const users = await UserRepo.find({
+      where: {
+        jobTitle: ''
+      },
+      limit: 1000,
+      orderBy: 'desc',
+      skip: 0
+    })
+
+    const rels = await Collect.records.relations('018e9aed-51f1-7d6b-a6ad-0f178d920a4d')
+    // const createRel = await Collect.records.detach('018e9aed-51f1-7d6b-a6ad-0f178d920a4d', [
+    //   '018e9aed-51f1-7d6b-a6ad-0f147b57f7fd',
+    //   '018e9aed-51f0-78bc-b8b8-84e021dfabad'
+    // ])
+    // const rels = await Collect.records.relations('018e9aa1-5c0c-7f59-9559-ec9068b8ccab')
+    console.log(rels)
     setUsers(users)
   }
 

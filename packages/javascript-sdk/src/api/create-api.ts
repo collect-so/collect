@@ -6,8 +6,8 @@ import type {
   CollectPropertyValuesData,
   CollectQuery,
   CollectRecord,
-  CollectRecordsRelationsRequest,
   CollectRecordsRelationsResponse,
+  CollectSchema,
   Enumerable
 } from '@collect.so/types'
 
@@ -19,8 +19,6 @@ import { isArray } from '../utils/utils'
 import { buildTransactionHeader, pickTransactionId } from './utils'
 
 // @TODO's
-// POST API.attach @TODO
-// POST API.detach @TODO
 // PATCH /api/v1/records/:id @TODO
 // POST /api/v1/records/:id @TODO
 
@@ -48,7 +46,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     }
   },
   labels: {
-    async find<T extends CollectObject = CollectObject>(
+    async find<T extends CollectObject | CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) {
@@ -70,7 +68,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
         method: 'DELETE'
       })
     },
-    find: <T extends CollectObject = CollectObject>(
+    find: <T extends CollectObject | CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) => {
@@ -109,7 +107,20 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     }
   },
   records: {
-    async create<T extends CollectObject = CollectObject>(
+    attach: async (
+      id: string,
+      idOrIds: Enumerable<string>,
+      transaction?: CollectTransaction | string
+    ) => {
+      const txId = pickTransactionId(transaction)
+
+      return fetcher<CollectApiResponse<{ message: string }>>(`/records/${id}/relations`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
+        method: 'POST',
+        requestData: { targetIds: idOrIds }
+      })
+    },
+    async create<T extends CollectObject | CollectSchema = any>(
       data: CollectRecordObject | T,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<CollectRecord<T> | undefined>> {
@@ -126,7 +137,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       return { data: undefined, success: false }
     },
 
-    async createMany<T extends CollectObject = CollectObject>(
+    async createMany<T extends CollectObject | CollectSchema = any>(
       data: CollectImportRecordsObject | T[],
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<CollectRecord<T>[]>> {
@@ -143,7 +154,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       return { data: [], success: false }
     },
 
-    delete<T extends CollectObject = CollectObject>(
+    delete<T extends CollectObject | CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) {
@@ -173,7 +184,21 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       }
     },
 
-    export<T extends CollectObject = CollectObject>(
+    detach: async (
+      id: string,
+      idOrIds: Enumerable<string>,
+      transaction?: CollectTransaction | string
+    ) => {
+      const txId = pickTransactionId(transaction)
+
+      return fetcher<CollectApiResponse<{ message: string }>>(`/records/${id}/relations`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
+        method: 'DELETE',
+        requestData: { targetIds: idOrIds }
+      })
+    },
+
+    export<T extends CollectObject | CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) {
@@ -189,7 +214,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       )
     },
 
-    find<T extends CollectObject = CollectObject>(
+    find<T extends CollectObject | CollectSchema = any>(
       params?: { id?: string; searchParams: CollectQuery<T> },
       transaction?: CollectTransaction | string
     ) {
@@ -203,7 +228,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       })
     },
 
-    findById<T extends CollectObject = CollectObject>(
+    findById<T extends CollectObject | CollectSchema = any>(
       ids: Enumerable<string>,
       transaction?: CollectTransaction | string
     ) {
@@ -221,7 +246,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       })
     },
 
-    async findOne<T extends CollectObject = CollectObject>(
+    async findOne<T extends CollectObject | CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) {
@@ -246,24 +271,19 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       })
     },
 
-    relations: async (
-      id: string,
-      searchParams: CollectRecordsRelationsRequest = {},
-      transaction?: CollectTransaction | string
-    ) => {
+    relations: async (id: string, transaction?: CollectTransaction | string) => {
       const txId = pickTransactionId(transaction)
 
       return fetcher<CollectApiResponse<CollectRecordsRelationsResponse>>(
         `/records/${id}/relations`,
         {
           headers: Object.assign({}, buildTransactionHeader(txId)),
-          method: 'POST',
-          requestData: searchParams
+          method: 'GET'
         }
       )
     },
 
-    update<T extends CollectObject = CollectObject>(
+    update<T extends CollectObject | CollectSchema = any>(
       id: string,
       data: CollectRecordObject | T,
       transaction?: CollectTransaction | string

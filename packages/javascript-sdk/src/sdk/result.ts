@@ -38,6 +38,7 @@ export class CollectRecordsArrayResult<
   searchParams?: CollectQuery<T>
   constructor(data: CollectRecord<T>[], total?: number, searchParams?: CollectQuery<T>) {
     super()
+    // @TODO: Map Records to Result-like class to have properties along with single Record methods on each item
     this.data = data
     this.total = total
     this.searchParams = searchParams

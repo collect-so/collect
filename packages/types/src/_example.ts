@@ -1,5 +1,7 @@
 import type { CollectQuery, CollectQueryCommonParams, CollectSchema } from './core'
 
+import { CollectQueryLogicalGrouping } from './core'
+
 type User = {
   age: number
   birthday: string
@@ -39,11 +41,24 @@ const queryCommonParams: CollectQueryCommonParams<User> = {
   },
   skip: 0
 }
-
+// Example usage:
+const a: CollectQuery = {
+  where: {
+    name: 'Post author name',
+    post: {
+      // This "post" is considered a relation
+      comment: {
+        // Nested relation
+        text: { startsWith: 'Neo4j' }
+      }
+    }
+  }
+}
+// posts.comment.text *. "Neo4j"
 export const q1: CollectQuery<typeof userSchema> = {
   ...queryCommonParams,
   where: {
-    age: 2,
+    age: '12',
     dateOfBirth: {
       day: 28,
       month: 1,

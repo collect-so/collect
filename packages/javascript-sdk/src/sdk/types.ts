@@ -1,4 +1,4 @@
-import type { FlattenTypes, InferTypesFromSchema } from '@collect.so/types'
+import type { FlattenTypes, InferSchemaTypesRead } from '@collect.so/types'
 
 import type { HttpClientInterface } from '../network/HttpClient'
 import type { Validator } from '../validators/types'
@@ -30,5 +30,5 @@ export type CollectSDKResult<T extends (...args: any[]) => Promise<any>> = Flatt
 >
 
 export type CollectInferType<T extends CollectModel<any> = CollectModel<any>> = FlattenTypes<
-  InferTypesFromSchema<T['schema']>
+  InferSchemaTypesRead<T['schema']>
 >
