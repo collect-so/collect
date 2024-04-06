@@ -2,15 +2,15 @@ import type { Enumerable, RequireAtLeastOne } from '../utils'
 import type { CollectPropertyType } from './properties'
 
 export type CollectDatetimeObject = {
-  day?: number
-  hour?: number
-  microsecond?: number
-  millisecond?: number
-  minute?: number
-  month?: number
-  nanosecond?: number
-  second?: number
-  year: number
+  $day?: number
+  $hour?: number
+  $microsecond?: number
+  $millisecond?: number
+  $minute?: number
+  $month?: number
+  $nanosecond?: number
+  $second?: number
+  $year: number
 }
 
 export type CollectPrimitiveValue = boolean | null | number | string
@@ -26,25 +26,26 @@ export type CollectPropertyValue<TType extends CollectPropertyType = CollectProp
 export type DatetimeValue =
   | CollectDatetimeObject
   | RequireAtLeastOne<
-      Record<'gt' | 'gte' | 'lt' | 'lte' | 'not', CollectDatetimeObject | string> &
-        Record<'in' | 'notIn', Array<CollectDatetimeObject | string>>
+      Record<'$gt' | '$gte' | '$lt' | '$lte' | '$not', CollectDatetimeObject | string> &
+        Record<'$in' | '$notIn', Array<CollectDatetimeObject | string>>
     >
   | string
 
-export type BooleanValue = Record<'not', boolean> | boolean
+export type BooleanValue = Record<'$not', boolean> | boolean
 
-export type NullValue = Record<'not', null> | null
+export type NullValue = Record<'$not', null> | null
 
 export type NumberValue =
   | RequireAtLeastOne<
-      Record<'gt' | 'gte' | 'lt' | 'lte' | 'not', number> & Record<'in' | 'notIn', Array<number>>
+      Record<'$gt' | '$gte' | '$lt' | '$lte' | '$not', number> &
+        Record<'$in' | '$notIn', Array<number>>
     >
   | number
 
 export type StringValue =
   | RequireAtLeastOne<
-      Record<'contains' | 'endsWith' | 'not' | 'startsWith', string> &
-        Record<'in' | 'notIn', Array<string>>
+      Record<'$contains' | '$endsWith' | '$not' | '$startsWith', string> &
+        Record<'$in' | '$notIn', Array<string>>
     >
   | string
 

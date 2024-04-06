@@ -1,7 +1,5 @@
 import type { CollectQuery, CollectQueryCommonParams, CollectSchema } from './core'
 
-import { CollectQueryLogicalGrouping } from './core'
-
 type User = {
   age: number
   birthday: string
@@ -60,43 +58,43 @@ export const q1: CollectQuery<typeof userSchema> = {
   where: {
     age: '12',
     dateOfBirth: {
-      day: 28,
-      month: 1,
-      year: 1994
+      $day: 28,
+      $month: 1,
+      $year: 1994
     },
     favoriteFood: {
-      in: ['pasta', 'pho bo', 'pad thai']
+      $in: ['pasta', 'pho bo', 'pad thai']
     },
     favoriteNumber: {
-      notIn: [5, 6, 7]
+      $notIn: [5, 6, 7]
     },
     height: {
-      gte: 173,
-      lte: 175
+      $gte: 173,
+      $lte: 175
     },
     id: {
-      in: [1, 2, 3],
-      not: 0,
-      notIn: [4, 5]
+      $in: [1, 2, 3],
+      $not: 0,
+      $notIn: [4, 5]
     },
     married: true,
     name: {
-      contains: 'em',
-      endsWith: 'iy',
-      startsWith: 'Art'
+      $contains: 'em',
+      $endsWith: 'iy',
+      $startsWith: 'Art'
     },
     otherDate: {
-      lt: {
-        day: 28,
-        month: 1,
-        year: 1994
+      $lt: {
+        $day: 28,
+        $month: 1,
+        $year: 1994
       }
     },
     registeredAt: '24-02-2023T12:45:11+01:00',
     secondCitizenship: null,
     weight: {
-      gt: 80,
-      lt: 90
+      $gt: 80,
+      $lt: 90
     }
   }
 }
@@ -107,9 +105,9 @@ export const q2: CollectQuery<User> = {
     AND: [
       {
         id: {
-          in: [1, 2, 3],
-          not: 0,
-          notIn: [4, 5]
+          $in: [1, 2, 3],
+          $not: 0,
+          $notIn: [4, 5]
         }
       }
     ]
@@ -125,15 +123,15 @@ export const variant1: CollectQuery<User> = {
     AND: [
       {
         id: {
-          gte: 2,
-          lt: 1,
-          lte: 4
+          $gte: 2,
+          $lt: 1,
+          $lte: 4
         }
       },
       {
         id: {
-          gt: 6,
-          lt: 8
+          $gt: 6,
+          $lt: 8
         }
       },
       { id: 0 }
@@ -147,14 +145,14 @@ export const variant2: CollectQuery<User> = {
     OR: [
       {
         id: {
-          gte: 2,
-          lte: 4
+          $gte: 2,
+          $lte: 4
         }
       },
       {
         id: {
-          gt: 6,
-          lt: 8
+          $gt: 6,
+          $lt: 8
         }
       },
       { id: 0 }
@@ -168,54 +166,17 @@ export const variant3: CollectQuery<User> = {
     AND: [
       {
         id: {
-          gte: 2,
-          lte: 4
+          $gte: 2,
+          $lte: 4
         }
       },
       {
         id: {
-          gt: 6,
-          lt: 8
+          $gt: 6,
+          $lt: 8
         }
       }
     ],
     OR: { id: 0 }
   }
 }
-
-// INCLUDES
-// export const includes1: CollectQuery = {
-//   includes: {
-//     user: {
-//       includes: {
-//         course: {
-//           where: {
-//             status: 'done'
-//           }
-//         }
-//       },
-//       where: {
-//         otherDate: {
-//           year: 1
-//         }
-//       }
-//     }
-//   }
-// }
-
-// export const includes2: CollectQuery = {
-//   includes: {
-//     user: {
-//       includes: {
-//         course: {
-//           where: {
-//             status: 'done'
-//           }
-//         }
-//       },
-//       where: {
-//         name: 'Peter'
-//       }
-//     }
-//   }
-// }
