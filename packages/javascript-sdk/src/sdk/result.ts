@@ -17,14 +17,14 @@ export class CollectRecordResult<
   }
 
   async delete(transaction?: CollectTransaction | string) {
-    return await this.apiProxy.records.deleteById(this.data._collect_id, transaction)
+    return await this.apiProxy.records.deleteById(this.data.__id, transaction)
   }
 
   async update<T extends CollectObject = CollectObject>(
     data: CollectRecordObject | T,
     transaction?: CollectTransaction | string
   ) {
-    return this.apiProxy.records.update(this.data._collect_id, data, transaction)
+    return this.apiProxy.records.update(this.data.__id, data, transaction)
   }
 
   // @TODO: Create Relation; Create Related Record (use this as parent);

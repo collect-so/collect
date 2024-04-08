@@ -12,7 +12,7 @@ import type {
 import type { Enumerable } from '../utils'
 
 export type CollectQueryLogicalGrouping<T extends CollectObject | CollectSchema = CollectSchema> =
-  Record<'AND' | 'NOT' | 'OR' | 'XOR', Enumerable<CollectQueryCondition<T>>>
+  Record<'$AND' | '$NOT' | '$OR' | '$XOR', Enumerable<CollectQueryCondition<T>>>
 
 export type CollectQueryOrderByMap<T extends CollectObject | CollectSchema = CollectSchema> =
   Partial<Record<keyof T, 'asc' | 'desc'>>
@@ -54,7 +54,7 @@ export type CollectQueryWhereClause<T extends CollectObject | CollectSchema = Co
 export type CollectQuery<T extends CollectObject | CollectSchema = any> =
   CollectQueryCommonParams<T> & CollectQueryWhereClause<T>
 
-/* Extent this typ*/
+/* Extend this type */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CollectModels {}
 

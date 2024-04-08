@@ -102,7 +102,7 @@ export const q1: CollectQuery<typeof userSchema> = {
 export const q2: CollectQuery<User> = {
   ...queryCommonParams,
   where: {
-    AND: [
+    $AND: [
       {
         id: {
           $in: [1, 2, 3],
@@ -120,7 +120,7 @@ export const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 // GET (>=2 AND <=4) AND (>6 AND <8) AND (0)
 export const variant1: CollectQuery<User> = {
   where: {
-    AND: [
+    $AND: [
       {
         id: {
           $gte: 2,
@@ -142,7 +142,7 @@ export const variant1: CollectQuery<User> = {
 // GET (>=2 AND <=4) OR (>6 AND <8) OR (0)
 export const variant2: CollectQuery<User> = {
   where: {
-    OR: [
+    $OR: [
       {
         id: {
           $gte: 2,
@@ -163,7 +163,7 @@ export const variant2: CollectQuery<User> = {
 // GET (>=2 AND <=4) AND (>6 AND <8) OR (0)
 export const variant3: CollectQuery<User> = {
   where: {
-    AND: [
+    $AND: [
       {
         id: {
           $gte: 2,
@@ -177,6 +177,6 @@ export const variant3: CollectQuery<User> = {
         }
       }
     ],
-    OR: { id: 0 }
+    $OR: { id: 0 }
   }
 }

@@ -29,7 +29,8 @@ export const UserRepo = Collect.registerModel(User)
 export const Post = new CollectModel('post', {
   created: { type: 'datetime', default: () => new Date().toISOString() },
   title: { type: 'string' },
-  content: { type: 'string' }
+  content: { type: 'string' },
+  rating: { type: 'number' }
 })
 
 export const Author = new CollectModel('author', {
@@ -65,6 +66,7 @@ export const findTest = async () => {
   await AuthorRepo.find({
     where: {
       name: '',
+
       post: {
         created: '',
         title: '',
@@ -77,14 +79,44 @@ export const findTest = async () => {
 
   await PostRepo.find({
     where: {
-      title: { startsWith: '' }
+      title: { $startsWith: '' }
     }
   })
 
   await UserRepo.find({
     where: {
-      email: { startsWith: '' },
-      married: { not: false }
+      email: { $startsWith: '' },
+      married: { $not: false }
     }
   })
 }
+
+// const recursiveSearch: CollectQuery = {
+//   where: {
+//     name: {
+//       $startsWith: 'Jack',
+//       $endsWith: 'Rooney'
+//     },
+//     dateOfBirth: {
+//       $year: 1984
+//     },
+//     post: {
+//       created: {
+//         $year: 2011,
+//         $month: 11,
+//         $day: 11
+//       },
+//       rating: {
+//         $gte: 4.5
+//       },
+//       title: {
+//         $not: 'Forest'
+//       },
+//       comment: {
+//         authoredBy: {
+//           $contains: 'Sam'
+//         }
+//       }
+//     }
+//   }
+// }

@@ -3,9 +3,9 @@ import type { CollectObject, CollectSchema, InferSchemaTypesRead } from './commo
 import type { CollectPropertyType } from './properties'
 
 export type CollectRecordInternalProps<T extends CollectObject | CollectSchema = CollectSchema> = {
-  _collect_id: string
-  _collect_label?: string
-  _collect_propsMetadata?: Record<keyof T, CollectPropertyType>
+  __id: string
+  __label?: string
+  __proptypes?: Record<keyof T, CollectPropertyType>
 }
 
 export type CollectRecordProps<T extends CollectObject | CollectSchema = CollectSchema> = {
