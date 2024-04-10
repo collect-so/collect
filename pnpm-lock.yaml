@@ -74,9 +74,6 @@ importers:
       '@collect.so/javascript-sdk':
         specifier: workspace:*
         version: link:../../packages/javascript-sdk
-      '@collect.so/types':
-        specifier: workspace:*
-        version: link:../../packages/types
       react:
         specifier: ^18.2.0
         version: 18.2.0
