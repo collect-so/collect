@@ -40,9 +40,6 @@ export type CollectQueryCondition<T extends CollectObject | CollectSchema = Coll
   [K in keyof CollectModels]?: CollectQueryWhere<CollectModels[K]>
 }
 
-export type CollectRelatedQuery<K extends keyof CollectModels = keyof CollectModels> =
-  CollectQueryCondition<CollectModels[K]>
-
 export type CollectQueryWhere<T extends CollectObject | CollectSchema = CollectSchema> =
   | CollectQueryCondition<T>
   | Partial<CollectQueryLogicalGrouping<T>>
@@ -58,17 +55,11 @@ export type CollectQuery<T extends CollectObject | CollectSchema = any> =
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CollectModels {}
 
-//& { includes?: never }
 // | (CollectQueryIncludesClause<T> & { where?: never })
-// INCLUDES CLAUSE
+// INCLUDE CLAUSE
 // export type CollectQueryIncludesClause<T extends CollectObject | CollectSchema = CollectSchema> = {
-//   includes?: CollectQueryIncludes<T>
+//   include?: CollectQueryIncludes<T>
 // }
-// @TODO: implement inferring relation type from schema
-// export type CollectQueryIncludesRelation = {
-//   relation: string
-// }
-
 // export type CollectQueryIncludes<T extends CollectObject | CollectSchema = CollectSchema> =
 //   RequireAtLeastOne<
 //     Record<

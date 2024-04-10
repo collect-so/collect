@@ -1,4 +1,8 @@
-import type { CollectQuery, CollectQueryCommonParams, CollectSchema } from './core'
+import type {
+  CollectQuery,
+  CollectQueryCommonParams,
+  CollectSchema
+} from '@collect.so/types/dist/core'
 
 type User = {
   age: number
@@ -40,14 +44,14 @@ const queryCommonParams: CollectQueryCommonParams<User> = {
   skip: 0
 }
 // Example usage:
-const a: CollectQuery = {
+export const a: CollectQuery = {
   where: {
     name: 'Post author name',
     post: {
       // This "post" is considered a relation
       comment: {
         // Nested relation
-        text: { startsWith: 'Neo4j' }
+        text: { $startsWith: 'Neo4j' }
       }
     }
   }

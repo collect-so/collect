@@ -21,9 +21,6 @@ export type CollectRelations = Record<
     model: string
   }
 >
-// export type CollectRelations = {
-//   [K in keyof CollectRelationships]?: () => CollectSchema
-// }
 
 // Typings for write ops (create/update)
 type TypeMappingWrite = {
