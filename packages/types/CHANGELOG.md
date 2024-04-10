@@ -1,5 +1,16 @@
 # @collect.so/types
 
+## 0.10.0
+
+### Minor Changes
+
+- 471dae1: Add related search and type redeclaration feature
+
+### Patch Changes
+
+- 79cad43: Update types re-export
+- b4ea83e: Update outdated pnpm-lock
+
 ## 0.9.0
 
 ### Minor Changes
