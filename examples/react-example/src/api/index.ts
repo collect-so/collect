@@ -1,4 +1,5 @@
 import CollectSDK, { CollectModel } from '@collect.so/javascript-sdk'
+import { CollectQuery } from '@collect.so/javascript-sdk'
 
 export const Collect = new CollectSDK(
   '01da9f307ae13a24bd07c309a4b0effdywhrC2H4YL25FUDu2i511G2mbEUnrBNQ7sng/tCCEAVTLuCDMPxYrg1rA99deHsQ',
@@ -66,7 +67,6 @@ export const findTest = async () => {
   await AuthorRepo.find({
     where: {
       name: '',
-
       post: {
         created: '',
         title: '',
@@ -91,32 +91,32 @@ export const findTest = async () => {
   })
 }
 
-// const recursiveSearch: CollectQuery = {
-//   where: {
-//     name: {
-//       $startsWith: 'Jack',
-//       $endsWith: 'Rooney'
-//     },
-//     dateOfBirth: {
-//       $year: 1984
-//     },
-//     post: {
-//       created: {
-//         $year: 2011,
-//         $month: 11,
-//         $day: 11
-//       },
-//       rating: {
-//         $gte: 4.5
-//       },
-//       title: {
-//         $not: 'Forest'
-//       },
-//       comment: {
-//         authoredBy: {
-//           $contains: 'Sam'
-//         }
-//       }
-//     }
-//   }
-// }
+export const recursiveSearch: CollectQuery = {
+  where: {
+    name: {
+      $startsWith: 'Jack',
+      $endsWith: 'Rooney'
+    },
+    dateOfBirth: {
+      $year: 1984
+    },
+    post: {
+      created: {
+        $year: 2011,
+        $month: 11,
+        $day: 11
+      },
+      rating: {
+        $gte: 4.5
+      },
+      title: {
+        $not: 'Forest'
+      },
+      comment: {
+        authoredBy: {
+          $contains: 'Sam'
+        }
+      }
+    }
+  }
+}

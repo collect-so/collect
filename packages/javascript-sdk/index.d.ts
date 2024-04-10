@@ -41,5 +41,18 @@ declare module '@collect.so/javascript-sdk' {
     createCollectModel
   }
 
+  export {
+    CollectApiResponse,
+    CollectFile,
+    CollectProperty,
+    CollectQuery,
+    CollectQueryCommonParams,
+    CollectQueryCondition,
+    CollectQueryWhere,
+    CollectRecord,
+    CollectRelations,
+    CollectSchema
+  } from '@collect.so/types'
+
   export default Collect
 }
