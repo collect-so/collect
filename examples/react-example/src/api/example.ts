@@ -2,7 +2,7 @@ import type {
   CollectQuery,
   CollectQueryCommonParams,
   CollectSchema
-} from '@collect.so/types/dist/core'
+} from '@collect.so/javascript-sdk'
 
 type User = {
   age: number

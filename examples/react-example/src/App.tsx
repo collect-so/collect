@@ -3,7 +3,7 @@ import './App.css'
 import { Collect, UserRepo } from './api'
 import { CollectRecordsArrayResult, CollectSDKResult } from '@collect.so/javascript-sdk'
 import { PropertiesList } from './PropertiesList.tsx'
-import { CollectQuery } from '@collect.so/types'
+import { CollectQuery } from '@collect.so/javascript-sdk'
 
 const recursiveSearch: CollectQuery = {
   where: {
