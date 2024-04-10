@@ -1,4 +1,8 @@
-import type { CollectQuery, CollectQueryCommonParams, CollectSchema } from './core'
+import type {
+  CollectQuery,
+  CollectQueryCommonParams,
+  CollectSchema
+} from '@collect.so/types/dist/core'
 
 type User = {
   age: number
@@ -39,49 +43,62 @@ const queryCommonParams: CollectQueryCommonParams<User> = {
   },
   skip: 0
 }
-
+// Example usage:
+export const a: CollectQuery = {
+  where: {
+    name: 'Post author name',
+    post: {
+      // This "post" is considered a relation
+      comment: {
+        // Nested relation
+        text: { $startsWith: 'Neo4j' }
+      }
+    }
+  }
+}
+// posts.comment.text *. "Neo4j"
 export const q1: CollectQuery<typeof userSchema> = {
   ...queryCommonParams,
   where: {
-    age: 2,
+    age: '12',
     dateOfBirth: {
-      day: 28,
-      month: 1,
-      year: 1994
+      $day: 28,
+      $month: 1,
+      $year: 1994
     },
     favoriteFood: {
-      in: ['pasta', 'pho bo', 'pad thai']
+      $in: ['pasta', 'pho bo', 'pad thai']
     },
     favoriteNumber: {
-      notIn: [5, 6, 7]
+      $notIn: [5, 6, 7]
     },
     height: {
-      gte: 173,
-      lte: 175
+      $gte: 173,
+      $lte: 175
     },
     id: {
-      in: [1, 2, 3],
-      not: 0,
-      notIn: [4, 5]
+      $in: [1, 2, 3],
+      $not: 0,
+      $notIn: [4, 5]
     },
     married: true,
     name: {
-      contains: 'em',
-      endsWith: 'iy',
-      startsWith: 'Art'
+      $contains: 'em',
+      $endsWith: 'iy',
+      $startsWith: 'Art'
     },
     otherDate: {
-      lt: {
-        day: 28,
-        month: 1,
-        year: 1994
+      $lt: {
+        $day: 28,
+        $month: 1,
+        $year: 1994
       }
     },
     registeredAt: '24-02-2023T12:45:11+01:00',
     secondCitizenship: null,
     weight: {
-      gt: 80,
-      lt: 90
+      $gt: 80,
+      $lt: 90
     }
   }
 }
@@ -89,12 +106,12 @@ export const q1: CollectQuery<typeof userSchema> = {
 export const q2: CollectQuery<User> = {
   ...queryCommonParams,
   where: {
-    AND: [
+    $AND: [
       {
         id: {
-          in: [1, 2, 3],
-          not: 0,
-          notIn: [4, 5]
+          $in: [1, 2, 3],
+          $not: 0,
+          $notIn: [4, 5]
         }
       }
     ]
@@ -107,18 +124,18 @@ export const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 // GET (>=2 AND <=4) AND (>6 AND <8) AND (0)
 export const variant1: CollectQuery<User> = {
   where: {
-    AND: [
+    $AND: [
       {
         id: {
-          gte: 2,
-          lt: 1,
-          lte: 4
+          $gte: 2,
+          $lt: 1,
+          $lte: 4
         }
       },
       {
         id: {
-          gt: 6,
-          lt: 8
+          $gt: 6,
+          $lt: 8
         }
       },
       { id: 0 }
@@ -129,17 +146,17 @@ export const variant1: CollectQuery<User> = {
 // GET (>=2 AND <=4) OR (>6 AND <8) OR (0)
 export const variant2: CollectQuery<User> = {
   where: {
-    OR: [
+    $OR: [
       {
         id: {
-          gte: 2,
-          lte: 4
+          $gte: 2,
+          $lte: 4
         }
       },
       {
         id: {
-          gt: 6,
-          lt: 8
+          $gt: 6,
+          $lt: 8
         }
       },
       { id: 0 }
@@ -150,57 +167,20 @@ export const variant2: CollectQuery<User> = {
 // GET (>=2 AND <=4) AND (>6 AND <8) OR (0)
 export const variant3: CollectQuery<User> = {
   where: {
-    AND: [
+    $AND: [
       {
         id: {
-          gte: 2,
-          lte: 4
+          $gte: 2,
+          $lte: 4
         }
       },
       {
         id: {
-          gt: 6,
-          lt: 8
+          $gt: 6,
+          $lt: 8
         }
       }
     ],
-    OR: { id: 0 }
+    $OR: { id: 0 }
   }
 }
-
-// INCLUDES
-// export const includes1: CollectQuery = {
-//   includes: {
-//     user: {
-//       includes: {
-//         course: {
-//           where: {
-//             status: 'done'
-//           }
-//         }
-//       },
-//       where: {
-//         otherDate: {
-//           year: 1
-//         }
-//       }
-//     }
-//   }
-// }
-
-// export const includes2: CollectQuery = {
-//   includes: {
-//     user: {
-//       includes: {
-//         course: {
-//           where: {
-//             status: 'done'
-//           }
-//         }
-//       },
-//       where: {
-//         name: 'Peter'
-//       }
-//     }
-//   }
-// }

@@ -3,6 +3,46 @@ import './App.css'
 import { Collect, UserRepo } from './api'
 import { CollectRecordsArrayResult, CollectSDKResult } from '@collect.so/javascript-sdk'
 import { PropertiesList } from './PropertiesList.tsx'
+import { CollectQuery } from '@collect.so/types'
+
+const recursiveSearch: CollectQuery = {
+  where: {
+    name: {
+      $startsWith: 'Jack',
+      $endsWith: 'Rooney'
+    },
+    dateOfBirth: {
+      $year: 1984
+    },
+    post: {
+      rating: {
+        $gte: 4.1
+      },
+      title: {
+        $not: 'Forest'
+      },
+      comment: {
+        authoredBy: {
+          $contains: 'Sam'
+        }
+      }
+    }
+  }
+}
+
+export const xorQuery: CollectQuery = {
+  where: {
+    $XOR: [
+      {
+        avgIncome: 29979,
+        age: 43
+      },
+      {
+        avgIncome: 29955
+      }
+    ]
+  }
+}
 
 function App() {
   const [records, setRecords] = useState<CollectRecordsArrayResult>()
@@ -10,19 +50,8 @@ function App() {
 
   useEffect(() => {
     const find = async () => {
-      const records = await Collect.records.find<{ avgIncome: number; age: number }>('CUSTOMER', {
-        where: {
-          XOR: [
-            {
-              avgIncome: 29979,
-              age: 43
-            },
-            {
-              avgIncome: 29955
-            }
-          ]
-        }
-      })
+      const records = await Collect.records.find('associatedDrug', recursiveSearch)
+
       setRecords(records)
     }
     find()
@@ -61,13 +90,13 @@ function App() {
   }
 
   const createMultipleUsers = async () => {
-    const users = await UserRepo.createMany([
+    /*const users = */ await UserRepo.createMany([
       {
         name: '1',
         email: 'test@example.com',
         jobTitle: 'manager',
         age: 40,
-        married: false
+        married: true
       },
       {
         name: '1',
@@ -77,12 +106,19 @@ function App() {
         married: false
       }
     ])
-    console.log(users)
     findUsers()
   }
 
   const findUsers = async () => {
-    const users = await UserRepo.find()
+    const users = await UserRepo.find({
+      where: {
+        jobTitle: ''
+      },
+      limit: 1000,
+      orderBy: 'desc',
+      skip: 0
+    })
+
     setUsers(users)
   }
 
@@ -103,9 +139,9 @@ function App() {
         <div>
           <p>Data</p>
           <ol style={{ fontFamily: 'monospace' }}>
-            {records?.data?.map(({ _collect_id, _collect_label }, index) => (
-              <li key={`${_collect_id}-${index}`}>
-                {_collect_label}: {_collect_id}
+            {records?.data?.map(({ __id, __label }, index) => (
+              <li key={`${__id}-${index}`}>
+                {__label}: {__id}
               </li>
             ))}
           </ol>
@@ -114,13 +150,13 @@ function App() {
       <div>
         <p>Users</p>
         <div style={{ display: 'grid' }}>
-          {users?.data?.map(({ _collect_id, _collect_propsMetadata, _collect_label, ...user }) => (
+          {users?.data?.map(({ __id, __proptypes, __label, ...user }) => (
             <div
-              key={_collect_id}
+              key={__id}
               style={{ textAlign: 'left' }}
               className="card"
-              data-_collect_propsMetadata={_collect_propsMetadata}
-              data-_collect_label={_collect_label}
+              data-__proptypes={__proptypes}
+              data-__label={__label}
             >
               {Object.entries(user).map(([key, value]) => (
                 <li key={key}>
