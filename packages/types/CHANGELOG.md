@@ -1,5 +1,11 @@
 # @collect.so/types
 
+## 0.11.0
+
+### Minor Changes
+
+- 68660ce: Add api methods to result and model
+
 ## 0.10.0
 
 ### Minor Changes
