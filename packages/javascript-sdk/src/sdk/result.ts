@@ -1,4 +1,10 @@
-import type { CollectObject, CollectQuery, CollectRecord, CollectSchema } from '@collect.so/types'
+import type {
+  CollectObject,
+  CollectQuery,
+  CollectRecord,
+  CollectSchema,
+  Enumerable
+} from '@collect.so/types'
 
 import type { CollectTransaction } from './transaction'
 import type { CollectRecordObject } from './utils'
@@ -27,7 +33,15 @@ export class CollectRecordResult<
     return this.apiProxy.records.update(this.data.__id, data, transaction)
   }
 
-  // @TODO: Create Relation; Create Related Record (use this as parent);
+  async attach(idOrIds: Enumerable<string>, transaction?: CollectTransaction | string) {
+    return this.apiProxy.records.attach(this.data.__id, idOrIds, transaction)
+  }
+
+  async detach(idOrIds: Enumerable<string>, transaction?: CollectTransaction | string) {
+    return this.apiProxy.records.detach(this.data.__id, idOrIds, transaction)
+  }
+
+  // @TODO: Create Related Record (use this as parent);
 }
 
 export class CollectRecordsArrayResult<

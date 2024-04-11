@@ -41,7 +41,18 @@ export class CollectModel<
     params?: CollectQuery<S> & { labels?: never },
     transaction?: CollectTransaction | string
   ) {
-    return this.apiProxy?.records.find<S>({ ...params, labels: [this.label] }, transaction)
+    return this.apiProxy?.records.find<S>(this.label, { ...params }, transaction)
+  }
+
+  async findOne(
+    params?: CollectQuery<S> & { labels?: never },
+    transaction?: CollectTransaction | string
+  ) {
+    return this.apiProxy?.records.findOne<S>(this.label, { ...params }, transaction)
+  }
+
+  async findById(id: string, transaction?: CollectTransaction | string) {
+    return this.apiProxy?.records.findById<S>(id, transaction)
   }
 
   async create(
