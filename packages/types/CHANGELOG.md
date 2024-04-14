@@ -1,5 +1,11 @@
 # @collect.so/types
 
+## 0.12.0
+
+### Minor Changes
+
+- 0959ef7: Refactor typings and usage
+
 ## 0.11.0
 
 ### Minor Changes
