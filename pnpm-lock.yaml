@@ -112,11 +112,7 @@ importers:
         specifier: ^5.0.8
         version: 5.0.12(@types/node@20.3.2)
 
-  packages/javascript-sdk:
-    devDependencies:
-      '@collect.so/types':
-        specifier: workspace:*
-        version: link:../types
+  packages/javascript-sdk: {}
 
   packages/types: {}
 

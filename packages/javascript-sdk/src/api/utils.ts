@@ -1,4 +1,4 @@
-import type { CollectObject, CollectQuery, CollectSchema } from '@collect.so/types'
+import type { CollectQuery, CollectSchema } from '../types'
 
 import { CollectTransaction } from '../sdk/transaction'
 import { isObject, isString } from '../utils/utils'
@@ -21,7 +21,7 @@ export const pickTransactionId = (input: any) =>
     : input
   : undefined
 
-export const createSearchParams = <T extends CollectObject | CollectSchema = CollectSchema>(
+export const createSearchParams = <T extends CollectSchema = CollectSchema>(
   labelOrSearchParams?: CollectQuery<T> | string,
   searchParamsOrTransaction?: CollectQuery<T> | CollectTransaction | string
 ): { id?: string; searchParams: CollectQuery<T> } => {

@@ -1,6 +1,5 @@
-import type { FlattenTypes, InferSchemaTypesRead } from '@collect.so/types'
-
 import type { HttpClientInterface } from '../network/HttpClient'
+import type { FlattenTypes, InferSchemaTypesRead } from '../types'
 import type { Validator } from '../validators/types'
 import type { CollectModel } from './model'
 

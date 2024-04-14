@@ -1,5 +1,4 @@
-import CollectSDK, { CollectModel } from '@collect.so/javascript-sdk'
-import { CollectQuery } from '@collect.so/javascript-sdk'
+import CollectSDK, { CollectModel, CollectQuery } from '@collect.so/javascript-sdk'
 
 export const Collect = new CollectSDK(
   '01da9f307ae13a24bd07c309a4b0effdywhrC2H4YL25FUDu2i511G2mbEUnrBNQ7sng/tCCEAVTLuCDMPxYrg1rA99deHsQ',
@@ -24,8 +23,6 @@ const User = new CollectModel('user', {
 })
 
 export const UserRepo = Collect.registerModel(User)
-
-//
 
 export const Post = new CollectModel('post', {
   created: { type: 'datetime', default: () => new Date().toISOString() },
@@ -54,7 +51,7 @@ export type Models = {
   comment: typeof Comment.schema
 }
 export const findTest = async () => {
-  await Collect.records.find<{ name: string }>({
+  await Collect.records.find({
     where: {
       name: '',
       post: {
@@ -67,15 +64,31 @@ export const findTest = async () => {
   await AuthorRepo.find({
     where: {
       name: '',
+      email: {
+        $startsWith: '113'
+      },
       post: {
         created: '',
-        title: '',
+        rating: 1,
+        comment: {
+          text: '',
+          authoredBy: ''
+        }
+      }
+    }
+  })
+
+  await AuthorRepo.find({
+    where: {
+      post: {
         comment: {
           authoredBy: ''
         }
       }
     }
   })
+
+  await AuthorRepo.find({ where: { name: '' } })
 
   await PostRepo.find({
     where: {
