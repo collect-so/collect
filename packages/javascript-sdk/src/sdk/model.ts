@@ -1,10 +1,4 @@
-import type {
-  CollectQuery,
-  CollectRelations,
-  CollectSchema,
-  InferSchemaTypesWrite
-} from '@collect.so/types'
-
+import type { CollectQuery, CollectRelations, CollectSchema, InferSchemaTypesWrite } from '../types'
 import type { Validator } from '../validators/types'
 import type { CollectTransaction } from './transaction'
 
@@ -41,7 +35,7 @@ export class CollectModel<
     params?: CollectQuery<S> & { labels?: never },
     transaction?: CollectTransaction | string
   ) {
-    return this.apiProxy?.records.find<S>(this.label, { ...params }, transaction)
+    return this.apiProxy?.records.find<S>(this.label, params, transaction)
   }
 
   async findOne(
@@ -60,10 +54,8 @@ export class CollectModel<
     transaction?: CollectTransaction | string,
     options: { validate: boolean } = { validate: true }
   ) {
-    const data = (await mergeDefaultsWithPayload<S>(
-      this.schema,
-      record
-    )) as InferSchemaTypesWrite<S>
+    const data = await mergeDefaultsWithPayload<S>(this.schema, record)
+
     const uniqFields = pickUniqFields(this.schema, data)
 
     if (!isEmptyObject(uniqFields)) {

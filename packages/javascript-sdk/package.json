@@ -16,9 +16,7 @@
     "clean": "rm -rf ./dist ./node_modules/.cache ./coverage ./esm ./cjs ./types",
     "flush": "rm -rf node_modules"
   },
-  "devDependencies": {
-    "@collect.so/types": "workspace:*"
-  },
+  "devDependencies": {},
   "peerDependencies": {},
   "sideEffects": false,
   "publishConfig": {

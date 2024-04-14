@@ -1,8 +1,4 @@
-import type {
-  CollectPropertyType,
-  CollectPropertyValue,
-  CollectPropertyWithValue
-} from '@collect.so/types'
+import type { CollectPropertyType, CollectPropertyValue, CollectPropertyWithValue } from '../types'
 
 import {
   ISO_8601_FULL,

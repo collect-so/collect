@@ -1,18 +1,17 @@
 import type {
-  CollectObject,
   CollectQuery,
   CollectRecord,
   CollectSchema,
-  Enumerable
-} from '@collect.so/types'
-
+  Enumerable,
+  InferSchemaTypesWrite
+} from '../types'
 import type { CollectTransaction } from './transaction'
 import type { CollectRecordObject } from './utils'
 
 import { CollectRestApiProxy } from '../api/rest-api-proxy'
 
 export class CollectRecordResult<
-  T extends CollectObject | CollectSchema = CollectObject
+  T extends CollectSchema = CollectSchema
 > extends CollectRestApiProxy {
   data: CollectRecord<T>
   searchParams?: CollectQuery<T>
@@ -26,8 +25,8 @@ export class CollectRecordResult<
     return await this.apiProxy.records.deleteById(this.data.__id, transaction)
   }
 
-  async update<T extends CollectObject = CollectObject>(
-    data: CollectRecordObject | T,
+  async update<T extends CollectSchema = CollectSchema>(
+    data: CollectRecordObject | InferSchemaTypesWrite<T>,
     transaction?: CollectTransaction | string
   ) {
     return this.apiProxy.records.update(this.data.__id, data, transaction)
@@ -45,7 +44,7 @@ export class CollectRecordResult<
 }
 
 export class CollectRecordsArrayResult<
-  T extends CollectObject | CollectSchema = CollectObject
+  T extends CollectSchema = CollectSchema
 > extends CollectRestApiProxy {
   data: CollectRecord<T>[]
   total: number | undefined

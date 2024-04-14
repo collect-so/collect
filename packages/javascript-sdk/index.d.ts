@@ -1,5 +1,3 @@
-import { CollectModels } from '@collect.so/types'
-
 import type { CollectSDKResult } from './src/sdk/types'
 import type { UserProvidedConfig } from './src/sdk/types'
 
@@ -9,6 +7,19 @@ import { CollectModel, createCollectModel } from './src/sdk/model'
 import { CollectRecordResult, CollectRecordsArrayResult } from './src/sdk/result'
 import { CollectTrasaction } from './src/sdk/transaction'
 import { CollectInferType } from './src/sdk/types'
+import {
+  CollectApiResponse,
+  CollectFile,
+  CollectModels,
+  CollectProperty,
+  CollectQuery,
+  CollectQueryCommonParams,
+  CollectQueryCondition,
+  CollectQueryWhere,
+  CollectRecord,
+  CollectRelations,
+  CollectSchema
+} from './src/types'
 
 declare module '@collect.so/javascript-sdk' {
   export namespace Collect {}
@@ -26,33 +37,30 @@ declare module '@collect.so/javascript-sdk' {
   }
 
   export {
+    CollectApiResponse,
+    CollectFile,
     CollectImportRecordsObject,
     CollectInferType,
     CollectModel,
     CollectModels,
-    CollectRecordObject,
-    CollectRecordResult,
-    CollectRecordsArrayResult,
-    CollectRestAPI,
-    CollectSDKResult,
-    CollectTrasaction,
-    HttpClient,
-    HttpClientResponse,
-    createCollectModel
-  }
-
-  export {
-    CollectApiResponse,
-    CollectFile,
     CollectProperty,
     CollectQuery,
     CollectQueryCommonParams,
     CollectQueryCondition,
     CollectQueryWhere,
     CollectRecord,
+    CollectRecordObject,
+    CollectRecordResult,
+    CollectRecordsArrayResult,
     CollectRelations,
-    CollectSchema
-  } from '@collect.so/types'
+    CollectRestAPI,
+    CollectSDKResult,
+    CollectSchema,
+    CollectTrasaction,
+    HttpClient,
+    HttpClientResponse,
+    createCollectModel
+  }
 
   export default Collect
 }

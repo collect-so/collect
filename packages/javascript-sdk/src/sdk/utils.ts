@@ -1,13 +1,12 @@
 import type {
   AnyObject,
-  CollectObject,
   CollectPropertyType,
   CollectPropertyValue,
   CollectPropertyWithValue,
   CollectSchema,
   Enumerable,
   InferSchemaTypesWrite
-} from '@collect.so/types'
+} from '../types'
 
 import { UniquenessError } from './errors'
 

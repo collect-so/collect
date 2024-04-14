@@ -74,7 +74,7 @@ function App() {
 
     await UserRepo.create(
       {
-        name: '1',
+        name: '',
         email: 'test@example.com',
         id: 6,
         jobTitle: 'programmer',
