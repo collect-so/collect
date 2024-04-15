@@ -1,7 +1,5 @@
-import type { CollectRecord } from '@collect.so/types'
-
 import type { HttpClient } from '../network/HttpClient'
-import type { CollectSchema } from '../types'
+import type { CollectRecord, CollectSchema } from '../types'
 import type { Validator } from '../validators/types'
 import type { CollectModel } from './model'
 import type { CollectState, UserProvidedConfig } from './types'
