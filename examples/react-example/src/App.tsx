@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { Collect, UserRepo } from './api'
-import { CollectRecordsArrayResult, CollectSDKResult } from '@collect.so/javascript-sdk'
+import { CollectRecordsArrayInstance, CollectSDKResult } from '@collect.so/javascript-sdk'
 import { PropertiesList } from './PropertiesList.tsx'
 import { CollectQuery } from '@collect.so/javascript-sdk'
 
@@ -45,7 +45,7 @@ export const xorQuery: CollectQuery = {
 }
 
 function App() {
-  const [records, setRecords] = useState<CollectRecordsArrayResult>()
+  const [records, setRecords] = useState<CollectRecordsArrayInstance>()
   const [users, setUsers] = useState<CollectSDKResult<typeof UserRepo.find>>()
 
   useEffect(() => {

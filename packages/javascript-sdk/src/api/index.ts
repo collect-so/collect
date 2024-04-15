@@ -1,2 +1,2 @@
-export { CollectImportRecordsObject, CollectRecordObject } from '../sdk/utils'
+export { CollectBatchDraft, CollectRecordDraft } from '../sdk/utils'
 export { CollectRestAPI } from './api'

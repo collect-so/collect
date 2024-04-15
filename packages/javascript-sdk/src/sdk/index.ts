@@ -1,4 +1,7 @@
+import type { CollectRecord } from '@collect.so/types'
+
 import type { HttpClient } from '../network/HttpClient'
+import type { CollectSchema } from '../types'
 import type { Validator } from '../validators/types'
 import type { CollectModel } from './model'
 import type { CollectState, UserProvidedConfig } from './types'
@@ -6,6 +9,7 @@ import type { CollectState, UserProvidedConfig } from './types'
 import { CollectRestAPI } from '../api'
 import { DEFAULT_TIMEOUT } from '../common/constants'
 import { parseConfig, validateInteger } from '../utils/utils'
+import { CollectRecordInstance } from './instance'
 
 export const createCollect = (httpClient: HttpClient) => {
   class Collect extends CollectRestAPI {
@@ -48,6 +52,12 @@ export const createCollect = (httpClient: HttpClient) => {
 
     public getModels(): Map<string, CollectModel> {
       return this.models
+    }
+
+    public toInstance<T extends CollectSchema = CollectSchema>(record: CollectRecord<T>) {
+      const result = new CollectRecordInstance<T>(record)
+      result.init(this)
+      return result
     }
 
     public getModel(label: string): CollectModel | undefined {
