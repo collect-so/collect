@@ -1,4 +1,10 @@
-import type { CollectQuery, CollectRelations, CollectSchema, InferSchemaTypesWrite } from '../types'
+import type {
+  CollectQuery,
+  CollectRelations,
+  CollectSchema,
+  Enumerable,
+  InferSchemaTypesWrite
+} from '../types'
 import type { Validator } from '../validators/types'
 import type { CollectTransaction } from './transaction'
 
@@ -86,6 +92,49 @@ export class CollectModel<
       data,
       transaction
     )
+  }
+
+  attach(sourceId: string, idOrIds: Enumerable<string>, transaction?: CollectTransaction | string) {
+    return this.apiProxy.records.attach(sourceId, idOrIds, transaction)
+  }
+
+  detach(sourceId: string, idOrIds: Enumerable<string>, transaction?: CollectTransaction | string) {
+    return this.apiProxy.records.detach(sourceId, idOrIds, transaction)
+  }
+
+  async update(
+    id: string,
+    record: InferSchemaTypesWrite<S>,
+    transaction?: CollectTransaction | string,
+    options: { validate: boolean } = { validate: true }
+  ) {
+    const data = await mergeDefaultsWithPayload<S>(this.schema, record)
+
+    const uniqFields = pickUniqFields(this.schema, data)
+
+    if (!isEmptyObject(uniqFields)) {
+      const tx = transaction ?? (await this.apiProxy.tx.begin())
+      const matchingRecords = await this.find({ where: uniqFields }, tx)
+      const hasOwnTransaction = typeof transaction !== 'undefined'
+
+      const canUpdate =
+        !matchingRecords?.data.length ||
+        (matchingRecords.data.length === 1 && matchingRecords.data[0].__id === id)
+
+      if (canUpdate) {
+        const result = await this.apiProxy.records.update<S>(id, data, tx)
+        if (!hasOwnTransaction) {
+          await (tx as CollectTransaction).commit()
+        }
+        return result
+      } else {
+        if (!hasOwnTransaction) {
+          await (tx as CollectTransaction).commit()
+        }
+        throw new UniquenessError(this.label, uniqFields)
+      }
+    }
+    return await this.apiProxy.records.update<S>(id, data, transaction)
   }
 
   async createMany(

@@ -6,11 +6,11 @@ import type {
   InferSchemaTypesWrite
 } from '../types'
 import type { CollectTransaction } from './transaction'
-import type { CollectRecordObject } from './utils'
+import type { CollectRecordDraft } from './utils'
 
 import { CollectRestApiProxy } from '../api/rest-api-proxy'
 
-export class CollectRecordResult<
+export class CollectRecordInstance<
   T extends CollectSchema = CollectSchema
 > extends CollectRestApiProxy {
   data: CollectRecord<T>
@@ -26,7 +26,7 @@ export class CollectRecordResult<
   }
 
   async update<T extends CollectSchema = CollectSchema>(
-    data: CollectRecordObject | InferSchemaTypesWrite<T>,
+    data: CollectRecordDraft | InferSchemaTypesWrite<T>,
     transaction?: CollectTransaction | string
   ) {
     return this.apiProxy.records.update(this.data.__id, data, transaction)
@@ -43,7 +43,7 @@ export class CollectRecordResult<
   // @TODO: Create Related Record (use this as parent);
 }
 
-export class CollectRecordsArrayResult<
+export class CollectRecordsArrayInstance<
   T extends CollectSchema = CollectSchema
 > extends CollectRestApiProxy {
   data: CollectRecord<T>[]

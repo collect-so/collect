@@ -11,7 +11,7 @@ import type {
   Enumerable
 } from '../types'
 
-import { CollectImportRecordsObject, CollectRecordObject } from '../sdk/utils'
+import { CollectBatchDraft, CollectRecordDraft } from '../sdk/utils'
 import { isArray } from '../utils/utils'
 import { buildTransactionHeader, pickTransactionId } from './utils'
 
@@ -118,12 +118,12 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       })
     },
     async create<T extends CollectSchema = any>(
-      data: CollectRecordObject | T,
+      data: CollectRecordDraft | T,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<CollectRecord<T> | undefined>> {
       const txId = pickTransactionId(transaction)
 
-      if (data instanceof CollectRecordObject) {
+      if (data instanceof CollectRecordDraft) {
         return fetcher<CollectApiResponse<CollectRecord<T>>>(`/records`, {
           headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'POST',
@@ -135,12 +135,12 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     },
 
     async createMany<T extends CollectSchema = any>(
-      data: CollectImportRecordsObject | T[],
+      data: CollectBatchDraft | T[],
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<CollectRecord<T>[]>> {
       const txId = pickTransactionId(transaction)
 
-      if (data instanceof CollectImportRecordsObject) {
+      if (data instanceof CollectBatchDraft) {
         return fetcher<CollectApiResponse<CollectRecord<T>[]>>(`/records/import/json`, {
           headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'POST',
@@ -286,7 +286,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
 
     update<T extends CollectSchema = any>(
       id: string,
-      data: CollectRecordObject | T,
+      data: CollectRecordDraft | T,
       transaction?: CollectTransaction | string
     ) {
       const txId = pickTransactionId(transaction)

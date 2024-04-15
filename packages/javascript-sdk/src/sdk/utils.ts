@@ -10,7 +10,7 @@ import type {
 
 import { UniquenessError } from './errors'
 
-export class CollectImportRecordsObject {
+export class CollectBatchDraft {
   label?: string
   options?: {
     generateLabels?: boolean
@@ -55,7 +55,7 @@ export class CollectImportRecordsObject {
   }
 }
 
-export class CollectRecordObject {
+export class CollectRecordDraft {
   label?: string
   parentId?: string
   properties?: Array<{
