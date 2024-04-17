@@ -1,5 +1,11 @@
 # @collect.so/types
 
+## 0.15.0
+
+### Minor Changes
+
+- 7d51158: Add multiple values support to schema configuration
+
 ## 0.14.0
 
 ### Minor Changes
