@@ -14,7 +14,7 @@ import { UniquenessError } from './errors'
 import { checkForInternalDuplicates, mergeDefaultsWithPayload, pickUniqFields } from './utils'
 
 export class CollectModel<
-  S extends CollectSchema = CollectSchema,
+  S extends CollectSchema = any,
   R extends CollectRelations = CollectRelations
 > extends CollectRestApiProxy {
   public readonly label: string
@@ -169,7 +169,7 @@ export class CollectModel<
       checkForInternalDuplicates(processedRecords, this.schema, this.label)
 
       // Create records in the database.
-      const createdRecords = await this.apiProxy.records.createMany<InferSchemaTypesWrite<S>>(
+      const createdRecords = await this.apiProxy.records.createMany<S>(
         this.label,
         processedRecords,
         tx

@@ -1,4 +1,3 @@
-// import type { Enumerable } from '../utils'
 import type { CollectModel } from '../sdk/model'
 import type { CollectSchema, CollectSchemaDefaultValue } from './common'
 import type { CollectPropertyType } from './properties'
@@ -30,9 +29,11 @@ type RequiredKeysWrite<S extends CollectSchema = CollectSchema> = {
   : P
 }[keyof S]
 export type InferSchemaTypesWrite<S extends CollectSchema = CollectSchema> = {
-  [P in RequiredKeysWrite<S>]: TypeMappingWrite[S[P]['type']]
+  [P in RequiredKeysWrite<S>]: S[P]['multiple'] extends true ? TypeMappingWrite[S[P]['type']][]
+  : TypeMappingWrite[S[P]['type']]
 } & {
-  [P in OptionalKeysWrite<S>]?: TypeMappingWrite[S[P]['type']]
+  [P in OptionalKeysWrite<S>]?: S[P]['multiple'] extends true ? TypeMappingWrite[S[P]['type']][]
+  : TypeMappingWrite[S[P]['type']]
 }
 
 // Typings for read ops (find/findById/findOne)
@@ -50,21 +51,17 @@ type RequiredKeysRead<S extends CollectSchema = CollectSchema> = {
   [P in keyof S]: S[P]['required'] extends false ? never : P
 }[keyof S]
 export type InferSchemaTypesRead<S extends CollectSchema = CollectSchema> = {
-  [P in RequiredKeysRead<S>]: TypeMappingRead[S[P]['type']]
+  [P in RequiredKeysRead<S>]: S[P]['multiple'] extends true ? TypeMappingRead[S[P]['type']][]
+  : TypeMappingRead[S[P]['type']]
 } & {
-  [P in OptionalKeysRead<S>]?: TypeMappingRead[S[P]['type']]
+  [P in OptionalKeysRead<S>]?: S[P]['multiple'] extends true ? TypeMappingRead[S[P]['type']][]
+  : TypeMappingRead[S[P]['type']]
 }
 export type CollectInferType<T extends CollectModel<any> = CollectModel<any>> = FlattenTypes<
   InferSchemaTypesRead<T['schema']>
 >
 
 export type CollectRecordProps<T extends CollectSchema = CollectSchema> = {
-  // [K in keyof T]?: T extends CollectSchema
-  //   ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //     // @ts-ignore
-  //     Enumerable<InferTypesFromSchema<T>[K]>
-  //   : Enumerable<T[K]>
-
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   [K in keyof T]?: T extends CollectSchema ? InferSchemaTypesRead<T>[K] : T[K]

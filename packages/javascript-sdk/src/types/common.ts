@@ -8,6 +8,7 @@ export type CollectSchema = Record<
   string,
   {
     default?: CollectSchemaDefaultValue
+    multiple?: boolean
     required?: boolean
     type: CollectPropertyType
     uniq?: boolean
