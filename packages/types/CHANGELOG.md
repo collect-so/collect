@@ -1,5 +1,12 @@
 # @collect.so/types
 
+## 0.13.0
+
+### Minor Changes
+
+- 1f33817: Remove redundant dependency to types package
+- 106efb0: Update typings imports and add more methods to model
+
 ## 0.12.0
 
 ### Minor Changes
