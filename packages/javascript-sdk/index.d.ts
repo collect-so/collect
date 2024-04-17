@@ -5,7 +5,7 @@ import { CollectBatchDraft, CollectRecordDraft, CollectRestAPI } from './src/api
 import { HttpClient, HttpClientResponse } from './src/network/HttpClient'
 import { CollectRecordInstance, CollectRecordsArrayInstance } from './src/sdk/instance'
 import { CollectModel, createCollectModel } from './src/sdk/model'
-import { CollectTrasaction } from './src/sdk/transaction'
+import { CollectTransaction } from './src/sdk/transaction'
 import { CollectInferType, CollectSDKResult } from './src/types'
 
 declare module '@collect.so/javascript-sdk' {
@@ -35,7 +35,7 @@ declare module '@collect.so/javascript-sdk' {
     CollectRecordsArrayInstance,
     CollectRestAPI,
     CollectSDKResult,
-    CollectTrasaction,
+    CollectTransaction,
     HttpClient,
     HttpClientResponse,
     createCollectModel
