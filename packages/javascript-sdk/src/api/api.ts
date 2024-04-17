@@ -32,13 +32,13 @@ export class CollectRestAPI {
     ): Promise<CollectApiResponse<{ message: string }>>
 
     create<T extends CollectSchema = any>(
-      data: CollectRecordDraft | T,
+      data: CollectRecordDraft | InferSchemaTypesWrite<T>,
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordInstance<T>>
 
     create<T extends CollectSchema = any>(
       label: string,
-      data?: T,
+      data?: InferSchemaTypesWrite<T>,
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordInstance<T>>
     create<T extends CollectSchema = any>(
@@ -48,17 +48,17 @@ export class CollectRestAPI {
     ): Promise<CollectRecordInstance<T>>
 
     createMany<T extends CollectSchema = any>(
-      data: CollectBatchDraft | T[],
+      data: CollectBatchDraft | InferSchemaTypesWrite<T>[],
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordsArrayInstance<T>>
     createMany<T extends CollectSchema = any>(
       label: string,
-      data?: CollectBatchDraft | T[],
+      data?: CollectBatchDraft | InferSchemaTypesWrite<T>[],
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordsArrayInstance<T>>
     createMany<T extends CollectSchema = any>(
-      labelOrData: CollectBatchDraft | Enumerable<T> | string,
-      maybeDataOrTransaction?: CollectTransaction | Enumerable<T> | string,
+      labelOrData: CollectBatchDraft | Enumerable<InferSchemaTypesWrite<T>> | string,
+      maybeDataOrTransaction?: CollectTransaction | Enumerable<InferSchemaTypesWrite<T>> | string,
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordsArrayInstance<T>>
 
@@ -219,8 +219,8 @@ export class CollectRestAPI {
       },
 
       createMany: async <T extends CollectSchema = any>(
-        labelOrData: CollectBatchDraft | Enumerable<T> | string,
-        maybeDataOrTransaction?: CollectTransaction | Enumerable<T> | string,
+        labelOrData: CollectBatchDraft | Enumerable<InferSchemaTypesWrite<T>> | string,
+        maybeDataOrTransaction?: CollectTransaction | Enumerable<InferSchemaTypesWrite<T>> | string,
         transaction?: CollectTransaction | string
       ): Promise<CollectRecordsArrayInstance<T>> => {
         let response

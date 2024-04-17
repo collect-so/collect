@@ -63,9 +63,9 @@ function App() {
     await UserRepo.create(
       {
         name: '1',
-        email: 'test@example.com',
+        email: 'test@example1.com',
         id: 5,
-        jobTitle: 'manager',
+        jobTitle: ['manager'],
         age: 40,
         married: false
       },
@@ -74,10 +74,10 @@ function App() {
 
     await UserRepo.create(
       {
-        name: '',
+        name: '2',
         email: 'test@example.com',
         id: 6,
-        jobTitle: 'programmer',
+        jobTitle: ['teamlead', 'programmer'],
         age: 40,
         married: false
       },
@@ -94,14 +94,14 @@ function App() {
       {
         name: '1',
         email: 'test@example.com',
-        jobTitle: 'manager',
+        jobTitle: ['manager'],
         age: 40,
         married: true
       },
       {
         name: '1',
         email: 'test@example.com',
-        jobTitle: 'manager',
+        jobTitle: ['manager'],
         age: 40,
         married: false
       }

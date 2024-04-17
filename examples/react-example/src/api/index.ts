@@ -16,7 +16,7 @@ const User = new CollectModel('user', {
   name: { type: 'string' },
   email: { type: 'string', uniq: true },
   id: { type: 'number', default: asyncRandomNumber },
-  jobTitle: { type: 'string' },
+  jobTitle: { type: 'string', multiple: true },
   age: { type: 'number' },
   married: { type: 'boolean' },
   dateOfBirth: { type: 'datetime', default: () => new Date().toISOString() }
