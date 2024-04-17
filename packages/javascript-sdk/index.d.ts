@@ -1,7 +1,5 @@
-import type { CollectRecord } from '@collect.so/types'
-
 import type { UserProvidedConfig } from './src/sdk/types'
-import type { CollectSchema } from './src/types'
+import type { CollectRecord, CollectSchema } from './src/types'
 
 import { CollectBatchDraft, CollectRecordDraft, CollectRestAPI } from './src/api'
 import { HttpClient, HttpClientResponse } from './src/network/HttpClient'
