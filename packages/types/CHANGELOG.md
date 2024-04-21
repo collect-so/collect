@@ -1,5 +1,11 @@
 # @collect.so/types
 
+## 0.17.0
+
+### Minor Changes
+
+- a574cfa: Fix secure connection checks
+
 ## 0.16.0
 
 ### Minor Changes
