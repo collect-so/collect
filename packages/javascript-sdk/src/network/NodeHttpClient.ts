@@ -36,7 +36,7 @@ export class NodeHttpClient extends HttpClient {
   ): Promise<HttpClientResponseInterface> {
     const url = new URL(urlString)
 
-    const isInsecureConnection = protocol === 'http' || url.port === 'http:'
+    const isInsecureConnection = protocol === 'http' || url.protocol === 'http:'
 
     let agent = this._agent
     if (!agent) {
