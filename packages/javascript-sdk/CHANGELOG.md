@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.16.0
+
+### Minor Changes
+
+- ea8721f: Fix issue with nodejs http layer data normalization
+
 ## 0.15.0
 
 ### Minor Changes
