@@ -127,12 +127,12 @@ export const mergeDefaultsWithPayload = async <T extends CollectSchema = Collect
   return { ...defaults, ...payload } as InferSchemaTypesWrite<T>
 }
 
-export const pickUniqFields = <T extends CollectSchema = CollectSchema>(
+export const pickUniqFieldsFromRecord = <T extends CollectSchema = CollectSchema>(
   schema: T,
   data: Partial<InferSchemaTypesWrite<T>>
 ) => {
   return Object.entries(data)
-    .filter(([key, value]) => schema[key]?.uniq)
+    .filter(([key]) => schema[key]?.uniq)
     .reduce(
       (acc, [key, value]) => {
         if (key in schema) {
@@ -144,24 +144,38 @@ export const pickUniqFields = <T extends CollectSchema = CollectSchema>(
     )
 }
 
-export const checkForInternalDuplicates = <T extends CollectSchema = CollectSchema>(
-  records: InferSchemaTypesWrite<T>[],
+export const pickUniqFieldsFromRecords = <T extends CollectSchema = CollectSchema>(
+  data: Partial<InferSchemaTypesWrite<T>>[],
   schema: T,
   label: string
 ) => {
-  const uniqueSignatures = new Set<string>()
+  const properties = {} as Record<string, CollectPropertyValue[]>
 
-  records.forEach((record) => {
-    const signature = Object.entries(schema)
-      .filter(([key, value]) => value.uniq)
-      .map(([key]) => `${key}:${(record as any)[key]}`)
-      .sort()
-      .join('|')
+  const uniqFields = Object.entries(schema)
+    .filter(([_, config]) => config.uniq)
+    .reduce(
+      (acc, [key]) => {
+        acc[key] = true
 
-    if (uniqueSignatures.has(signature)) {
-      throw new UniquenessError(label, signature)
-    }
+        return acc
+      },
+      {} as Record<string, boolean>
+    )
 
-    uniqueSignatures.add(signature)
+  data.forEach((record) => {
+    Object.entries(record).forEach(([key, value]) => {
+      if (key in uniqFields) {
+        if (properties[key]) {
+          if (properties[key].includes(value as CollectPropertyValue)) {
+            throw new UniquenessError(label, { [key]: value })
+          }
+          properties[key] = [...properties[key], value] as CollectPropertyValue[]
+        } else {
+          properties[key] = [value] as CollectPropertyValue[]
+        }
+      }
+    })
   })
+
+  return properties
 }

@@ -26,3 +26,11 @@ export class NotFoundError extends Error {
     Object.setPrototypeOf(this, NotFoundError.prototype)
   }
 }
+
+export class EmptyTargetError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'EmptyTarget'
+    Object.setPrototypeOf(this, EmptyTargetError.prototype)
+  }
+}

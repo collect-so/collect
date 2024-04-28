@@ -1,8 +1,8 @@
 import type {
   CollectQuery,
   CollectRecord,
+  CollectRelationTarget,
   CollectSchema,
-  Enumerable,
   InferSchemaTypesWrite
 } from '../types'
 import type { CollectTransaction } from './transaction'
@@ -32,12 +32,12 @@ export class CollectRecordInstance<
     return this.apiProxy.records.update(this.data.__id, data, transaction)
   }
 
-  async attach(idOrIds: Enumerable<string>, transaction?: CollectTransaction | string) {
-    return this.apiProxy.records.attach(this.data.__id, idOrIds, transaction)
+  async attach(target: CollectRelationTarget, transaction?: CollectTransaction | string) {
+    return this.apiProxy.records.attach(this.data.__id, target, transaction)
   }
 
-  async detach(idOrIds: Enumerable<string>, transaction?: CollectTransaction | string) {
-    return this.apiProxy.records.detach(this.data.__id, idOrIds, transaction)
+  async detach(target: CollectRelationTarget, transaction?: CollectTransaction | string) {
+    return this.apiProxy.records.detach(this.data.__id, target, transaction)
   }
 
   // @TODO: Create Related Record (use this as parent);
