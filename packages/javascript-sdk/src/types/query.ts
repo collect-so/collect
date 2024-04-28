@@ -24,12 +24,15 @@ export type CollectQueryOrderBy<T extends CollectSchema = CollectSchema> =
   | 'desc'
   | CollectQueryOrderByMap<T>
 
-export type CollectQueryCommonParams<T extends CollectSchema = CollectSchema> = {
-  labels?: string[]
+type CollectPagination = {
   limit?: number
-  orderBy?: CollectQueryOrderBy<T>
   skip?: number
 }
+
+export type CollectQueryCommonParams<T extends CollectSchema = CollectSchema> = {
+  labels?: string[]
+  orderBy?: CollectQueryOrderBy<T>
+} & CollectPagination
 
 export type CollectQueryCondition<T extends CollectSchema = CollectSchema> = (
   | {
@@ -56,22 +59,11 @@ export type CollectQueryWhereClause<T extends CollectSchema = CollectSchema> = {
 export type CollectQuery<T extends CollectSchema = any> = CollectQueryCommonParams<T> &
   CollectQueryWhereClause<T>
 
-/* Extend this type */
+// @TODO: Eager fetching
+// export type CollectInclude = {
+//   [K in keyof CollectModels]?: CollectPagination | boolean
+// }
+
+/** Redeclare CollectModels type in order to have suggestions over related records fields **/
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CollectModels {}
-
-// | (CollectQueryIncludesClause<T> & { where?: never })
-// INCLUDE CLAUSE
-// export type CollectQueryIncludesClause<T extends CollectSchema = CollectSchema> = {
-//   include?: CollectQueryIncludes<T>
-// }
-// export type CollectQueryIncludes<T extends CollectSchema = CollectSchema> =
-//   RequireAtLeastOne<
-//     Record<
-//       string,
-//       Partial<CollectQueryIncludesClause<T>> &
-//         CollectQueryWhereClause<T> &
-//         CollectQueryCommonParams<T> &
-//         Partial<CollectQueryIncludesRelation>
-//     >
-//   >

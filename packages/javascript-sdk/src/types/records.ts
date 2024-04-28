@@ -1,7 +1,8 @@
+import type { CollectRecordInstance, CollectRecordsArrayInstance } from '../sdk/instance'
 import type { CollectModel } from '../sdk/model'
 import type { CollectSchema, CollectSchemaDefaultValue } from './common'
 import type { CollectPropertyType } from './properties'
-import type { FlattenTypes } from './utils'
+import type { Enumerable, FlattenTypes } from './utils'
 import type { CollectDatetimeObject } from './value'
 
 export type CollectRecordInternalProps<T extends CollectSchema = CollectSchema> = {
@@ -69,3 +70,9 @@ export type CollectRecordProps<T extends CollectSchema = CollectSchema> = {
 
 export type CollectRecord<T extends CollectSchema = CollectSchema> = CollectRecordInternalProps<T> &
   CollectRecordProps<T>
+
+export type CollectRelationTarget =
+  | CollectRecordsArrayInstance<any>
+  | Enumerable<CollectRecord<any>>
+  | Enumerable<CollectRecordInstance<any>>
+  | Enumerable<string>

@@ -6,12 +6,14 @@ import type {
   CollectPropertyValue,
   CollectQuery,
   CollectRecord,
+  CollectRelationTarget,
   CollectSchema,
   Enumerable,
   InferSchemaTypesWrite
 } from '../types'
 
 import { createFetcher } from '../network'
+import { EmptyTargetError } from '../sdk/errors'
 import { CollectRecordInstance, CollectRecordsArrayInstance } from '../sdk/instance'
 import { CollectTransaction } from '../sdk/transaction'
 import { CollectBatchDraft, CollectRecordDraft } from '../sdk/utils'
@@ -27,7 +29,7 @@ export class CollectRestAPI {
   public records: {
     attach(
       sourceId: string,
-      idOrIds: Enumerable<string>,
+      target: CollectRelationTarget,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<{ message: string }>>
 
@@ -74,7 +76,7 @@ export class CollectRestAPI {
 
     detach(
       sourceId: string,
-      idOrIds: Enumerable<string>,
+      target: CollectRelationTarget,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<{ message: string }>>
 
@@ -160,10 +162,52 @@ export class CollectRestAPI {
     this.records = {
       attach: async (
         sourceId: string,
-        idOrIds: Enumerable<string>,
+        target: CollectRelationTarget,
         transaction?: CollectTransaction | string
       ) => {
-        return await this.api.records.attach(sourceId, idOrIds, transaction)
+        // target is Enumerable<CollectRecordInstance>
+        if (target instanceof CollectRecordInstance) {
+          const id = target.data?.__id
+          if (id) {
+            return await this.api.records.attach(sourceId, id, transaction)
+          } else {
+            throw new EmptyTargetError('Attach error: Target id is empty')
+          }
+        } else if (isArray(target) && target.every((r) => r instanceof CollectRecordInstance)) {
+          const ids = target.map((r) => (r as CollectRecordInstance).data.__id).filter(Boolean)
+          if (ids.length) {
+            return await this.api.records.attach(sourceId, ids, transaction)
+          } else {
+            throw new EmptyTargetError('Attach error: Target ids are empty')
+          }
+        }
+
+        // target is CollectRecordsArrayInstance
+        else if (target instanceof CollectRecordsArrayInstance) {
+          const ids = target.data?.map((r) => r.__id).filter(Boolean)
+          if (ids?.length) {
+            return await this.api.records.attach(sourceId, ids, transaction)
+          } else {
+            throw new EmptyTargetError('Attach error: Target ids are empty')
+          }
+        }
+
+        // target is Enumerable<CollectRecord>
+        else if (isObject(target) && '__id' in target) {
+          return await this.api.records.attach(sourceId, target.__id, transaction)
+        } else if (isArray(target) && target.every((r) => isObject(r) && '__id' in r)) {
+          const ids = target?.map((r) => (r as CollectRecord).__id).filter(Boolean)
+          if (ids?.length) {
+            return await this.api.records.attach(sourceId, ids, transaction)
+          } else {
+            throw new EmptyTargetError('Attach error: Target ids are empty')
+          }
+        }
+
+        // target is Enumerable<string>
+        else {
+          return await this.api.records.attach(sourceId, target as Enumerable<string>, transaction)
+        }
       },
 
       create: async <T extends CollectSchema = any>(
@@ -277,10 +321,52 @@ export class CollectRestAPI {
 
       detach: async (
         sourceId: string,
-        idOrIds: Enumerable<string>,
+        target: CollectRelationTarget,
         transaction?: CollectTransaction | string
       ) => {
-        return await this.api.records.detach(sourceId, idOrIds, transaction)
+        // target is Enumerable<CollectRecordInstance>
+        if (target instanceof CollectRecordInstance) {
+          const id = target.data?.__id
+          if (id) {
+            return await this.api.records.detach(sourceId, id, transaction)
+          } else {
+            throw new EmptyTargetError('Detach error: Target id is empty')
+          }
+        } else if (isArray(target) && target.every((r) => r instanceof CollectRecordInstance)) {
+          const ids = target.map((r) => (r as CollectRecordInstance).data.__id).filter(Boolean)
+          if (ids.length) {
+            return await this.api.records.detach(sourceId, ids, transaction)
+          } else {
+            throw new EmptyTargetError('Detach error: Target ids are empty')
+          }
+        }
+
+        // target is CollectRecordsArrayInstance
+        else if (target instanceof CollectRecordsArrayInstance) {
+          const ids = target.data?.map((r) => r.__id).filter(Boolean)
+          if (ids?.length) {
+            return await this.api.records.detach(sourceId, ids, transaction)
+          } else {
+            throw new EmptyTargetError('Detach error: Target ids are empty')
+          }
+        }
+
+        // target is Enumerable<CollectRecord>
+        else if (isObject(target) && '__id' in target) {
+          return await this.api.records.detach(sourceId, target.__id, transaction)
+        } else if (isArray(target) && target.every((r) => isObject(r) && '__id' in r)) {
+          const ids = target?.map((r) => (r as CollectRecord).__id).filter(Boolean)
+          if (ids?.length) {
+            return await this.api.records.detach(sourceId, ids, transaction)
+          } else {
+            throw new EmptyTargetError('Detach error: Target ids are empty')
+          }
+        }
+
+        // target is Enumerable<string>
+        else {
+          return await this.api.records.detach(sourceId, target as Enumerable<string>, transaction)
+        }
       },
 
       export: async <T extends CollectSchema = any>(
