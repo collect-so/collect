@@ -1,5 +1,11 @@
 # @collect.so/types
 
+## 0.18.0
+
+### Minor Changes
+
+- 7ad8073: Improved attach-detach api and uniq fields optimizations
+
 ## 0.17.0
 
 ### Minor Changes
