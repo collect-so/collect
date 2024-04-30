@@ -6,9 +6,9 @@ import type {
   InferSchemaTypesWrite
 } from '../types'
 import type { CollectTransaction } from './transaction'
-import type { CollectRecordDraft } from './utils'
 
 import { CollectRestApiProxy } from '../api/rest-api-proxy'
+import { CollectRecordDraft } from './utils'
 
 export class CollectRecordInstance<
   T extends CollectSchema = CollectSchema
@@ -32,6 +32,17 @@ export class CollectRecordInstance<
     return this.apiProxy.records.update(this.data.__id, data, transaction)
   }
 
+  async patch<T extends CollectSchema = CollectSchema>(
+    partialData: CollectRecordDraft | Partial<InferSchemaTypesWrite<T>>,
+    transaction?: CollectTransaction | string
+  ) {
+    return this.apiProxy.records.update(
+      this.data.__id,
+      partialData instanceof CollectRecordDraft ? partialData : { ...this.data, ...partialData },
+      transaction
+    )
+  }
+
   async attach(target: CollectRelationTarget, transaction?: CollectTransaction | string) {
     return this.apiProxy.records.attach(this.data.__id, target, transaction)
   }
@@ -51,7 +62,6 @@ export class CollectRecordsArrayInstance<
   searchParams?: CollectQuery<T>
   constructor(data: CollectRecord<T>[], total?: number, searchParams?: CollectQuery<T>) {
     super()
-    // @TODO: Map Records to Result-like class to have properties along with single Record methods on each item
     this.data = data
     this.total = total
     this.searchParams = searchParams
