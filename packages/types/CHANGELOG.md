@@ -1,5 +1,11 @@
 # @collect.so/types
 
+## 0.19.0
+
+### Minor Changes
+
+- e7e6712: Improve model and instance apis and fix empty payload on find
+
 ## 0.18.0
 
 ### Minor Changes
