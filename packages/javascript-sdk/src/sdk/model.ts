@@ -114,7 +114,7 @@ export class CollectModel<
     return this.apiProxy.records.detach(sourceId, target, transaction)
   }
 
-  async update(
+  async updateById(
     id: string,
     record: InferSchemaTypesWrite<S>,
     transaction?: CollectTransaction | string,

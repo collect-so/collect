@@ -14,6 +14,7 @@ export const isTransaction = (input: any): input is CollectTransaction | string 
   isString(input) || input instanceof CollectTransaction
 
 export const pickTransaction = (input: any) => (isTransaction(input) ? input : undefined)
+
 export const pickTransactionId = (input: any) =>
   isTransaction(input) ?
     input instanceof CollectTransaction ?
@@ -28,7 +29,7 @@ export const createSearchParams = <T extends CollectSchema = CollectSchema>(
   const isFirstArgString = isString(labelOrSearchParams)
   const isFirstArgUUID = isUUID(labelOrSearchParams)
   const isSecondArgTransaction = isTransaction(searchParamsOrTransaction)
-  const hasNoSearchParams = isSecondArgTransaction || !isObject(searchParamsOrTransaction)
+  const isEmptySearchParams = isSecondArgTransaction || !isObject(searchParamsOrTransaction)
 
   if (isFirstArgString) {
     const baseParams =
@@ -36,8 +37,8 @@ export const createSearchParams = <T extends CollectSchema = CollectSchema>(
         { id: labelOrSearchParams }
       : { searchParams: { labels: [labelOrSearchParams as string] } as CollectQuery<T> }
 
-    return hasNoSearchParams ?
-        { ...baseParams, searchParams: {} }
+    return isEmptySearchParams ?
+        { ...baseParams, searchParams: { ...baseParams.searchParams } }
       : {
           ...baseParams,
           searchParams: {
