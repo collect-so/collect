@@ -2,7 +2,7 @@
   "name": "@collect.so/javascript-sdk",
   "description": "Collect Javascript SDK",
   "license": "MIT",
-  "version": "0.11.0",
+  "version": "0.19.0",
   "type": "module",
   "main": "cjs/index.cjs.node.js",
   "types": "types/index.d.ts",
@@ -16,9 +16,7 @@
     "clean": "rm -rf ./dist ./node_modules/.cache ./coverage ./esm ./cjs ./types",
     "flush": "rm -rf node_modules"
   },
-  "devDependencies": {
-    "@collect.so/types": "workspace:*"
-  },
+  "devDependencies": {},
   "peerDependencies": {},
   "sideEffects": false,
   "publishConfig": {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { Collect, UserRepo } from './api'
-import { CollectRecordsArrayResult, CollectSDKResult } from '@collect.so/javascript-sdk'
+import { CollectRecordsArrayInstance, CollectSDKResult } from '@collect.so/javascript-sdk'
 import { PropertiesList } from './PropertiesList.tsx'
 import { CollectQuery } from '@collect.so/javascript-sdk'
 
@@ -45,7 +45,7 @@ export const xorQuery: CollectQuery = {
 }
 
 function App() {
-  const [records, setRecords] = useState<CollectRecordsArrayResult>()
+  const [records, setRecords] = useState<CollectRecordsArrayInstance>()
   const [users, setUsers] = useState<CollectSDKResult<typeof UserRepo.find>>()
 
   useEffect(() => {
@@ -63,9 +63,9 @@ function App() {
     await UserRepo.create(
       {
         name: '1',
-        email: 'test@example.com',
+        email: 'test@example1.com',
         id: 5,
-        jobTitle: 'manager',
+        jobTitle: ['manager'],
         age: 40,
         married: false
       },
@@ -74,10 +74,10 @@ function App() {
 
     await UserRepo.create(
       {
-        name: '1',
+        name: '2',
         email: 'test@example.com',
         id: 6,
-        jobTitle: 'programmer',
+        jobTitle: ['teamlead', 'programmer'],
         age: 40,
         married: false
       },
@@ -94,14 +94,14 @@ function App() {
       {
         name: '1',
         email: 'test@example.com',
-        jobTitle: 'manager',
+        jobTitle: ['manager'],
         age: 40,
         married: true
       },
       {
         name: '1',
         email: 'test@example.com',
-        jobTitle: 'manager',
+        jobTitle: ['manager'],
         age: 40,
         married: false
       }

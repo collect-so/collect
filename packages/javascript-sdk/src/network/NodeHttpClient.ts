@@ -36,7 +36,7 @@ export class NodeHttpClient extends HttpClient {
   ): Promise<HttpClientResponseInterface> {
     const url = new URL(urlString)
 
-    const isInsecureConnection = protocol === 'http'
+    const isInsecureConnection = protocol === 'http' || url.protocol === 'http:'
 
     let agent = this._agent
     if (!agent) {
@@ -67,15 +67,17 @@ export class NodeHttpClient extends HttpClient {
       })
 
       req.once('socket', (socket) => {
+        const payload = requestData ? JSON.stringify(requestData) : ''
+
         if (socket.connecting) {
           socket.once(isInsecureConnection ? 'connect' : 'secureConnect', () => {
             // Send payload; we're safe:
-            req.write(JSON.stringify(requestData))
+            req.write(payload)
             req.end()
           })
         } else {
           // we're already connected
-          req.write(JSON.stringify(requestData))
+          req.write(payload)
           req.end()
         }
       })

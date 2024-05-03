@@ -1,5 +1,54 @@
 # @collect.so/types
 
+## 0.19.0
+
+### Minor Changes
+
+- e7e6712: Improve model and instance apis and fix empty payload on find
+
+## 0.18.0
+
+### Minor Changes
+
+- 7ad8073: Improved attach-detach api and uniq fields optimizations
+
+## 0.17.0
+
+### Minor Changes
+
+- a574cfa: Fix secure connection checks
+
+## 0.16.0
+
+### Minor Changes
+
+- ea8721f: Fix issue with nodejs http layer data normalization
+
+## 0.15.0
+
+### Minor Changes
+
+- 7d51158: Add multiple values support to schema configuration
+
+## 0.14.0
+
+### Minor Changes
+
+- c04135c: Fixes types typo
+
+## 0.13.0
+
+### Minor Changes
+
+- 1f33817: Remove redundant dependency to types package
+- 106efb0: Update typings imports and add more methods to model
+
+## 0.12.0
+
+### Minor Changes
+
+- 0959ef7: Refactor typings and usage
+
 ## 0.11.0
 
 ### Minor Changes

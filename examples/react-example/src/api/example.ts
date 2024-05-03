@@ -4,21 +4,6 @@ import type {
   CollectSchema
 } from '@collect.so/javascript-sdk'
 
-type User = {
-  age: number
-  birthday: string
-  favoriteFood: string
-  favoriteNumber: number
-  height: number
-  id: number
-  married: boolean
-  name: string
-  otherDate: string
-  registeredAt: string
-  secondCitizenship: null
-  weight: number
-}
-
 const userSchema: CollectSchema = {
   age: { type: 'number' },
   dateOfBirth: { required: false, type: 'datetime' },
@@ -35,7 +20,7 @@ const userSchema: CollectSchema = {
   weight: { required: false, type: 'number' }
 } as const
 
-const queryCommonParams: CollectQueryCommonParams<User> = {
+const queryCommonParams: CollectQueryCommonParams = {
   limit: 1000,
   orderBy: {
     age: 'desc',
@@ -103,7 +88,7 @@ export const q1: CollectQuery<typeof userSchema> = {
   }
 }
 
-export const q2: CollectQuery<User> = {
+export const q2: CollectQuery = {
   ...queryCommonParams,
   where: {
     $AND: [
@@ -122,7 +107,7 @@ export const q2: CollectQuery<User> = {
 export const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 
 // GET (>=2 AND <=4) AND (>6 AND <8) AND (0)
-export const variant1: CollectQuery<User> = {
+export const variant1: CollectQuery = {
   where: {
     $AND: [
       {
@@ -144,7 +129,7 @@ export const variant1: CollectQuery<User> = {
 }
 
 // GET (>=2 AND <=4) OR (>6 AND <8) OR (0)
-export const variant2: CollectQuery<User> = {
+export const variant2: CollectQuery = {
   where: {
     $OR: [
       {
@@ -165,7 +150,7 @@ export const variant2: CollectQuery<User> = {
 }
 
 // GET (>=2 AND <=4) AND (>6 AND <8) OR (0)
-export const variant3: CollectQuery<User> = {
+export const variant3: CollectQuery = {
   where: {
     $AND: [
       {

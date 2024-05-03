@@ -1,6 +1,5 @@
-import type { CollectSchema, InferSchemaTypesWrite } from '@collect.so/types'
-
 import type { CollectModel } from '../sdk/model'
+import type { CollectSchema, InferSchemaTypesWrite } from '../types'
 
 export type Validator<T extends CollectSchema = CollectSchema> = (
   model: CollectModel<T>

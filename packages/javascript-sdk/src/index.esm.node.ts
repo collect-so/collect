@@ -1,18 +1,19 @@
-import { CollectImportRecordsObject, CollectRecordObject } from './api'
+import { CollectBatchDraft, CollectRecordDraft } from './api'
 import { HttpClient, HttpClientResponse } from './network/HttpClient'
 import { NodeHttpClient } from './network/NodeHttpClient'
 import { createCollect } from './sdk'
+import { CollectRecordInstance, CollectRecordsArrayInstance } from './sdk/instance'
 import { CollectModel } from './sdk/model'
-import { CollectRecordResult } from './sdk/result'
 import { CollectTransaction } from './sdk/transaction'
 
 export const Collect = createCollect(new NodeHttpClient())
 
 export {
-  CollectImportRecordsObject,
+  CollectBatchDraft,
   CollectModel,
-  CollectRecordObject,
-  CollectRecordResult,
+  CollectRecordDraft,
+  CollectRecordInstance,
+  CollectRecordsArrayInstance,
   CollectTransaction,
   HttpClient,
   HttpClientResponse

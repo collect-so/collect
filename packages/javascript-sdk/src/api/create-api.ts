@@ -1,20 +1,17 @@
+import type { createFetcher } from '../network'
+import type { CollectTransaction } from '../sdk/transaction'
 import type {
   CollectApiResponse,
   CollectFile,
-  CollectObject,
   CollectProperty,
   CollectPropertyValuesData,
   CollectQuery,
   CollectRecord,
-  CollectRecordsRelationsResponse,
   CollectSchema,
   Enumerable
-} from '@collect.so/types'
+} from '../types'
 
-import type { createFetcher } from '../network'
-import type { CollectTransaction } from '../sdk/transaction'
-
-import { CollectImportRecordsObject, CollectRecordObject } from '../sdk/utils'
+import { CollectBatchDraft, CollectRecordDraft } from '../sdk/utils'
 import { isArray } from '../utils/utils'
 import { buildTransactionHeader, pickTransactionId } from './utils'
 
@@ -46,7 +43,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     }
   },
   labels: {
-    async find<T extends CollectObject | CollectSchema = any>(
+    async find<T extends CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) {
@@ -68,7 +65,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
         method: 'DELETE'
       })
     },
-    find: <T extends CollectObject | CollectSchema = any>(
+    find: <T extends CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) => {
@@ -120,13 +117,13 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
         requestData: { targetIds: idOrIds }
       })
     },
-    async create<T extends CollectObject | CollectSchema = any>(
-      data: CollectRecordObject | T,
+    async create<T extends CollectSchema = any>(
+      data: CollectRecordDraft | T,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<CollectRecord<T> | undefined>> {
       const txId = pickTransactionId(transaction)
 
-      if (data instanceof CollectRecordObject) {
+      if (data instanceof CollectRecordDraft) {
         return fetcher<CollectApiResponse<CollectRecord<T>>>(`/records`, {
           headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'POST',
@@ -137,13 +134,13 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       return { data: undefined, success: false }
     },
 
-    async createMany<T extends CollectObject | CollectSchema = any>(
-      data: CollectImportRecordsObject | T[],
+    async createMany<T extends CollectSchema = any>(
+      data: CollectBatchDraft | T[],
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<CollectRecord<T>[]>> {
       const txId = pickTransactionId(transaction)
 
-      if (data instanceof CollectImportRecordsObject) {
+      if (data instanceof CollectBatchDraft) {
         return fetcher<CollectApiResponse<CollectRecord<T>[]>>(`/records/import/json`, {
           headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'POST',
@@ -154,7 +151,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       return { data: [], success: false }
     },
 
-    delete<T extends CollectObject | CollectSchema = any>(
+    delete<T extends CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) {
@@ -198,7 +195,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       })
     },
 
-    export<T extends CollectObject | CollectSchema = any>(
+    export<T extends CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) {
@@ -214,7 +211,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       )
     },
 
-    find<T extends CollectObject | CollectSchema = any>(
+    find<T extends CollectSchema = any>(
       params?: { id?: string; searchParams: CollectQuery<T> },
       transaction?: CollectTransaction | string
     ) {
@@ -228,7 +225,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       })
     },
 
-    findById<T extends CollectObject | CollectSchema = any>(
+    findById<T extends CollectSchema = any>(
       ids: Enumerable<string>,
       transaction?: CollectTransaction | string
     ) {
@@ -246,7 +243,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       })
     },
 
-    async findOne<T extends CollectObject | CollectSchema = any>(
+    async findOne<T extends CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) {
@@ -274,18 +271,22 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     relations: async (id: string, transaction?: CollectTransaction | string) => {
       const txId = pickTransactionId(transaction)
 
-      return fetcher<CollectApiResponse<CollectRecordsRelationsResponse>>(
-        `/records/${id}/relations`,
-        {
-          headers: Object.assign({}, buildTransactionHeader(txId)),
-          method: 'GET'
-        }
-      )
+      return fetcher<
+        CollectApiResponse<
+          Array<{
+            relations: Array<{ count: number; label: string }>
+            type: string
+          }>
+        >
+      >(`/records/${id}/relations`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
+        method: 'GET'
+      })
     },
 
-    update<T extends CollectObject | CollectSchema = any>(
+    update<T extends CollectSchema = any>(
       id: string,
-      data: CollectRecordObject | T,
+      data: CollectRecordDraft | T,
       transaction?: CollectTransaction | string
     ) {
       const txId = pickTransactionId(transaction)

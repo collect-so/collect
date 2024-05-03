@@ -1,22 +1,22 @@
+import type { HttpClient } from '../network/HttpClient'
+import type { UserProvidedConfig } from '../sdk/types'
 import type {
   CollectApiResponse,
-  CollectObject,
   CollectProperty,
   CollectPropertyValue,
   CollectQuery,
   CollectRecord,
-  CollectRecordsRelationsResponse,
+  CollectRelationTarget,
   CollectSchema,
-  Enumerable
-} from '@collect.so/types'
-
-import type { HttpClient } from '../network/HttpClient'
-import type { UserProvidedConfig } from '../sdk/types'
+  Enumerable,
+  InferSchemaTypesWrite
+} from '../types'
 
 import { createFetcher } from '../network'
-import { CollectRecordResult, CollectRecordsArrayResult } from '../sdk/result'
+import { EmptyTargetError } from '../sdk/errors'
+import { CollectRecordInstance, CollectRecordsArrayInstance } from '../sdk/instance'
 import { CollectTransaction } from '../sdk/transaction'
-import { CollectImportRecordsObject, CollectRecordObject } from '../sdk/utils'
+import { CollectBatchDraft, CollectRecordDraft } from '../sdk/utils'
 import { normalizeRecord } from '../utils/normalize'
 import { buildUrl, isArray, isObject, isObjectFlat, isString } from '../utils/utils'
 import { createApi } from './create-api'
@@ -29,41 +29,42 @@ export class CollectRestAPI {
   public records: {
     attach(
       sourceId: string,
-      idOrIds: Enumerable<string>,
+      target: CollectRelationTarget,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<{ message: string }>>
 
-    create<T extends CollectObject | CollectSchema = any>(
-      data: CollectRecordObject | T,
+    create<T extends CollectSchema = any>(
+      data: CollectRecordDraft | InferSchemaTypesWrite<T>,
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordResult<T>>
+    ): Promise<CollectRecordInstance<T>>
 
-    create<T extends CollectObject | CollectSchema = any>(
+    create<T extends CollectSchema = any>(
       label: string,
-      data?: T,
+      data?: InferSchemaTypesWrite<T>,
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordResult<T>>
-    create<T extends CollectObject | CollectSchema = any>(
-      labelOrData: CollectRecordObject | T | string,
+    ): Promise<CollectRecordInstance<T>>
+    create<T extends CollectSchema = any>(
+      labelOrData: CollectRecordDraft | T | string,
       maybeDataOrTransaction?: CollectTransaction | T | string,
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordResult<T>>
-    createMany<T extends CollectObject | CollectSchema = any>(
-      data: CollectImportRecordsObject | T[],
-      transaction?: CollectTransaction | string
-    ): Promise<CollectRecordsArrayResult<T>>
+    ): Promise<CollectRecordInstance<T>>
 
-    createMany<T extends CollectObject | CollectSchema = any>(
+    createMany<T extends CollectSchema = any>(
+      data: CollectBatchDraft | InferSchemaTypesWrite<T>[],
+      transaction?: CollectTransaction | string
+    ): Promise<CollectRecordsArrayInstance<T>>
+    createMany<T extends CollectSchema = any>(
       label: string,
-      data?: CollectImportRecordsObject | T[],
+      data?: CollectBatchDraft | InferSchemaTypesWrite<T>[],
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordsArrayResult<T>>
-    createMany<T extends CollectObject | CollectSchema = any>(
-      labelOrData: CollectImportRecordsObject | Enumerable<T> | string,
-      maybeDataOrTransaction?: CollectTransaction | Enumerable<T> | string,
+    ): Promise<CollectRecordsArrayInstance<T>>
+    createMany<T extends CollectSchema = any>(
+      labelOrData: CollectBatchDraft | Enumerable<InferSchemaTypesWrite<T>> | string,
+      maybeDataOrTransaction?: CollectTransaction | Enumerable<InferSchemaTypesWrite<T>> | string,
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordsArrayResult<T>>
-    delete<T extends CollectObject | CollectSchema = any>(
+    ): Promise<CollectRecordsArrayInstance<T>>
+
+    delete<T extends CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<{ message: string }>>
@@ -75,51 +76,51 @@ export class CollectRestAPI {
 
     detach(
       sourceId: string,
-      idOrIds: Enumerable<string>,
+      target: CollectRelationTarget,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<{ message: string }>>
 
-    export<T extends CollectObject | CollectSchema = any>(
+    export<T extends CollectSchema = any>(
       searchParams?: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<{ dateTime: string; fileContent: string }>>
 
-    find<T extends CollectObject | CollectSchema = any>(
+    find<T extends CollectSchema = any>(
       label: string,
       searchParams?: CollectQuery<T>,
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordsArrayResult<T>>
-    find<T extends CollectObject | CollectSchema = any>(
+    ): Promise<CollectRecordsArrayInstance<T>>
+    find<T extends CollectSchema = any>(
       labelOrSearchParams: CollectQuery<T> | string,
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordsArrayResult<T>>
-    find<T extends CollectObject | CollectSchema = any>(
+    ): Promise<CollectRecordsArrayInstance<T>>
+    find<T extends CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordsArrayResult<T>>
+    ): Promise<CollectRecordsArrayInstance<T>>
 
-    findById<T extends CollectObject | CollectSchema = any>(
+    findById<T extends CollectSchema = any>(
       id: string,
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordResult<T>>
-    findById<T extends CollectObject | CollectSchema = any>(
+    ): Promise<CollectRecordInstance<T>>
+    findById<T extends CollectSchema = any>(
       ids: string[],
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordsArrayResult<T>>
+    ): Promise<CollectRecordsArrayInstance<T>>
 
-    findOne<T extends CollectObject | CollectSchema = any>(
+    findOne<T extends CollectSchema = any>(
       label: string,
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordResult<T>>
-    findOne<T extends CollectObject | CollectSchema = any>(
+    ): Promise<CollectRecordInstance<T>>
+    findOne<T extends CollectSchema = any>(
       labelOrSearchParams: CollectQuery<T> | string,
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordResult<T>>
-    findOne<T extends CollectObject | CollectSchema = any>(
+    ): Promise<CollectRecordInstance<T>>
+    findOne<T extends CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordResult<T>>
+    ): Promise<CollectRecordInstance<T>>
 
     properties(
       id: string,
@@ -129,13 +130,20 @@ export class CollectRestAPI {
     relations(
       id: string,
       transaction?: CollectTransaction | string
-    ): Promise<CollectApiResponse<CollectRecordsRelationsResponse>>
+    ): Promise<
+      CollectApiResponse<
+        Array<{
+          relations: Array<{ count: number; label: string }>
+          type: string
+        }>
+      >
+    >
 
-    update<T extends CollectObject | CollectSchema = any>(
+    update<T extends CollectSchema = any>(
       id: string,
-      data: CollectRecordObject | T,
+      data: CollectRecordDraft | InferSchemaTypesWrite<T>,
       transaction?: CollectTransaction | string
-    ): Promise<CollectRecordResult<T>>
+    ): Promise<CollectRecordInstance<T>>
   }
 
   constructor(token?: string, config?: UserProvidedConfig & { httpClient: HttpClient }) {
@@ -154,20 +162,62 @@ export class CollectRestAPI {
     this.records = {
       attach: async (
         sourceId: string,
-        idOrIds: Enumerable<string>,
+        target: CollectRelationTarget,
         transaction?: CollectTransaction | string
       ) => {
-        return await this.api.records.attach(sourceId, idOrIds, transaction)
+        // target is Enumerable<CollectRecordInstance>
+        if (target instanceof CollectRecordInstance) {
+          const id = target.data?.__id
+          if (id) {
+            return await this.api.records.attach(sourceId, id, transaction)
+          } else {
+            throw new EmptyTargetError('Attach error: Target id is empty')
+          }
+        } else if (isArray(target) && target.every((r) => r instanceof CollectRecordInstance)) {
+          const ids = target.map((r) => (r as CollectRecordInstance).data.__id).filter(Boolean)
+          if (ids.length) {
+            return await this.api.records.attach(sourceId, ids, transaction)
+          } else {
+            throw new EmptyTargetError('Attach error: Target ids are empty')
+          }
+        }
+
+        // target is CollectRecordsArrayInstance
+        else if (target instanceof CollectRecordsArrayInstance) {
+          const ids = target.data?.map((r) => r.__id).filter(Boolean)
+          if (ids?.length) {
+            return await this.api.records.attach(sourceId, ids, transaction)
+          } else {
+            throw new EmptyTargetError('Attach error: Target ids are empty')
+          }
+        }
+
+        // target is Enumerable<CollectRecord>
+        else if (isObject(target) && '__id' in target) {
+          return await this.api.records.attach(sourceId, target.__id, transaction)
+        } else if (isArray(target) && target.every((r) => isObject(r) && '__id' in r)) {
+          const ids = target?.map((r) => (r as CollectRecord).__id).filter(Boolean)
+          if (ids?.length) {
+            return await this.api.records.attach(sourceId, ids, transaction)
+          } else {
+            throw new EmptyTargetError('Attach error: Target ids are empty')
+          }
+        }
+
+        // target is Enumerable<string>
+        else {
+          return await this.api.records.attach(sourceId, target as Enumerable<string>, transaction)
+        }
       },
 
-      create: async <T extends CollectObject | CollectSchema = any>(
-        labelOrData: CollectRecordObject | T | string,
-        maybeDataOrTransaction?: CollectTransaction | T | string,
+      create: async <T extends CollectSchema = any>(
+        labelOrData: CollectRecordDraft | InferSchemaTypesWrite<T> | string,
+        maybeDataOrTransaction?: CollectTransaction | InferSchemaTypesWrite<T> | string,
         transaction?: CollectTransaction | string
-      ): Promise<CollectRecordResult<T>> => {
+      ): Promise<CollectRecordInstance<T>> => {
         let response
 
-        if (labelOrData instanceof CollectRecordObject) {
+        if (labelOrData instanceof CollectRecordDraft) {
           response = await this.api?.records.create<T>(
             labelOrData,
             pickTransaction(maybeDataOrTransaction)
@@ -180,7 +230,7 @@ export class CollectRestAPI {
           })
 
           response = await this.api?.records.create<T>(
-            new CollectRecordObject(normalizedRecord),
+            new CollectRecordDraft(normalizedRecord),
             pickTransaction(maybeDataOrTransaction)
           )
         } else if (isObject(labelOrData)) {
@@ -195,7 +245,7 @@ export class CollectRestAPI {
             })
 
             response = await this.api?.records.create<T>(
-              new CollectRecordObject(normalizedRecord),
+              new CollectRecordDraft(normalizedRecord),
               transaction
             )
           } else if (isObject(maybeDataOrTransaction)) {
@@ -204,22 +254,22 @@ export class CollectRestAPI {
         }
 
         if (response?.success && response?.data) {
-          const result = new CollectRecordResult<T>(response.data)
+          const result = new CollectRecordInstance<T>(response.data)
           result.init(this)
           return result
         }
 
-        return new CollectRecordResult<T>({} as CollectRecord<T>)
+        return new CollectRecordInstance<T>({} as CollectRecord<T>)
       },
 
-      createMany: async <T extends CollectObject | CollectSchema = any>(
-        labelOrData: CollectImportRecordsObject | Enumerable<T> | string,
-        maybeDataOrTransaction?: CollectTransaction | Enumerable<T> | string,
+      createMany: async <T extends CollectSchema = any>(
+        labelOrData: CollectBatchDraft | Enumerable<InferSchemaTypesWrite<T>> | string,
+        maybeDataOrTransaction?: CollectTransaction | Enumerable<InferSchemaTypesWrite<T>> | string,
         transaction?: CollectTransaction | string
-      ): Promise<CollectRecordsArrayResult<T>> => {
+      ): Promise<CollectRecordsArrayInstance<T>> => {
         let response
 
-        if (labelOrData instanceof CollectImportRecordsObject) {
+        if (labelOrData instanceof CollectBatchDraft) {
           response = await this.api?.records.createMany<T>(
             labelOrData,
             pickTransaction(maybeDataOrTransaction)
@@ -227,7 +277,7 @@ export class CollectRestAPI {
         }
 
         if (!response && (isArray(labelOrData) || isObject(labelOrData))) {
-          const data = new CollectImportRecordsObject({
+          const data = new CollectBatchDraft({
             payload: labelOrData
           })
 
@@ -242,7 +292,7 @@ export class CollectRestAPI {
           isString(labelOrData) &&
           (isArray(maybeDataOrTransaction) || isObject(maybeDataOrTransaction))
         ) {
-          const data = new CollectImportRecordsObject({
+          const data = new CollectBatchDraft({
             label: labelOrData,
             payload: maybeDataOrTransaction
           })
@@ -250,15 +300,15 @@ export class CollectRestAPI {
         }
 
         if (response?.success && response?.data) {
-          const result = new CollectRecordsArrayResult<T>(response.data, response.total)
+          const result = new CollectRecordsArrayInstance<T>(response.data, response.total)
           result.init(this)
           return result
         }
 
-        return new CollectRecordsArrayResult<T>([])
+        return new CollectRecordsArrayInstance<T>([])
       },
 
-      delete: async <T extends CollectObject | CollectSchema = any>(
+      delete: async <T extends CollectSchema = any>(
         searchParams: CollectQuery<T>,
         transaction?: CollectTransaction | string
       ) => {
@@ -271,24 +321,66 @@ export class CollectRestAPI {
 
       detach: async (
         sourceId: string,
-        idOrIds: Enumerable<string>,
+        target: CollectRelationTarget,
         transaction?: CollectTransaction | string
       ) => {
-        return await this.api.records.detach(sourceId, idOrIds, transaction)
+        // target is Enumerable<CollectRecordInstance>
+        if (target instanceof CollectRecordInstance) {
+          const id = target.data?.__id
+          if (id) {
+            return await this.api.records.detach(sourceId, id, transaction)
+          } else {
+            throw new EmptyTargetError('Detach error: Target id is empty')
+          }
+        } else if (isArray(target) && target.every((r) => r instanceof CollectRecordInstance)) {
+          const ids = target.map((r) => (r as CollectRecordInstance).data.__id).filter(Boolean)
+          if (ids.length) {
+            return await this.api.records.detach(sourceId, ids, transaction)
+          } else {
+            throw new EmptyTargetError('Detach error: Target ids are empty')
+          }
+        }
+
+        // target is CollectRecordsArrayInstance
+        else if (target instanceof CollectRecordsArrayInstance) {
+          const ids = target.data?.map((r) => r.__id).filter(Boolean)
+          if (ids?.length) {
+            return await this.api.records.detach(sourceId, ids, transaction)
+          } else {
+            throw new EmptyTargetError('Detach error: Target ids are empty')
+          }
+        }
+
+        // target is Enumerable<CollectRecord>
+        else if (isObject(target) && '__id' in target) {
+          return await this.api.records.detach(sourceId, target.__id, transaction)
+        } else if (isArray(target) && target.every((r) => isObject(r) && '__id' in r)) {
+          const ids = target?.map((r) => (r as CollectRecord).__id).filter(Boolean)
+          if (ids?.length) {
+            return await this.api.records.detach(sourceId, ids, transaction)
+          } else {
+            throw new EmptyTargetError('Detach error: Target ids are empty')
+          }
+        }
+
+        // target is Enumerable<string>
+        else {
+          return await this.api.records.detach(sourceId, target as Enumerable<string>, transaction)
+        }
       },
 
-      export: async <T extends CollectObject | CollectSchema = any>(
+      export: async <T extends CollectSchema = any>(
         searchParams: CollectQuery<T>,
         transaction?: CollectTransaction | string
       ) => {
         return this.api?.records.export(searchParams, transaction)
       },
 
-      find: async <T extends CollectObject | CollectSchema = any>(
+      find: async <T extends CollectSchema = any>(
         labelOrSearchParams?: CollectQuery<T> | string,
         searchParamsOrTransaction?: CollectQuery<T> | CollectTransaction | string,
         transaction?: CollectTransaction | string
-      ): Promise<CollectRecordsArrayResult<T>> => {
+      ): Promise<CollectRecordsArrayInstance<T>> => {
         const isTransactionParam = isTransaction(searchParamsOrTransaction)
         const { id, searchParams } = createSearchParams<T>(
           labelOrSearchParams,
@@ -297,7 +389,7 @@ export class CollectRestAPI {
         const tx = isTransactionParam ? searchParamsOrTransaction : transaction
         const response = await this.api?.records.find<T>({ id, searchParams }, tx)
 
-        const result = new CollectRecordsArrayResult<T>(
+        const result = new CollectRecordsArrayInstance<T>(
           response.data,
           response.total,
           searchParamsOrTransaction as CollectQuery<T>
@@ -307,9 +399,9 @@ export class CollectRestAPI {
       },
 
       findById: async <
-        T extends CollectObject = CollectObject,
+        T extends CollectSchema = CollectSchema,
         Arg extends Enumerable<string> = Enumerable<string>,
-        R = Arg extends string[] ? CollectRecordsArrayResult<T> : CollectRecordResult<T>
+        R = Arg extends string[] ? CollectRecordsArrayInstance<T> : CollectRecordInstance<T>
       >(
         idOrIds: Arg,
         transaction?: CollectTransaction | string
@@ -319,7 +411,7 @@ export class CollectRestAPI {
             idOrIds,
             transaction
           )) as CollectApiResponse<CollectRecord<T>[]>
-          const result = new CollectRecordsArrayResult<T>(response.data, response.total)
+          const result = new CollectRecordsArrayInstance<T>(response.data, response.total)
           result.init(this)
           return result as R
         } else {
@@ -327,17 +419,17 @@ export class CollectRestAPI {
             idOrIds,
             transaction
           )) as CollectApiResponse<CollectRecord<T>>
-          const result = new CollectRecordResult<T>(response.data)
+          const result = new CollectRecordInstance<T>(response.data)
           result.init(this)
           return result as R
         }
       },
 
-      findOne: async <T extends CollectObject | CollectSchema = any>(
+      findOne: async <T extends CollectSchema = any>(
         labelOrSearchParams?: CollectQuery<T> | string,
         searchParamsOrTransaction?: CollectQuery<T> | CollectTransaction | string,
         transaction?: CollectTransaction | string
-      ): Promise<CollectRecordResult<T>> => {
+      ): Promise<CollectRecordInstance<T>> => {
         const isTransactionParam = isTransaction(searchParamsOrTransaction)
         const { searchParams } = createSearchParams<T>(
           labelOrSearchParams,
@@ -346,7 +438,7 @@ export class CollectRestAPI {
         const tx = isTransactionParam ? searchParamsOrTransaction : transaction
         const response = await this.api?.records.findOne<T>(searchParams, tx)
 
-        const result = new CollectRecordResult<T>(
+        const result = new CollectRecordInstance<T>(
           response.data,
           searchParamsOrTransaction as CollectQuery<T>
         )
@@ -362,14 +454,14 @@ export class CollectRestAPI {
         return await this.api.records.relations(id, transaction)
       },
 
-      update: async <T extends CollectObject | CollectSchema = any>(
+      update: async <T extends CollectSchema = any>(
         id: string,
-        data: CollectRecordObject | T,
+        data: CollectRecordDraft | InferSchemaTypesWrite<T>,
         transaction?: CollectTransaction | string
       ) => {
         let response
 
-        if (data instanceof CollectRecordObject) {
+        if (data instanceof CollectRecordDraft) {
           response = await this.api?.records.update<T>(id, data, transaction)
         } else if (isObjectFlat(data)) {
           const normalizedRecord = normalizeRecord({
@@ -377,7 +469,7 @@ export class CollectRestAPI {
           })
           response = await this.api?.records.update<T>(
             id,
-            new CollectRecordObject(normalizedRecord),
+            new CollectRecordDraft(normalizedRecord),
             transaction
           )
         } else if (isObject(data)) {
@@ -385,12 +477,12 @@ export class CollectRestAPI {
         }
 
         if (response?.success && response?.data) {
-          const result = new CollectRecordResult<T>(response.data)
+          const result = new CollectRecordInstance<T>(response.data)
           result.init(this)
           return result
         }
 
-        return new CollectRecordResult<T>({} as CollectRecord<T>)
+        return new CollectRecordInstance<T>({} as CollectRecord<T>)
       }
     }
   }
@@ -399,7 +491,7 @@ export class CollectRestAPI {
     delete: async (id: string, transaction?: CollectTransaction | string) => {
       return this.api?.properties.delete(id, transaction)
     },
-    find: async <T extends CollectObject | CollectSchema = any>(
+    find: async <T extends CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) => {
@@ -414,7 +506,7 @@ export class CollectRestAPI {
   }
 
   public labels = {
-    find: async <T extends CollectObject | CollectSchema = any>(
+    find: async <T extends CollectSchema = any>(
       searchParams: CollectQuery<T>,
       transaction?: CollectTransaction | string
     ) => {
