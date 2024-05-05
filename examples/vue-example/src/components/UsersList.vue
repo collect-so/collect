@@ -23,7 +23,8 @@ async function handleClickUserCreation(event: Event) {
     id: Math.floor(Math.random() * 10000),
     age: age.value,
     married: married.value,
-    dob: dob.value
+    dob: dob.value,
+    huj: 'test'
   }
 
   await user.create(payload)
@@ -70,7 +71,7 @@ async function handleGetUserList() {
       <button class="form-button" type="button" @click="handleGetUserList">Get user list</button>
     </div>
     <ul class="form-result">
-      <li v-for="{ __id, __label, __proptypes, ...user } in userList?.data" :key="__id">
+      <li v-for="user in userList?.data" :key="user.__id">
         <ul>
           <li v-for="[key, value] in Object.entries(user)" :key="key">
             {{ key }}: <span> {{ JSON.stringify(value) }}</span>
