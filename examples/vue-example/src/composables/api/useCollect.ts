@@ -3,6 +3,7 @@ import { createInjectionState } from '@vueuse/core'
 import { userSchema } from '@/models/user/user.schema'
 import { postSchema } from '@/models/post/post.schema'
 import { postModel, userModel } from '@/models'
+import type { CollectTransaction } from '@collect.so/javascript-sdk/types/sdk/transaction'
 
 const COLLECT_SDK_TOKEN =
   '34349973e77ab1b40f3edcb40ed0708fnXIdbKDFUBGksR2hsLH12pJGb8BSPiOfAEG0ZbX303OnoApMHIW73cZRL+UnGTET'
@@ -17,9 +18,16 @@ const [useProvideCollect, useCollectInjection] = createInjectionState(() => {
   const userRepo = collectInstance.registerModel(userModel)
   const postRepo = collectInstance.registerModel(postModel)
 
+  async function getUserById(id: string, tx?: CollectTransaction) {
+    return userRepo.findById(id, tx)
+  }
+
   return {
     collect: collectInstance,
-    user: userRepo,
+    user: {
+      repo: userRepo,
+      getById: getUserById
+    },
     post: postRepo
   }
 })

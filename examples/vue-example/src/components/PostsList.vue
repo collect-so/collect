@@ -4,15 +4,18 @@ import { ref } from 'vue'
 import type { CollectSDKResult } from '@collect.so/javascript-sdk'
 import type { CollectRecordInstance } from '@collect.so/javascript-sdk/types/sdk/instance'
 import { postModel } from '@/models'
+import { get } from '@vueuse/core'
 // import type { Post } from '@/models/post/post.interface'
 // import {CollectQuery} from "@collect.so/javascript-sdk";
 
-const { post, collect } = useCollect()
+const { post, user, collect } = useCollect()
 const postList = ref<CollectSDKResult<typeof post.find>>()
 
 const postTitle = ref<string>()
 const postContent = ref<string>()
-const relatedUser = ref<string>()
+const relatedUserId = ref<string>()
+
+const currentUserQuery = ref<string>()
 
 async function getPosts() {
   // @TODO: why should I use collect.records and how to assign potential type?
@@ -22,7 +25,14 @@ async function getPosts() {
     where: {
       title: {
         $not: ''
-      }
+      },
+      ...(currentUserQuery.value && {
+        user: {
+          username: {
+            $contains: currentUserQuery.value
+          }
+        }
+      })
     },
     labels: ['post']
   })
@@ -52,15 +62,30 @@ async function handleCreatePost() {
     return
   }
 
-  const createdPost = (await post.create({
-    title: postTitle.value,
-    content: postContent.value
-  })) satisfies CollectRecordInstance<typeof postModel.schema>
+  const tx = await collect.tx.begin({ ttl: 5000 })
 
-  if (relatedUser.value) {
-    await createdPost.attach(relatedUser.value)
+  const createdPost = (await post.create(
+    {
+      title: postTitle.value,
+      content: postContent.value
+    },
+    tx
+  )) satisfies CollectRecordInstance<typeof postModel.schema>
+
+  // we can use string to attach post
+  // if (relatedUserId.value) {
+  //   await createdPost.attach(relatedUserId.value, tx)
+  // }
+
+  // or validate is user exists and attach to record instance
+  if (relatedUserId.value) {
+    const targetUser = await user.getById(relatedUserId.value, tx)
+    console.log(targetUser)
+
+    await createdPost.attach(targetUser, tx)
   }
 
+  await tx.commit()
   getPosts()
 }
 
@@ -68,6 +93,12 @@ getPosts()
 </script>
 
 <template>
+  <form class="form" @submit.prevent="getPosts">
+    <label class="form-label">
+      Search post by username
+      <input type="search" v-model="currentUserQuery" />
+    </label>
+  </form>
   <ul class="posts">
     <li v-for="{ __id, title, content } in postList?.data" :key="__id">
       <h3>
@@ -91,7 +122,7 @@ getPosts()
       </label>
       <label class="form-label">
         User __id
-        <input v-model="relatedUser" type="text" placeholder="User id here" />
+        <input v-model="relatedUserId" type="text" placeholder="User id here" />
       </label>
       <button class="form-button" type="submit" @click.prevent="handleCreatePost">
         Create post

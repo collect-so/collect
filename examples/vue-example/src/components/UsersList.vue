@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import type { CollectSDKResult } from '@collect.so/javascript-sdk'
 
 const { user } = useCollect()
-const userList = ref<CollectSDKResult<typeof user.find>>()
+const userList = ref<CollectSDKResult<typeof user.repo.find>>()
 
 const username = ref<string>()
 const dob = ref<string>()
@@ -27,11 +27,11 @@ async function handleClickUserCreation(event: Event) {
     huj: 'test'
   }
 
-  await user.create(payload)
+  await user.repo.create(payload)
 }
 
 async function handleGetUserList() {
-  userList.value = await user.find({
+  userList.value = await user.repo.find({
     where: {
       username: {
         $startsWith: ''
