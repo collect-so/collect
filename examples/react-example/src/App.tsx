@@ -19,7 +19,7 @@ const recursiveSearch: CollectQuery = {
         $gte: 4.1
       },
       title: {
-        $not: 'Forest'
+        $ne: 'Forest'
       },
       comment: {
         authoredBy: {
