@@ -1,8 +1,8 @@
 import type { CollectSchema } from '../common/types'
 import type {
   BooleanExpression,
-  CollectExpressionByType,
-  CollectWhereExpression,
+  CollectPropertyExpression,
+  CollectPropertyExpressionByType,
   DatetimeExpression,
   NullExpression,
   NumberExpression,
@@ -10,10 +10,7 @@ import type {
 } from './expressions'
 import type { Enumerable } from './utils'
 
-export type CollectQueryLogicalGrouping<T extends CollectSchema = CollectSchema> = Record<
-  '$and' | '$not' | '$or' | '$xor',
-  Enumerable<CollectQueryCondition<T>>
->
+export type CollectQueryLogicalGrouping<T> = Record<'$and' | '$not' | '$or' | '$xor', T>
 
 export type CollectQueryOrderByMap<T extends CollectSchema = CollectSchema> = Partial<
   Record<keyof T, 'asc' | 'desc'>
@@ -44,12 +41,12 @@ export type CollectQueryCommonParams<T extends CollectSchema = CollectSchema> = 
 
 export type CollectQueryCondition<T extends CollectSchema = CollectSchema> = (
   | {
-      [K in keyof T]?: T extends CollectSchema ? CollectExpressionByType[T[K]['type']]
+      [K in keyof T]?: T extends CollectSchema ? CollectPropertyExpressionByType[T[K]['type']]
       : T[K] extends number ? NumberExpression
       : T[K] extends boolean ? BooleanExpression
       : T[K] extends string ? DatetimeExpression | StringExpression
       : T[K] extends null ? NullExpression
-      : Partial<CollectWhereExpression>
+      : Partial<CollectPropertyExpression>
     }
   | { __id?: string }
 ) &
@@ -57,7 +54,7 @@ export type CollectQueryCondition<T extends CollectSchema = CollectSchema> = (
 
 export type CollectQueryWhere<T extends CollectSchema = CollectSchema> =
   | CollectQueryCondition<T>
-  | Partial<CollectQueryLogicalGrouping<T>>
+  | Partial<CollectQueryLogicalGrouping<Enumerable<CollectQueryCondition<T>>>>
 
 export type CollectQueryWhereClause<T extends CollectSchema = CollectSchema> = {
   where?: CollectQueryWhere<T>

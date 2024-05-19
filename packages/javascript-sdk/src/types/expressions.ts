@@ -36,17 +36,49 @@ export type StringExpression =
         Record<'$in' | '$nin', Array<CollectStringValue>>
     >
 
-export type CollectWhereExpression =
+export type CollectPropertyExpression =
   | BooleanExpression
   | DatetimeExpression
   | NullExpression
   | NumberExpression
   | StringExpression
 
-export type CollectExpressionByType = {
+export type CollectPropertyExpressionByType = {
   boolean: BooleanExpression
   datetime: DatetimeExpression
   null: NullExpression
   number: NumberExpression
   string: StringExpression
 }
+
+export type LogicalExpressionValue<T = CollectPropertyExpression> =
+  | AndExpression<T>
+  | NorExpression<T>
+  | NotExpression<T>
+  | OrExpression<T>
+  | T
+  | XorExpression<T>
+
+export type AndExpression<T = CollectPropertyExpression> = {
+  $and: LogicalExpressionValue<T[]>
+}
+
+export type OrExpression<T = CollectPropertyExpression> = {
+  $or: LogicalExpressionValue<T[]>
+}
+
+export type NotExpression<T = CollectPropertyExpression> = {
+  $not: LogicalExpressionValue<T>
+}
+
+export type XorExpression<T = CollectPropertyExpression> = {
+  $xor: LogicalExpressionValue<T[]>
+}
+
+export type NorExpression<T = CollectPropertyExpression> = {
+  $nor: LogicalExpressionValue<T[]>
+}
+
+export type LogicalExpression<T = CollectPropertyExpression> = RequireAtLeastOne<
+  AndExpression<T> & OrExpression<T> & NotExpression<T> & XorExpression<T> & NorExpression<T>
+>
