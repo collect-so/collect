@@ -15,9 +15,17 @@ export enum OP {
   $endsWith = '$endsWith',
   $startsWith = '$startsWith',
 
+  //@TODO:
+  // $regex = '$regex'
+  // $eq = '$eq'
+  // $all = '$all'
+
   /** Logical operators **/
   $and = '$and',
   $or = '$or',
   $xor = '$xor',
   $not = '$not'
+
+  //@TODO:
+  // $nor = '$nor'
 }

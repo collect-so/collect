@@ -32,7 +32,7 @@ const recursiveSearch: CollectQuery = {
 
 export const xorQuery: CollectQuery = {
   where: {
-    $XOR: [
+    $xor: [
       {
         avgIncome: 29979,
         age: 43

@@ -1,5 +1,4 @@
 import type { CollectSchema } from '../common/types'
-import type { Enumerable } from './utils'
 import type {
   BooleanExpression,
   CollectExpressionByType,
@@ -8,7 +7,8 @@ import type {
   NullExpression,
   NumberExpression,
   StringExpression
-} from './value'
+} from './expressions'
+import type { Enumerable } from './utils'
 
 export type CollectQueryLogicalGrouping<T extends CollectSchema = CollectSchema> = Record<
   '$and' | '$not' | '$or' | '$xor',
