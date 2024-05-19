@@ -29,6 +29,14 @@ type CollectPagination = {
   skip?: number
 }
 
+export type CollectQueryRelation = { direction?: 'in' | 'out'; type?: string } | string
+
+export type CollectQueryRelatedCondition = {
+  [K in keyof CollectModels]?: {
+    $relation?: CollectQueryRelation
+  } & CollectQueryWhere<CollectModels[K]>
+}
+
 export type CollectQueryCommonParams<T extends CollectSchema = CollectSchema> = {
   labels?: string[]
   orderBy?: CollectQueryOrderBy<T>
@@ -44,9 +52,8 @@ export type CollectQueryCondition<T extends CollectSchema = CollectSchema> = (
       : Partial<CollectWhereExpression>
     }
   | { __id?: string }
-) & {
-  [K in keyof CollectModels]?: CollectQueryWhere<CollectModels[K]>
-}
+) &
+  CollectQueryRelatedCondition
 
 export type CollectQueryWhere<T extends CollectSchema = CollectSchema> =
   | CollectQueryCondition<T>
