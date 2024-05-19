@@ -13,48 +13,67 @@ export type CollectDatetimeObject = {
   $year: number
 }
 
-export type CollectPrimitiveValue = boolean | null | number | string
-
+// DATETIME
 export type CollectDatetimeValue = CollectDatetimeObject | string
+export type DatetimeExpression =
+  | CollectDatetimeValue
+  | RequireAtLeastOne<
+      Record<
+        '$gt' | '$gte' | '$lt' | '$lte' | '$ne',
+        CollectDatetimeObject | CollectDatetimeValue
+      > &
+        Record<'$in' | '$nin', Array<CollectDatetimeObject | CollectDatetimeValue>>
+    >
 
-export type CollectPropertySingleValue<TType extends CollectPropertyType = CollectPropertyType> =
+// BOOLEAN
+export type CollectBooleanValue = boolean
+export type BooleanExpression = CollectBooleanValue | Record<'$ne', CollectBooleanValue>
+
+// NULL
+export type CollectNullValue = null
+export type NullExpression = CollectNullValue | Record<'$ne', CollectNullValue>
+
+// NUMBER
+export type CollectNumberValue = number
+export type NumberExpression =
+  | CollectNumberValue
+  | RequireAtLeastOne<
+      Record<'$gt' | '$gte' | '$lt' | '$lte' | '$ne', CollectNumberValue> &
+        Record<'$in' | '$nin', Array<CollectNumberValue>>
+    >
+
+// STRING
+export type CollectStringValue = string
+export type StringExpression =
+  | CollectStringValue
+  | RequireAtLeastOne<
+      Record<'$contains' | '$endsWith' | '$ne' | '$startsWith', CollectStringValue> &
+        Record<'$in' | '$nin', Array<CollectStringValue>>
+    >
+
+export type CollectWhereExpression =
+  | BooleanExpression
+  | DatetimeExpression
+  | NullExpression
+  | NumberExpression
+  | StringExpression
+
+export type CollectExpressionByType = {
+  boolean: BooleanExpression
+  datetime: DatetimeExpression
+  null: NullExpression
+  number: NumberExpression
+  string: StringExpression
+}
+
+type CollectPrimitiveValue =
+  | CollectBooleanValue
+  | CollectNullValue
+  | CollectNumberValue
+  | CollectStringValue
+
+type CollectPropertySingleValue<TType extends CollectPropertyType = CollectPropertyType> =
   TType extends 'datetime' ? CollectDatetimeValue : CollectPrimitiveValue
 
 export type CollectPropertyValue<TType extends CollectPropertyType = CollectPropertyType> =
   Enumerable<CollectPropertySingleValue<TType>>
-
-export type DatetimeValue =
-  | CollectDatetimeObject
-  | RequireAtLeastOne<
-      Record<'$gt' | '$gte' | '$lt' | '$lte' | '$not', CollectDatetimeObject | string> &
-        Record<'$in' | '$notIn', Array<CollectDatetimeObject | string>>
-    >
-  | string
-
-export type BooleanValue = Record<'$not', boolean> | boolean
-
-export type NullValue = Record<'$not', null> | null
-
-export type NumberValue =
-  | RequireAtLeastOne<
-      Record<'$gt' | '$gte' | '$lt' | '$lte' | '$not', number> &
-        Record<'$in' | '$notIn', Array<number>>
-    >
-  | number
-
-export type StringValue =
-  | RequireAtLeastOne<
-      Record<'$contains' | '$endsWith' | '$not' | '$startsWith', string> &
-        Record<'$in' | '$notIn', Array<string>>
-    >
-  | string
-
-export type CollectWhereValue = BooleanValue | DatetimeValue | NullValue | NumberValue | StringValue
-
-export type CollectValueByType = {
-  boolean: BooleanValue
-  datetime: DatetimeValue
-  null: NullValue
-  number: NumberValue
-  string: StringValue
-}

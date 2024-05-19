@@ -55,7 +55,8 @@ export const findTest = async () => {
     where: {
       name: '',
       post: {
-        content: ''
+        content: '',
+        comment: { text: '' }
       }
     },
     labels: ['author']
@@ -99,7 +100,7 @@ export const findTest = async () => {
   await UserRepo.find({
     where: {
       email: { $startsWith: '' },
-      married: { $not: false }
+      married: { $ne: false }
     }
   })
 }
@@ -123,7 +124,7 @@ export const recursiveSearch: CollectQuery = {
         $gte: 4.5
       },
       title: {
-        $not: 'Forest'
+        $ne: 'Forest'
       },
       comment: {
         authoredBy: {

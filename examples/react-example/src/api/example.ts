@@ -55,7 +55,7 @@ export const q1: CollectQuery<typeof userSchema> = {
       $in: ['pasta', 'pho bo', 'pad thai']
     },
     favoriteNumber: {
-      $notIn: [5, 6, 7]
+      $nin: [5, 6, 7]
     },
     height: {
       $gte: 173,
@@ -63,8 +63,8 @@ export const q1: CollectQuery<typeof userSchema> = {
     },
     id: {
       $in: [1, 2, 3],
-      $not: 0,
-      $notIn: [4, 5]
+      $ne: 0,
+      $nin: [4, 5]
     },
     married: true,
     name: {
@@ -91,7 +91,7 @@ export const q1: CollectQuery<typeof userSchema> = {
 export const q2: CollectQuery = {
   ...queryCommonParams,
   where: {
-    $AND: [
+    $and: [
       {
         id: {
           $in: [1, 2, 3],
@@ -109,7 +109,7 @@ export const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 // GET (>=2 AND <=4) AND (>6 AND <8) AND (0)
 export const variant1: CollectQuery = {
   where: {
-    $AND: [
+    $and: [
       {
         id: {
           $gte: 2,
@@ -131,7 +131,7 @@ export const variant1: CollectQuery = {
 // GET (>=2 AND <=4) OR (>6 AND <8) OR (0)
 export const variant2: CollectQuery = {
   where: {
-    $OR: [
+    $or: [
       {
         id: {
           $gte: 2,
@@ -152,7 +152,7 @@ export const variant2: CollectQuery = {
 // GET (>=2 AND <=4) AND (>6 AND <8) OR (0)
 export const variant3: CollectQuery = {
   where: {
-    $AND: [
+    $and: [
       {
         id: {
           $gte: 2,
@@ -166,6 +166,6 @@ export const variant3: CollectQuery = {
         }
       }
     ],
-    $OR: { id: 0 }
+    $or: { id: 0 }
   }
 }

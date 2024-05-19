@@ -1,18 +1,18 @@
+import type { CollectSchema } from '../common/types'
 import type { createFetcher } from '../network'
 import type { CollectTransaction } from '../sdk/transaction'
 import type {
-  CollectApiResponse,
   CollectFile,
   CollectProperty,
   CollectPropertyValuesData,
   CollectQuery,
   CollectRecord,
-  CollectSchema,
   Enumerable
 } from '../types'
+import type { CollectApiResponse } from './types'
 
+import { isArray } from '../common/utils'
 import { CollectBatchDraft, CollectRecordDraft } from '../sdk/utils'
-import { isArray } from '../utils/utils'
 import { buildTransactionHeader, pickTransactionId } from './utils'
 
 // @TODO's

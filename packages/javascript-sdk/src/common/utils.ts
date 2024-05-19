@@ -6,7 +6,7 @@ import {
   DEFAULT_HOST,
   DEFAULT_PORT,
   DEFAULT_PROTOCOL
-} from '../common/constants'
+} from './constants'
 
 export function validateInteger(name: string, n: unknown, defaultVal?: number): number {
   if (!Number.isInteger(n)) {

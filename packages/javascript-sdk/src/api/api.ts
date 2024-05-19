@@ -1,26 +1,25 @@
+import type { CollectSchema } from '../common/types'
 import type { HttpClient } from '../network/HttpClient'
 import type { UserProvidedConfig } from '../sdk/types'
 import type {
-  CollectApiResponse,
   CollectProperty,
   CollectPropertyValue,
   CollectQuery,
   CollectRecord,
   CollectRelationTarget,
-  CollectSchema,
   Enumerable,
   InferSchemaTypesWrite
 } from '../types'
+import type { CollectApiResponse } from './types'
 
+import { buildUrl, isArray, isObject, isObjectFlat, isString } from '../common/utils'
 import { createFetcher } from '../network'
 import { EmptyTargetError } from '../sdk/errors'
 import { CollectRecordInstance, CollectRecordsArrayInstance } from '../sdk/instance'
 import { CollectTransaction } from '../sdk/transaction'
 import { CollectBatchDraft, CollectRecordDraft } from '../sdk/utils'
-import { normalizeRecord } from '../utils/normalize'
-import { buildUrl, isArray, isObject, isObjectFlat, isString } from '../utils/utils'
 import { createApi } from './create-api'
-import { createSearchParams, isTransaction, pickTransaction } from './utils'
+import { createSearchParams, isTransaction, normalizeRecord, pickTransaction } from './utils'
 
 export class CollectRestAPI {
   public api: ReturnType<typeof createApi>
@@ -70,7 +69,7 @@ export class CollectRestAPI {
     ): Promise<CollectApiResponse<{ message: string }>>
 
     deleteById(
-      ids: Enumerable<string>,
+      idOrIds: Enumerable<string>,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<{ message: string }>>
 

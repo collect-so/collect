@@ -15,13 +15,6 @@ export type CollectSchema = Record<
   }
 >
 
-export type CollectRelations = Record<
-  string,
-  {
-    model: string
-  }
->
-
 // Typings for write ops (create/update)
 type TypeMappingWrite = {
   boolean: boolean

@@ -1,6 +1,6 @@
+import type { CollectSchema, CollectSchemaDefaultValue } from '../common/types'
 import type { CollectRecordInstance, CollectRecordsArrayInstance } from '../sdk/instance'
 import type { CollectModel } from '../sdk/model'
-import type { CollectSchema, CollectSchemaDefaultValue } from './common'
 import type { CollectPropertyType } from './properties'
 import type { Enumerable, FlattenTypes } from './utils'
 import type { CollectDatetimeObject } from './value'

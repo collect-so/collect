@@ -1,9 +1,9 @@
+import type { CollectSchema } from '../common/types'
 import type {
   AnyObject,
   CollectPropertyType,
   CollectPropertyValue,
   CollectPropertyWithValue,
-  CollectSchema,
   Enumerable,
   InferSchemaTypesWrite
 } from '../types'

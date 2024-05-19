@@ -1,12 +1,13 @@
+import type { CollectSchema } from '../common/types'
 import type { HttpClient } from '../network/HttpClient'
-import type { CollectRecord, CollectSchema } from '../types'
+import type { CollectRecord } from '../types'
 import type { Validator } from '../validators/types'
 import type { CollectModel } from './model'
 import type { CollectState, UserProvidedConfig } from './types'
 
 import { CollectRestAPI } from '../api'
 import { DEFAULT_TIMEOUT } from '../common/constants'
-import { parseConfig, validateInteger } from '../utils/utils'
+import { parseConfig, validateInteger } from '../common/utils'
 import { CollectRecordInstance } from './instance'
 
 export const createCollect = (httpClient: HttpClient) => {

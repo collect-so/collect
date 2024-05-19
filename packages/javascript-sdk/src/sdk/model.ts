@@ -1,15 +1,10 @@
-import type {
-  CollectQuery,
-  CollectRelationTarget,
-  CollectRelations,
-  CollectSchema,
-  InferSchemaTypesWrite
-} from '../types'
+import type { CollectSchema } from '../common/types'
+import type { CollectQuery, CollectRelationTarget, InferSchemaTypesWrite } from '../types'
 import type { Validator } from '../validators/types'
 import type { CollectTransaction } from './transaction'
 
 import { CollectRestApiProxy } from '../api/rest-api-proxy'
-import { isEmptyObject } from '../utils/utils'
+import { isEmptyObject } from '../common/utils'
 import { UniquenessError } from './errors'
 import {
   mergeDefaultsWithPayload,
@@ -17,20 +12,15 @@ import {
   pickUniqFieldsFromRecords
 } from './utils'
 
-export class CollectModel<
-  S extends CollectSchema = any,
-  R extends CollectRelations = CollectRelations
-> extends CollectRestApiProxy {
+export class CollectModel<S extends CollectSchema = any> extends CollectRestApiProxy {
   public readonly label: string
   public readonly schema: S
-  public readonly relationships: R
   private validator?: Validator
 
-  constructor(modelName: string, schema: S, relationships: R = {} as R) {
+  constructor(modelName: string, schema: S) {
     super()
     this.label = modelName
     this.schema = schema
-    this.relationships = relationships
   }
 
   setValidator(validator?: Validator) {
@@ -42,14 +32,14 @@ export class CollectModel<
   }
 
   async find(
-    params?: CollectQuery<S> & { labels?: never },
+    params: CollectQuery<S> & { labels?: never } = {},
     transaction?: CollectTransaction | string
   ) {
     return this.apiProxy?.records.find<S>(this.label, params, transaction)
   }
 
   async findOne(
-    params?: CollectQuery<S> & { labels?: never },
+    params: CollectQuery<S> & { labels?: never } = {},
     transaction?: CollectTransaction | string
   ) {
     return this.apiProxy?.records.findOne<S>(this.label, { ...params }, transaction)
@@ -180,7 +170,7 @@ export class CollectModel<
         const matchingRecords = await this.find(
           {
             where: {
-              $OR: criteria
+              $or: criteria
             }
           },
           tx
