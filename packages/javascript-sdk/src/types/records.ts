@@ -65,11 +65,11 @@ export type CollectInferType<T extends CollectModel<any> = CollectModel<any>> = 
 >
 // --------------------------------------------
 
-export type CollectRecordProps<T extends CollectSchema = CollectSchema> = {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  [K in keyof T]?: T extends CollectSchema ? InferSchemaTypesRead<T>[K] : T[K]
-}
+export type CollectRecordProps<T extends CollectSchema = CollectSchema> =
+  T extends CollectSchema ? InferSchemaTypesRead<T>
+  : {
+      [K in keyof T]?: T[K]
+    }
 
 export type CollectRecord<T extends CollectSchema = CollectSchema> = CollectRecordInternalProps<T> &
   CollectRecordProps<T>

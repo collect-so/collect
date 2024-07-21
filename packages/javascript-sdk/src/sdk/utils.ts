@@ -103,10 +103,13 @@ export const mergeDefaultsWithPayload = async <T extends CollectSchema = Collect
   const defaultPromises = Object.entries(schema).map(async ([key, prop]) => {
     if (
       prop.default &&
-      typeof prop.default === 'function' &&
+      typeof prop.default !== 'undefined' &&
       typeof payload[key as keyof Partial<InferSchemaTypesWrite<T>>] === 'undefined'
     ) {
-      return { key, value: await prop.default() }
+      return {
+        key,
+        value: typeof prop.default === 'function' ? await prop.default() : prop.default
+      }
     } else {
       return { key, value: undefined }
     }
