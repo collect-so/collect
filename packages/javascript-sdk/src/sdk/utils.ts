@@ -1,11 +1,11 @@
-import type { CollectSchema } from '../common/types'
 import type {
   AnyObject,
   CollectPropertyType,
   CollectPropertyValue,
   CollectPropertyWithValue,
-  Enumerable,
-  InferSchemaTypesWrite
+  CollectSchema,
+  InferSchemaTypesWrite,
+  MaybeArray
 } from '../types'
 
 import { UniquenessError } from './errors'
@@ -18,7 +18,7 @@ export class CollectBatchDraft {
     suggestTypes?: boolean
   }
   parentId?: string
-  payload: Enumerable<AnyObject>
+  payload: MaybeArray<AnyObject>
 
   constructor({
     label,

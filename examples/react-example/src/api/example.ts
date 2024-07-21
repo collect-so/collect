@@ -1,8 +1,4 @@
-import type {
-  CollectQuery,
-  CollectQueryCommonParams,
-  CollectSchema
-} from '@collect.so/javascript-sdk'
+import type { CollectQuery, CollectSchema } from '@collect.so/javascript-sdk'
 
 const userSchema: CollectSchema = {
   age: { type: 'number' },
@@ -20,7 +16,7 @@ const userSchema: CollectSchema = {
   weight: { required: false, type: 'number' }
 } as const
 
-const queryCommonParams: CollectQueryCommonParams = {
+const queryCommonParams: CollectQuery = {
   limit: 1000,
   orderBy: {
     age: 'desc',

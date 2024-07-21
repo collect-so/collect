@@ -1,6 +1,10 @@
-import type { CollectSchema } from '../common/types'
-import type { CollectPropertyType } from '../types'
-import type { CollectPropertyValue, CollectPropertyWithValue, CollectQuery } from '../types'
+import type {
+  CollectPropertyType,
+  CollectPropertyValue,
+  CollectPropertyWithValue,
+  CollectQuery,
+  CollectSchema
+} from '../types'
 
 import {
   ISO_8601_FULL,

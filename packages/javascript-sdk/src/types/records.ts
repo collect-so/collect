@@ -1,9 +1,8 @@
-import type { CollectSchema, CollectSchemaDefaultValue } from '../common/types'
 import type { CollectRecordInstance, CollectRecordsArrayInstance } from '../sdk/instance'
 import type { CollectModel } from '../sdk/model'
-import type { CollectPropertyType } from './properties'
-import type { Enumerable, FlattenTypes } from './utils'
-import type { CollectDatetimeObject } from './value'
+import type { CollectSchema, CollectSchemaDefaultValue } from './common'
+import type { FlattenTypes, MaybeArray } from './utils'
+import type { CollectDatetimeObject, CollectPropertyType } from './value'
 
 export type CollectRecordInternalProps<T extends CollectSchema = CollectSchema> = {
   __id: string
@@ -11,14 +10,18 @@ export type CollectRecordInternalProps<T extends CollectSchema = CollectSchema> 
   __proptypes?: Record<keyof T, CollectPropertyType>
 }
 
-// Typings for write ops (create/update)
-type TypeMappingWrite = {
+// Common Type Mappings
+type TypeMapping<T> = {
   boolean: boolean
-  datetime: CollectDatetimeObject | string
+  datetime: T
   null: null
   number: number
   string: string
 }
+
+// Typings for write ops (create/update)
+type TypeMappingWrite = TypeMapping<CollectDatetimeObject | string>
+
 type OptionalKeysWrite<S extends CollectSchema = CollectSchema> = {
   [P in keyof S]: S[P]['required'] extends false ? P
   : S[P]['default'] extends CollectSchemaDefaultValue ? P
@@ -30,37 +33,37 @@ type RequiredKeysWrite<S extends CollectSchema = CollectSchema> = {
   : P
 }[keyof S]
 export type InferSchemaTypesWrite<S extends CollectSchema = CollectSchema> = {
-  [P in RequiredKeysWrite<S>]: S[P]['multiple'] extends true ? TypeMappingWrite[S[P]['type']][]
+  [P in RequiredKeysWrite<S>]: S[P]['multiple'] extends true ? Array<TypeMappingWrite[S[P]['type']]>
   : TypeMappingWrite[S[P]['type']]
 } & {
-  [P in OptionalKeysWrite<S>]?: S[P]['multiple'] extends true ? TypeMappingWrite[S[P]['type']][]
+  [P in OptionalKeysWrite<S>]?: S[P]['multiple'] extends true ?
+    Array<TypeMappingWrite[S[P]['type']]>
   : TypeMappingWrite[S[P]['type']]
 }
+// --------------------------------------------
 
 // Typings for read ops (find/findById/findOne)
-type TypeMappingRead = {
-  boolean: boolean
-  datetime: string
-  null: null
-  number: number
-  string: string
-}
+type TypeMappingRead = TypeMapping<string>
+
 type OptionalKeysRead<S extends CollectSchema = CollectSchema> = {
   [P in keyof S]: S[P]['required'] extends false ? P : never
 }[keyof S]
+
 type RequiredKeysRead<S extends CollectSchema = CollectSchema> = {
   [P in keyof S]: S[P]['required'] extends false ? never : P
 }[keyof S]
+
 export type InferSchemaTypesRead<S extends CollectSchema = CollectSchema> = {
-  [P in RequiredKeysRead<S>]: S[P]['multiple'] extends true ? TypeMappingRead[S[P]['type']][]
+  [P in RequiredKeysRead<S>]: S[P]['multiple'] extends true ? Array<TypeMappingRead[S[P]['type']]>
   : TypeMappingRead[S[P]['type']]
 } & {
-  [P in OptionalKeysRead<S>]?: S[P]['multiple'] extends true ? TypeMappingRead[S[P]['type']][]
+  [P in OptionalKeysRead<S>]?: S[P]['multiple'] extends true ? Array<TypeMappingRead[S[P]['type']]>
   : TypeMappingRead[S[P]['type']]
 }
 export type CollectInferType<T extends CollectModel<any> = CollectModel<any>> = FlattenTypes<
   InferSchemaTypesRead<T['schema']>
 >
+// --------------------------------------------
 
 export type CollectRecordProps<T extends CollectSchema = CollectSchema> = {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -73,6 +76,6 @@ export type CollectRecord<T extends CollectSchema = CollectSchema> = CollectReco
 
 export type CollectRelationTarget =
   | CollectRecordsArrayInstance<any>
-  | Enumerable<CollectRecord<any>>
-  | Enumerable<CollectRecordInstance<any>>
-  | Enumerable<string>
+  | MaybeArray<CollectRecord<any>>
+  | MaybeArray<CollectRecordInstance<any>>
+  | MaybeArray<string>

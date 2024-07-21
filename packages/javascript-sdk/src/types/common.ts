@@ -1,9 +1,5 @@
-import type {
-  CollectPropertyType,
-  CollectPropertyValue,
-  FlattenTypes,
-  MaybePromise
-} from '../types'
+import type { FlattenTypes, MaybePromise } from './utils'
+import type { CollectPropertyType, CollectPropertyValue } from './value'
 
 export type CollectSchemaDefaultValue = MaybePromise<CollectPropertyValue>
 

@@ -1,7 +1,5 @@
-import type { CollectSchema } from '../common/types'
 import type { HttpClient } from '../network/HttpClient'
-import type { CollectRecord } from '../types'
-import type { Validator } from '../validators/types'
+import type { CollectModels, CollectRecord, CollectSchema } from '../types'
 import type { CollectModel } from './model'
 import type { CollectState, UserProvidedConfig } from './types'
 
@@ -12,11 +10,9 @@ import { CollectRecordInstance } from './instance'
 
 export const createCollect = (httpClient: HttpClient) => {
   class Collect extends CollectRestAPI {
-    static instance: Collect
     state: CollectState
 
     public models: Map<string, CollectModel>
-    public validator?: Validator
 
     constructor(token?: string, config?: UserProvidedConfig) {
       const props = parseConfig(config)
@@ -27,22 +23,13 @@ export const createCollect = (httpClient: HttpClient) => {
         timeout: validateInteger('timeout', props.timeout, DEFAULT_TIMEOUT),
         token
       }
-      this.validator = props.validator
       this.models = new Map()
     }
 
-    public static getInstance(token: string, config?: UserProvidedConfig): Collect {
-      if (!Collect.instance) {
-        Collect.instance = new Collect(token, config)
-      }
-      return Collect.instance
-    }
-
-    registerModel<T extends CollectModel>(model: T): CollectModel<T['schema']> {
+    registerModel<T extends CollectModel = CollectModel>(model: T): CollectModel<T['schema']> {
       const label = model.getLabel()
 
       // Inject the API into the model
-      model.setValidator(this.validator)
       model.init(this)
 
       this.models.set(label, model)
@@ -53,14 +40,18 @@ export const createCollect = (httpClient: HttpClient) => {
       return this.models
     }
 
+    public getModel<T extends keyof CollectModels | string = keyof CollectModels>(
+      label: T
+    ): T extends keyof CollectModels ? CollectModel<CollectModels[typeof label]>
+    : CollectModel | undefined {
+      return this.models.get(label) as T extends keyof CollectModels ? CollectModels[typeof label]
+      : CollectModel
+    }
+
     public toInstance<T extends CollectSchema = CollectSchema>(record: CollectRecord<T>) {
       const result = new CollectRecordInstance<T>(record)
       result.init(this)
       return result
-    }
-
-    public getModel(label: string): CollectModel | undefined {
-      return this.models.get(label)
     }
   }
 

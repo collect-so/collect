@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import { Collect, UserRepo } from './api'
+import { Collect, CommentRepo, UserRepo } from './api'
 import { CollectRecordsArrayInstance, CollectSDKResult } from '@collect.so/javascript-sdk'
 import { PropertiesList } from './PropertiesList.tsx'
 import { CollectQuery } from '@collect.so/javascript-sdk'
+import { seed } from './api/seed.ts'
 
 const recursiveSearch: CollectQuery = {
   where: {
@@ -48,14 +49,14 @@ function App() {
   const [records, setRecords] = useState<CollectRecordsArrayInstance>()
   const [users, setUsers] = useState<CollectSDKResult<typeof UserRepo.find>>()
 
-  useEffect(() => {
-    const find = async () => {
-      const records = await Collect.records.find('associatedDrug', recursiveSearch)
-
-      setRecords(records)
-    }
-    find()
-  }, [])
+  // useEffect(() => {
+  //   const find = async () => {
+  //     const records = await Collect.records.find('associatedDrug', recursiveSearch)
+  //
+  //     setRecords(records)
+  //   }
+  //   find()
+  // }, [])
 
   const createUser = async () => {
     const tx = await Collect.tx.begin({ ttl: 5000 })
@@ -123,14 +124,27 @@ function App() {
   }
 
   useEffect(() => {
-    findUsers()
+    // findUsers()
+    // seed()
   }, [])
+
+  const deleteAuthorByComment = async () => {
+    await CommentRepo.delete({
+      where: {
+        // __id: '0190d540-7fe9-76b3-a28c-1c38c7691b1a',
+        author: {
+          __id: '0190d540-7ffe-73a4-af5b-7eb68346dc28'
+        }
+      }
+    })
+  }
 
   return (
     <>
       <header>
         <button onClick={createUser}>create user</button>
         <button onClick={createMultipleUsers}>create multiple users</button>
+        <button onClick={deleteAuthorByComment}>deleteAuthorByComment</button>
       </header>
       <main>
         <PropertiesList />

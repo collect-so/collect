@@ -5,8 +5,7 @@ import type {
   PROPERTY_TYPE_NUMBER,
   PROPERTY_TYPE_STRING
 } from '../common/constants'
-import type { CollectPropertyType } from './properties'
-import type { Enumerable } from './utils'
+import type { MaybeArray } from './utils'
 
 // DATETIME
 export type CollectDatetimeObject = {
@@ -34,6 +33,30 @@ export type CollectNumberValue = number
 // STRING
 export type CollectStringValue = string
 
+export type CollectPropertyType =
+  | typeof PROPERTY_TYPE_BOOLEAN
+  | typeof PROPERTY_TYPE_DATETIME
+  | typeof PROPERTY_TYPE_NULL
+  | typeof PROPERTY_TYPE_NUMBER
+  | typeof PROPERTY_TYPE_STRING
+
+export type CollectProperty = {
+  id: string
+  metadata?: string
+  name: string
+  type: CollectPropertyType
+}
+
+export type CollectPropertyWithValue = CollectProperty & {
+  value: CollectPropertyValue
+}
+
+export type CollectPropertyValuesData = {
+  max?: number
+  min?: number
+  values: CollectPropertyValue[]
+}
+
 type CollectPropertySingleValue<TType extends CollectPropertyType = CollectPropertyType> =
   TType extends typeof PROPERTY_TYPE_DATETIME ? CollectDatetimeValue
   : TType extends typeof PROPERTY_TYPE_NUMBER ? CollectNumberValue
@@ -43,4 +66,4 @@ type CollectPropertySingleValue<TType extends CollectPropertyType = CollectPrope
   : CollectStringValue
 
 export type CollectPropertyValue<TType extends CollectPropertyType = CollectPropertyType> =
-  Enumerable<CollectPropertySingleValue<TType>>
+  MaybeArray<CollectPropertySingleValue<TType>>

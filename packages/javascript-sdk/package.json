@@ -14,7 +14,8 @@
     "dev": "tsup --watch",
     "types:check": "tsc --noEmit",
     "clean": "rm -rf ./dist ./node_modules/.cache ./coverage ./esm ./cjs ./types",
-    "flush": "rm -rf node_modules"
+    "flush": "rm -rf node_modules",
+    "lint:circularDeps": "madge --circular ./src/*"
   },
   "devDependencies": {},
   "peerDependencies": {},

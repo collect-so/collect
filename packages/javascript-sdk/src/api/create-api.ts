@@ -1,4 +1,3 @@
-import type { CollectSchema } from '../common/types'
 import type { createFetcher } from '../network'
 import type { CollectTransaction } from '../sdk/transaction'
 import type {
@@ -7,7 +6,8 @@ import type {
   CollectPropertyValuesData,
   CollectQuery,
   CollectRecord,
-  Enumerable
+  CollectSchema,
+  MaybeArray
 } from '../types'
 import type { CollectApiResponse } from './types'
 
@@ -106,7 +106,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
   records: {
     attach: async (
       id: string,
-      idOrIds: Enumerable<string>,
+      idOrIds: MaybeArray<string>,
       transaction?: CollectTransaction | string
     ) => {
       const txId = pickTransactionId(transaction)
@@ -164,7 +164,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       })
     },
 
-    deleteById(ids: Enumerable<string>, transaction?: CollectTransaction | string) {
+    deleteById(ids: MaybeArray<string>, transaction?: CollectTransaction | string) {
       const txId = pickTransactionId(transaction)
 
       if (isArray(ids)) {
@@ -183,7 +183,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
 
     detach: async (
       id: string,
-      idOrIds: Enumerable<string>,
+      idOrIds: MaybeArray<string>,
       transaction?: CollectTransaction | string
     ) => {
       const txId = pickTransactionId(transaction)
@@ -226,7 +226,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     },
 
     findById<T extends CollectSchema = any>(
-      ids: Enumerable<string>,
+      ids: MaybeArray<string>,
       transaction?: CollectTransaction | string
     ) {
       const txId = pickTransactionId(transaction)

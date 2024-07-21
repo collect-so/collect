@@ -1,6 +1,9 @@
-import type { CollectSchema } from '../common/types'
-import type { CollectQuery, CollectRelationTarget, InferSchemaTypesWrite } from '../types'
-import type { Validator } from '../validators/types'
+import type {
+  CollectQuery,
+  CollectRelationTarget,
+  CollectSchema,
+  InferSchemaTypesWrite
+} from '../types'
 import type { CollectTransaction } from './transaction'
 
 import { CollectRestApiProxy } from '../api/rest-api-proxy'
@@ -15,16 +18,11 @@ import {
 export class CollectModel<S extends CollectSchema = any> extends CollectRestApiProxy {
   public readonly label: string
   public readonly schema: S
-  private validator?: Validator
 
   constructor(modelName: string, schema: S) {
     super()
     this.label = modelName
     this.schema = schema
-  }
-
-  setValidator(validator?: Validator) {
-    this.validator = validator
   }
 
   getLabel() {
@@ -139,8 +137,8 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
     return await this.apiProxy.records.update<S>(id, data, transaction)
   }
 
-  async createMany(
-    records: InferSchemaTypesWrite<S>[],
+  async createMany<T extends CollectSchema = S>(
+    records: InferSchemaTypesWrite<T>[],
     transaction?: CollectTransaction | string,
     options: { validate: boolean } = { validate: true }
   ) {
@@ -152,17 +150,16 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
       // Apply defaults in parallel
       const recordsToStore = await Promise.all(
         records.map(async (record) => {
-          const data = (await mergeDefaultsWithPayload<typeof this.schema>(
-            this.schema,
-            record
-          )) as InferSchemaTypesWrite<S>
-
-          return data
+          return await mergeDefaultsWithPayload<T>(this.schema as unknown as T, record)
         })
       )
 
       // Check uniqueness
-      const uniqProperties = pickUniqFieldsFromRecords(recordsToStore, this.schema, this.label)
+      const uniqProperties = pickUniqFieldsFromRecords(
+        recordsToStore as Partial<InferSchemaTypesWrite<S>>[],
+        this.schema,
+        this.label
+      )
       if (!isEmptyObject(uniqProperties)) {
         const criteria = Object.entries(uniqProperties).map(([key, values]) => ({
           [key]: { $in: values }
@@ -181,7 +178,7 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
       }
 
       // Create records in the database
-      const createdRecords = await this.apiProxy.records.createMany<S>(
+      const createdRecords = await this.apiProxy.records.createMany<T>(
         this.label,
         recordsToStore,
         tx
@@ -207,15 +204,4 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
   ) {
     return await this.apiProxy.records.delete({ ...params, labels: [this.label] }, transaction)
   }
-
-  async validate(data: InferSchemaTypesWrite<S>) {
-    return this.validator?.(this as CollectModel<CollectSchema>)(data)
-  }
-}
-
-export function createCollectModel<S extends CollectSchema>(
-  modelName: string,
-  schema: S
-): CollectModel<S> {
-  return new CollectModel<S>(modelName, schema)
 }

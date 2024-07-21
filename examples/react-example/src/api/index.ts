@@ -1,7 +1,7 @@
 import CollectSDK, { CollectModel, CollectQuery } from '@collect.so/javascript-sdk'
 
 export const Collect = new CollectSDK(
-  '01da9f307ae13a24bd07c309a4b0effdywhrC2H4YL25FUDu2i511G2mbEUnrBNQ7sng/tCCEAVTLuCDMPxYrg1rA99deHsQ',
+  '4fe44debe9efe8845c1318863d6f07297x974ilf2h3qM62/Ci3iu4D5GFhMuzHk7Nulop8Yr4g8CJ5YUIONhNsbx0pv7RT0',
   {
     url: 'http://localhost'
   }
@@ -37,7 +37,7 @@ export const Author = new CollectModel('author', {
 })
 
 export const Comment = new CollectModel('comment', {
-  authoredBy: { type: 'string' },
+  authoredBy: { type: 'string', required: false },
   text: { type: 'string' }
 })
 
@@ -51,7 +51,7 @@ export type Models = {
   comment: typeof Comment.schema
 }
 export const findTest = async () => {
-  await Collect.records.find({
+  await Collect.records.find('', {
     where: {
       name: '',
       post: {
@@ -82,6 +82,9 @@ export const findTest = async () => {
   await AuthorRepo.find({
     where: {
       post: {
+        created: {
+          $year: 1994
+        },
         comment: {
           authoredBy: ''
         }
@@ -100,7 +103,8 @@ export const findTest = async () => {
   await UserRepo.find({
     where: {
       email: { $startsWith: '' },
-      married: { $ne: false }
+      married: { $ne: false },
+      age: { $nor: [{ $or: [4, 5, { $gte: 4 }] }, { $and: [4, 5, { $gte: 4 }] }], $gte: 5 }
     }
   })
 }
@@ -114,7 +118,7 @@ export const recursiveSearch: CollectQuery = {
     dateOfBirth: {
       $year: 1984
     },
-    post: {
+    POST: {
       created: {
         $year: 2011,
         $month: 11,
@@ -126,7 +130,8 @@ export const recursiveSearch: CollectQuery = {
       title: {
         $ne: 'Forest'
       },
-      comment: {
+      COMMENT: {
+        $relation: { direction: 'in', type: 'HAS_COMMENT' },
         authoredBy: {
           $contains: 'Sam'
         }

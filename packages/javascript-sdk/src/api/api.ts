@@ -1,4 +1,3 @@
-import type { CollectSchema } from '../common/types'
 import type { HttpClient } from '../network/HttpClient'
 import type { UserProvidedConfig } from '../sdk/types'
 import type {
@@ -7,8 +6,9 @@ import type {
   CollectQuery,
   CollectRecord,
   CollectRelationTarget,
-  Enumerable,
-  InferSchemaTypesWrite
+  CollectSchema,
+  InferSchemaTypesWrite,
+  MaybeArray
 } from '../types'
 import type { CollectApiResponse } from './types'
 
@@ -58,8 +58,8 @@ export class CollectRestAPI {
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordsArrayInstance<T>>
     createMany<T extends CollectSchema = any>(
-      labelOrData: CollectBatchDraft | Enumerable<InferSchemaTypesWrite<T>> | string,
-      maybeDataOrTransaction?: CollectTransaction | Enumerable<InferSchemaTypesWrite<T>> | string,
+      labelOrData: CollectBatchDraft | MaybeArray<InferSchemaTypesWrite<T>> | string,
+      maybeDataOrTransaction?: CollectTransaction | MaybeArray<InferSchemaTypesWrite<T>> | string,
       transaction?: CollectTransaction | string
     ): Promise<CollectRecordsArrayInstance<T>>
 
@@ -69,7 +69,7 @@ export class CollectRestAPI {
     ): Promise<CollectApiResponse<{ message: string }>>
 
     deleteById(
-      idOrIds: Enumerable<string>,
+      idOrIds: MaybeArray<string>,
       transaction?: CollectTransaction | string
     ): Promise<CollectApiResponse<{ message: string }>>
 
@@ -205,7 +205,7 @@ export class CollectRestAPI {
 
         // target is Enumerable<string>
         else {
-          return await this.api.records.attach(sourceId, target as Enumerable<string>, transaction)
+          return await this.api.records.attach(sourceId, target as MaybeArray<string>, transaction)
         }
       },
 
@@ -262,8 +262,8 @@ export class CollectRestAPI {
       },
 
       createMany: async <T extends CollectSchema = any>(
-        labelOrData: CollectBatchDraft | Enumerable<InferSchemaTypesWrite<T>> | string,
-        maybeDataOrTransaction?: CollectTransaction | Enumerable<InferSchemaTypesWrite<T>> | string,
+        labelOrData: CollectBatchDraft | MaybeArray<InferSchemaTypesWrite<T>> | string,
+        maybeDataOrTransaction?: CollectTransaction | MaybeArray<InferSchemaTypesWrite<T>> | string,
         transaction?: CollectTransaction | string
       ): Promise<CollectRecordsArrayInstance<T>> => {
         let response
@@ -314,7 +314,7 @@ export class CollectRestAPI {
         return this.api?.records.delete(searchParams, transaction)
       },
 
-      deleteById: async (ids: Enumerable<string>, transaction?: CollectTransaction | string) => {
+      deleteById: async (ids: MaybeArray<string>, transaction?: CollectTransaction | string) => {
         return this.api?.records.deleteById(ids, transaction)
       },
 
@@ -364,7 +364,7 @@ export class CollectRestAPI {
 
         // target is Enumerable<string>
         else {
-          return await this.api.records.detach(sourceId, target as Enumerable<string>, transaction)
+          return await this.api.records.detach(sourceId, target as MaybeArray<string>, transaction)
         }
       },
 
@@ -399,7 +399,7 @@ export class CollectRestAPI {
 
       findById: async <
         T extends CollectSchema = CollectSchema,
-        Arg extends Enumerable<string> = Enumerable<string>,
+        Arg extends MaybeArray<string> = MaybeArray<string>,
         R = Arg extends string[] ? CollectRecordsArrayInstance<T> : CollectRecordInstance<T>
       >(
         idOrIds: Arg,

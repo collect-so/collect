@@ -1,8 +1,8 @@
-import type { CollectSchema } from '../common/types'
 import type {
   CollectQuery,
   CollectRecord,
   CollectRelationTarget,
+  CollectSchema,
   InferSchemaTypesWrite
 } from '../types'
 import type { CollectTransaction } from './transaction'
