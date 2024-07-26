@@ -1,8 +1,7 @@
 # Collect types
 
+> ⚠️ Package is under development
 
-### Installation
-```
-npm install @collect.so/types
-```
+> ⚠️ DO NOT USE IT IN YOUR PROJECTS
+
 
