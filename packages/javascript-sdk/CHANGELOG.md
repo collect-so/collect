@@ -1,5 +1,21 @@
 # @collect.so/javascript-sdk
 
+## 0.20.0
+
+### Minor Changes
+
+- 926ed60: ## Changelog
+  - Types package is now redundant
+  - Revamped query typings for better type inference and performance
+  - Minor cleanups & tweaks
+  - Resolved major circular dependencies
+  - SDK types refactoring
+  - `.find()` and `.findMany()` now explicitly returns undefined in `result.data`
+
+### Patch Changes
+
+- fc20b10: Upgrade CI/CD pipeline
+
 ## 0.19.0
 
 ### Minor Changes
