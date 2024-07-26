@@ -5,3 +5,4 @@
 ```
 npm install @collect.so/types
 ```
+

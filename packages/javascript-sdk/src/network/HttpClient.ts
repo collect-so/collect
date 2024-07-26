@@ -1,4 +1,4 @@
-import type { RequestData, RequestHeaders, ResponseHeaders } from './types'
+import type { RequestData, RequestHeaders, ResponseHeaders } from './types.js'
 
 type TimeoutError = TypeError & { code?: string }
 

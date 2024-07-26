@@ -12,43 +12,53 @@ const asyncRandomNumber = async () =>
     setTimeout(() => resolve(Math.random()), 150)
   })
 
-const User = new CollectModel('user', {
-  name: { type: 'string' },
-  email: { type: 'string', uniq: true },
-  id: { type: 'number', default: asyncRandomNumber },
-  jobTitle: { type: 'string', multiple: true },
-  age: { type: 'number' },
-  married: { type: 'boolean' },
-  dateOfBirth: { type: 'datetime', default: () => new Date().toISOString() }
-})
+export const UserRepo = new CollectModel(
+  'user',
+  {
+    name: { type: 'string' },
+    email: { type: 'string', uniq: true },
+    id: { type: 'number', default: asyncRandomNumber },
+    jobTitle: { type: 'string', multiple: true },
+    age: { type: 'number' },
+    married: { type: 'boolean' },
+    dateOfBirth: { type: 'datetime', default: () => new Date().toISOString() }
+  },
+  Collect
+)
 
-export const UserRepo = Collect.registerModel(User)
+export const PostRepo = new CollectModel(
+  'post',
+  {
+    created: { type: 'datetime', default: () => new Date().toISOString() },
+    title: { type: 'string' },
+    content: { type: 'string' },
+    rating: { type: 'number' }
+  },
+  Collect
+)
 
-export const Post = new CollectModel('post', {
-  created: { type: 'datetime', default: () => new Date().toISOString() },
-  title: { type: 'string' },
-  content: { type: 'string' },
-  rating: { type: 'number' }
-})
+export const AuthorRepo = new CollectModel(
+  'author',
+  {
+    name: { type: 'string' },
+    email: { type: 'string', uniq: true }
+  },
+  Collect
+)
 
-export const Author = new CollectModel('author', {
-  name: { type: 'string' },
-  email: { type: 'string', uniq: true }
-})
-
-export const Comment = new CollectModel('comment', {
-  authoredBy: { type: 'string', required: false },
-  text: { type: 'string' }
-})
-
-export const AuthorRepo = Collect.registerModel(Author)
-export const PostRepo = Collect.registerModel(Post)
-export const CommentRepo = Collect.registerModel(Comment)
+export const CommentRepo = new CollectModel(
+  'comment',
+  {
+    authoredBy: { type: 'string', required: false },
+    text: { type: 'string' }
+  },
+  Collect
+)
 
 export type Models = {
-  author: typeof Author.schema
-  post: typeof Post.schema
-  comment: typeof Comment.schema
+  author: typeof AuthorRepo.schema
+  post: typeof PostRepo.schema
+  comment: typeof CommentRepo.schema
 }
 export const findTest = async () => {
   await Collect.records.find('', {

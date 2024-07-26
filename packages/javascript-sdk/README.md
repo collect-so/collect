@@ -1,24 +1,130 @@
+<div align="center">
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g>
+        <path d="M89.7279 71.2081C78.6541 76.5128 68.9892 79.1276 61.9934 80.5209C57.2111 81.4739 55.5308 81.4524 54.4903 81.4524C40.4082 81.4524 28.9887 71.9678 28.9887 60.2658C28.9887 48.5638 40.4049 39.0792 54.4903 39.0792C61.0693 39.0792 67.0666 41.1517 71.5905 44.5504L89.7279 35.8497C81.3103 27.4739 68.65 22.145 54.4903 22.145C29.1502 22.1477 8.60547 39.2162 8.60547 60.2685C8.60547 81.3209 29.1502 98.3893 54.4903 98.3893C68.65 98.3893 81.3103 93.0578 89.7279 84.6846V71.2081Z" fill="white"/>
+        <path d="M54.4904 100C28.1195 100 6.66675 82.1771 6.66675 60.2684C6.66675 38.3597 28.1195 20.5369 54.4904 20.5369C68.7082 20.5369 82.0923 25.7422 91.2176 34.8214C91.586 35.1865 91.7379 35.6671 91.6377 36.1342C91.5375 36.6013 91.195 37.0093 90.6974 37.2483L72.5599 45.9489C71.8329 46.2979 70.9152 46.2174 70.2883 45.7476C65.9519 42.4885 60.3391 40.6926 54.4904 40.6926C41.4972 40.6926 30.9275 49.4738 30.9275 60.2684C30.9275 71.063 41.4972 79.8443 54.4904 79.8443H54.5582C55.4985 79.8389 57.0851 79.8442 61.5411 78.9557C70.7827 77.114 79.9403 74.0375 88.7586 69.812C89.3596 69.5248 90.0963 69.5248 90.6974 69.812C91.2984 70.0993 91.6668 70.6308 91.6668 71.208V84.6845C91.6668 85.063 91.5084 85.4281 91.2176 85.7181C82.0956 94.7946 68.7082 100.003 54.4904 100.003V100ZM54.4904 23.7583C30.2587 23.7583 10.5443 40.1369 10.5443 60.2684C10.5443 80.4 30.2587 96.7785 54.4904 96.7785C67.322 96.7785 79.42 92.161 87.7892 84.0912V73.9489C79.5461 77.6402 71.0347 80.3731 62.4459 82.0859C57.5407 83.063 55.6633 83.0577 54.555 83.063H54.4904C39.3613 83.063 27.0499 72.8375 27.0499 60.2657C27.0499 47.6939 39.3581 37.4684 54.4904 37.4684C60.8302 37.4684 66.9245 39.2778 71.8103 42.5852L86.7099 35.4389C78.3957 27.9892 66.7823 23.7557 54.4904 23.7557V23.7583Z" fill="#222222"/>
+        <path d="M89.7279 25.5841C86.6517 22.5908 79.5686 16.5317 68.0683 13.576C63.7771 12.4727 59.2177 11.8794 54.4903 11.8794C29.1502 11.8794 8.60547 28.9479 8.60547 50.0002C8.60547 71.0526 29.1502 88.121 54.4903 88.121C68.65 88.121 81.3103 82.7895 89.7279 74.4163V64.4888C78.9546 67.0015 69.5773 68.8727 61.9934 70.2552C57.5213 71.0713 56.2675 71.1868 54.4903 71.1868C40.4082 71.1868 28.9887 61.7022 28.9887 50.0002C28.9887 38.2982 40.4049 28.8136 54.4903 28.8136C61.0693 28.8136 67.0666 30.8861 71.5905 34.2848L89.7279 25.5841Z" fill="white"/>
+        <path d="M54.4904 89.7316C28.1195 89.7316 6.66675 71.9088 6.66675 50.0001C6.66675 28.0914 28.1195 10.2686 54.4904 10.2686C59.3147 10.2686 64.0777 10.8645 68.6436 12.0377C77.2744 14.2551 85.0749 18.58 91.2047 24.5397C91.5795 24.9048 91.7379 25.388 91.6409 25.8578C91.544 26.3276 91.1982 26.741 90.7006 26.98L72.5632 35.6806C71.8361 36.0296 70.9184 35.9491 70.2915 35.4793C65.9551 32.2202 60.3423 30.4243 54.4936 30.4243C41.5004 30.4243 30.9308 39.2055 30.9308 50.0001C30.9308 60.7947 41.5004 69.5759 54.4936 69.5759C56.0446 69.5759 57.1207 69.4954 61.5799 68.682C70.7342 67.0122 80.0308 65.0793 89.2077 62.937C89.7894 62.8001 90.4195 62.8994 90.9042 63.2028C91.3889 63.5061 91.6732 63.9813 91.6732 64.486V74.4135C91.6732 74.792 91.5149 75.1571 91.2241 75.4471C82.102 84.5236 68.7147 89.7316 54.4968 89.7316H54.4904ZM54.4904 13.49C30.2587 13.49 10.5443 29.8686 10.5443 50.0001C10.5443 70.1316 30.2587 86.5102 54.4904 86.5102C67.322 86.5102 79.42 81.8927 87.7892 73.8229V66.6041C79.3457 68.537 70.8183 70.29 62.4103 71.8256C57.8639 72.6551 56.4453 72.7947 54.4904 72.7947C39.3613 72.7947 27.0499 62.5692 27.0499 49.9974C27.0499 37.4256 39.3581 27.2001 54.4904 27.2001C60.8302 27.2001 66.9245 29.0095 71.8103 32.3169L86.6873 25.1813C82.6094 21.592 76.2921 17.3746 67.4964 15.1142C63.3022 14.035 58.927 13.49 54.4904 13.49Z" fill="#222222"/>
+        <path d="M71.5905 55.4471C67.0666 58.8457 61.0693 60.9182 54.4903 60.9182C40.4082 60.9182 28.9887 51.4337 28.9887 39.7316C28.9887 28.0296 40.4049 18.5451 54.4903 18.5451C61.0693 18.5451 67.0666 20.6176 71.5905 24.0162L89.7279 15.3155C81.3103 6.94238 68.65 1.61084 54.4903 1.61084C29.1502 1.61084 8.60547 18.6793 8.60547 39.7316C8.60547 60.784 29.1502 77.8525 54.4903 77.8525C68.65 77.8525 81.3103 72.5209 89.7279 64.1478L71.5905 55.4471Z" fill="white"/>
+        <path d="M54.4904 79.4631C28.1195 79.4631 6.66675 61.6403 6.66675 39.7315C6.66675 17.8228 28.1195 0 54.4904 0C68.7082 0 82.0924 5.20537 91.2176 14.2846C91.586 14.6497 91.7379 15.1302 91.6377 15.5973C91.5375 16.0644 91.195 16.4725 90.6974 16.7114L72.5599 25.4121C71.8329 25.7611 70.9152 25.6805 70.2883 25.2107C65.9519 21.9517 60.3391 20.1557 54.4904 20.1557C41.4972 20.1557 30.9275 28.9369 30.9275 39.7315C30.9275 50.5262 41.4972 59.3074 54.4904 59.3074C60.3423 59.3074 65.9519 57.5114 70.2883 54.2523C70.912 53.7825 71.8297 53.702 72.5599 54.051L90.6974 62.7517C91.1918 62.9906 91.5375 63.396 91.6377 63.8658C91.7379 64.3329 91.5828 64.8161 91.2176 65.1785C82.0956 74.255 68.7082 79.4631 54.4904 79.4631ZM54.4904 3.22148C30.2587 3.22148 10.5443 19.6 10.5443 39.7315C10.5443 59.8631 30.2587 76.2416 54.4904 76.2416C66.7823 76.2416 78.3957 72.008 86.7099 64.5584L71.8103 57.4121C66.9245 60.7195 60.8302 62.5289 54.4904 62.5289C39.3613 62.5289 27.05 52.3034 27.05 39.7315C27.05 27.1597 39.3581 16.9342 54.4904 16.9342C60.8302 16.9342 66.9245 18.7436 71.8103 22.051L86.7099 14.9047C78.3957 7.45503 66.7823 3.22148 54.4904 3.22148Z" fill="#222222"/>
+        <path d="M71.5906 44.5933V34.3248V24.0564L89.728 15.3584V25.6269V35.8953L71.5906 44.5933Z" fill="white"/>
+        <path d="M71.5907 46.2041C71.2546 46.2041 70.9218 46.1316 70.6213 45.9893C70.0202 45.7021 69.6519 45.1706 69.6519 44.5934V24.0565C69.6519 23.482 70.0202 22.9504 70.6213 22.6605L88.7587 13.9598C89.3597 13.6726 90.0964 13.6726 90.6975 13.9598C91.2985 14.2471 91.6669 14.7786 91.6669 15.3558V35.8927C91.6669 36.4672 91.2985 36.9987 90.6975 37.2887L72.56 45.9893C72.2595 46.1343 71.9267 46.2041 71.5907 46.2041ZM73.5294 24.9853V41.8014L87.7893 34.9612V18.1451L73.5294 24.9853Z" fill="#222222"/>
+        <path d="M8.60554 61.8792C7.53597 61.8792 6.66675 61.1571 6.66675 60.2685V39.7316C6.66675 38.843 7.53597 38.1208 8.60554 38.1208C9.67511 38.1208 10.5443 38.843 10.5443 39.7316V60.2685C10.5443 61.1571 9.67511 61.8792 8.60554 61.8792Z" fill="#222222"/>
+    </g>
+</svg>
+
 # Collect SDK
 
+> The Collect.so SDK for JavaScript and TypeScript
+
+[![NPM Version](https://img.shields.io/npm/v/%40collect.so%2Fjavascript-sdk)](https://www.npmjs.com/package/@collect.so/javascript-sdk)
+[![License](https://img.shields.io/badge/License-MIT-blue)](#license "Go to license section")
+
+![NPM Downloads](https://img.shields.io/npm/dw/%40collect.so%2Fjavascript-sdk)
+![npm bundle size](https://img.shields.io/bundlephobia/minzip/%40collect.so%2Fjavascript-sdk)
+
+
+[![Made with Node](https://img.shields.io/badge/dynamic/json?label=node&query=%24.engines%5B%22node%22%5D&url=https%3A%2F%2Fraw.githubusercontent.com%2Fcollect-so%2Fcollect%2Fmaster%2Fpackage.json)](https://nodejs.org "Go to Node.js homepage")
+[![Package - Typescript](https://img.shields.io/github/package-json/dependency-version/collect-so/collect/dev/typescript?logo=typescript&logoColor=white)](https://www.npmjs.com/package/typescript "Go to TypeScript on NPM")
+
+[Homepage](https://collect.so) — [Blog](https://collect.so/blog) — [Platform](https://app.collect.so) — [Docs](https://docs.collect.so) — [Examples](https://github.com/collect-so/examples)
+</div>
+
+## Features
+
+---
+- **Automatic Type Inference**: Enjoy seamless type safety with automatic TypeScript inference.
+- **Isomorphic Architecture**: Fully compatible with both server and browser environments.
+- **Zero Dependencies**: Lightweight and efficient with no external dependencies.
+- **No Configuration Needed**: Plug-and-play design requires no setup or configuration.
+
+
+## Installation
+
+---
+NPM:
+```bash
+npm install @collect.so/javascript-sdk
+```
+
+YARN:
+```bash
+yarn add @collect.so/javascript-sdk
+```
+
+PNPM:
+```bash
+pnmp add @collect.so/javascript-sdk
+```
+
+
+## Usage
+
+---
+
+1. **Obtain Collect API Token**: Grab your API token from the [Dashboard](https://app.collect.so).
+2. **Setup Collect Instance**: Initialize your Collect instance with obtained token.
+3. **(Optional) Define Data Models**: Tailor your data models to fit your needs.
+4. **Manage Your Data**: Push, link, fetch, and manage your data effortlessly.
+
+### TLDR;
 ```ts
-// lib/db.js
-import Collect, { CollectModel } from '@collect.so/sdk'
+/* ./your-app/src/collect.ts */
 
-const collect = new Collect(YOUR_API_TOKEN)
+import CollectSDK, { CollectModel } from '@collect.so/sdk'
 
-// Define your model schema
-const TaskModel = new CollectModel({
-    title: { type: 'string' },
-    completed: { type: 'boolean', default: false }
+// Setup Collect instance
+const Collect = new CollectSDK("API_TOKEN")
+
+// Optionaly define Model
+export const UserRepo = new CollectModel(
+    'USER',
+    {
+        name: { type: 'string' },
+        email: { type: 'string', uniq: true },
+        verified: { type: 'boolean', default: false },
+        hobbies: { type: 'string', multiple: true, requiered: false },
+        rating: { type: 'number', default: 1 },
+        created: { type: 'datetime', default: () => new Date().toISOString() },
+        password: { type: 'string' }
+    },
+    Collect
+)
+
+// Create new Record
+const newUser = await UserRepo.create({
+    name: "John Galt",
+    email: 'john.g@example.com',
+    hobbies: ['Programming', 'Hiking'],
+    password: '********'
 })
 
-// Register the model with the SDK
-const TaskRepo = collect.registerModel('Task', TaskSchema)
-
-// Create a new task
-const newTask = await Task.create({title: 'Finish the report'})
-
-// Find all completed tasks
-const completedTasks = await Task.find({where: {completed: true}})
-
+// Find Records by specific criteria
+const matchedUsers = await UserRepo.find({
+    where: {
+        email: { $ne: 'john.g@example.com' },
+        hobbies: { $in: ['Hiking'] },
+        rating: { $gte: 1.5 }
+    }
+})
 ```
+
+<div align="center">
+<b>You're Awesome!</b>  🚀
+</div>
+
+---
+
+<div align="center" style="margin-top: 20px">
+
+> Check the [Docs](https://docs.collect.so) and [Examples Repository](https://github.com/collect-so/examples) to learn more 🤓
+
+
+</div>
+
+
+## Contributing
+
+---
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+

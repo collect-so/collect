@@ -6,10 +6,8 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
-    "preserveSymlinks": true,
-
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -21,7 +19,8 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "allowUnusedLabels": true
+    "allowUnusedLabels": true,
+    "types": ["@collect.so/javascript-sdk"]
   },
   "exclude": [ "**/node_modules"],
   "include": ["./src/**/*", "index.d.ts"],

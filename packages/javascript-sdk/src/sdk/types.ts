@@ -1,4 +1,4 @@
-import type { HttpClientInterface } from '../network/HttpClient'
+import type { HttpClientInterface } from '../network/HttpClient.js'
 
 type ApiConnectionConfig =
   | {

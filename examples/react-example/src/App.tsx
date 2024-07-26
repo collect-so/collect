@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { Collect, CommentRepo, UserRepo } from './api'
-import { CollectRecordsArrayInstance, CollectSDKResult } from '@collect.so/javascript-sdk'
+import { CollectRecordsArrayInstance } from '@collect.so/javascript-sdk'
 import { PropertiesList } from './PropertiesList.tsx'
 import { CollectQuery } from '@collect.so/javascript-sdk'
-import { seed } from './api/seed.ts'
+// import { seed } from './api/seed.ts'
 
 const recursiveSearch: CollectQuery = {
   where: {
@@ -47,7 +47,7 @@ export const xorQuery: CollectQuery = {
 
 function App() {
   const [records, setRecords] = useState<CollectRecordsArrayInstance>()
-  const [users, setUsers] = useState<CollectSDKResult<typeof UserRepo.find>>()
+  const [users, setUsers] = useState<CollectRecordsArrayInstance<(typeof UserRepo)['schema']>>()
 
   // useEffect(() => {
   //   const find = async () => {
@@ -91,7 +91,7 @@ function App() {
   }
 
   const createMultipleUsers = async () => {
-    /*const users = */ await UserRepo.createMany([
+    const users = await UserRepo.createMany([
       {
         name: '1',
         email: 'test@example.com',
@@ -107,6 +107,8 @@ function App() {
         married: false
       }
     ])
+
+    //
     findUsers()
   }
 

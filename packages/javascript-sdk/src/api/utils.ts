@@ -4,7 +4,7 @@ import type {
   CollectPropertyWithValue,
   CollectQuery,
   CollectSchema
-} from '../types'
+} from '../types/index.js'
 
 import {
   ISO_8601_FULL,
@@ -13,9 +13,9 @@ import {
   PROPERTY_TYPE_NULL,
   PROPERTY_TYPE_NUMBER,
   PROPERTY_TYPE_STRING
-} from '../common/constants'
-import { isArray, isObject, isString } from '../common/utils'
-import { CollectTransaction } from '../sdk/transaction'
+} from '../common/constants.js'
+import { isArray, isObject, isString } from '../common/utils.js'
+import { CollectTransaction } from '../sdk/transaction.js'
 
 export const buildTransactionHeader = (txId?: string) =>
   txId ?
@@ -36,10 +36,10 @@ export const pickTransactionId = (input: any) =>
     : input
   : undefined
 
-export const createSearchParams = <T extends CollectSchema = CollectSchema>(
-  labelOrSearchParams?: CollectQuery<T> | string,
-  searchParamsOrTransaction?: CollectQuery<T> | CollectTransaction | string
-): { id?: string; searchParams: CollectQuery<T> } => {
+export const createSearchParams = <Schema extends CollectSchema = CollectSchema>(
+  labelOrSearchParams?: CollectQuery<Schema> | string,
+  searchParamsOrTransaction?: CollectQuery<Schema> | CollectTransaction | string
+): { id?: string; searchParams: CollectQuery<Schema> } => {
   const isFirstArgString = isString(labelOrSearchParams)
   const isFirstArgUUID = isUUID(labelOrSearchParams)
   const isSecondArgTransaction = isTransaction(searchParamsOrTransaction)
@@ -49,7 +49,7 @@ export const createSearchParams = <T extends CollectSchema = CollectSchema>(
     const baseParams =
       isFirstArgUUID ?
         { id: labelOrSearchParams }
-      : { searchParams: { labels: [labelOrSearchParams as string] } as CollectQuery<T> }
+      : { searchParams: { labels: [labelOrSearchParams as string] } as CollectQuery<Schema> }
 
     return isEmptySearchParams ?
         { ...baseParams, searchParams: { ...baseParams.searchParams } }
@@ -59,7 +59,7 @@ export const createSearchParams = <T extends CollectSchema = CollectSchema>(
             ...searchParamsOrTransaction,
             labels: [
               ...(baseParams.searchParams?.labels ?? []),
-              ...((searchParamsOrTransaction as CollectQuery<T>).labels ?? [])
+              ...((searchParamsOrTransaction as CollectQuery<Schema>).labels ?? [])
             ]
           }
         }

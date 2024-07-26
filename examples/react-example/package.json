@@ -11,7 +11,7 @@
     "flush": "rm -rf node_modules"
   },
   "dependencies": {
-    "@collect.so/javascript-sdk": "workspace:*",
+    "@collect.so/javascript-sdk": "workspace:^",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

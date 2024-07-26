@@ -1,13 +1,14 @@
-import type { UserProvidedConfig } from './src/sdk/types'
-import type { CollectRecord } from './src/types'
+import type { CollectInferType, CollectRecord, UserProvidedConfig } from './src/sdk'
 
 import { CollectBatchDraft, CollectRecordDraft, CollectRestAPI } from './src/api'
 import { HttpClient, HttpClientResponse } from './src/network/HttpClient'
-import { CollectRecordInstance, CollectRecordsArrayInstance } from './src/sdk/instance'
-import { CollectModel } from './src/sdk/model'
-import { CollectTransaction } from './src/sdk/transaction'
-import { CollectInferType, CollectModels } from './src/types'
-import { CollectSDKResult, CollectSchema } from './src/types/common'
+import {
+  CollectModel,
+  CollectRecordInstance,
+  CollectRecordsArrayInstance,
+  CollectTransaction
+} from './src/sdk'
+import { CollectModels, CollectSchema } from './src/types'
 
 declare module '@collect.so/javascript-sdk' {
   export namespace Collect {}
@@ -18,12 +19,12 @@ declare module '@collect.so/javascript-sdk' {
     constructor(token?: string, config?: UserProvidedConfig)
     public api: CollectRestAPI
 
-    public registerModel<T extends CollectModel = CollectModel>(model: T): CollectModel<T['schema']>
+    public registerModel<Model extends CollectModel = CollectModel>(model: Model): Model //CollectModel<T['schema']>
     public getModel(label: string): CollectModel
     public getModels(): Map<string, CollectModel>
     public getInstance(token: string, config?: UserProvidedConfig): Collect
-    public toInstance<T extends CollectSchema = CollectSchema>(
-      record: CollectRecord<T>
+    public toInstance<Schema extends CollectSchema = CollectSchema>(
+      record: CollectRecord<Schema>
     ): CollectRecordInstance
   }
 
@@ -32,11 +33,11 @@ declare module '@collect.so/javascript-sdk' {
     CollectInferType,
     CollectModel,
     CollectModels,
+    CollectRecord,
     CollectRecordDraft,
     CollectRecordInstance,
     CollectRecordsArrayInstance,
     CollectRestAPI,
-    CollectSDKResult,
     CollectSchema,
     CollectTransaction,
     HttpClient,

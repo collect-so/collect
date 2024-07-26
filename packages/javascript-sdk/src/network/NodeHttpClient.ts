@@ -1,10 +1,10 @@
 import * as http_ from 'http'
 import * as https_ from 'https'
 
-import type { HttpClientResponseInterface, MakeRequestConfig } from './HttpClient'
+import type { HttpClientResponseInterface, MakeRequestConfig } from './HttpClient.js'
 
-import { DEFAULT_TIMEOUT } from '../common/constants'
-import { HttpClient, HttpClientGenericResponse } from './HttpClient'
+import { DEFAULT_TIMEOUT } from '../common/constants.js'
+import { HttpClient, HttpClientGenericResponse } from './HttpClient.js'
 
 // `import * as http_ from 'http'` creates a "Module Namespace Exotic Object"
 // which is immune to monkey-patching, whereas http_.default (in an ES Module context)

@@ -2,11 +2,11 @@ import type {
   HttpClientInterface,
   HttpClientResponseInterface,
   MakeRequestConfig
-} from './HttpClient'
-import type { ResponseHeaders } from './types'
+} from './HttpClient.js'
+import type { ResponseHeaders } from './types.js'
 
-import { DEFAULT_TIMEOUT } from '../common/constants'
-import { HttpClient, HttpClientGenericResponse } from './HttpClient'
+import { DEFAULT_TIMEOUT } from '../common/constants.js'
+import { HttpClient, HttpClientGenericResponse } from './HttpClient.js'
 
 type FetchWithTimeout = (url: string, init: RequestInit, timeout: number) => Promise<Response>
 

@@ -1,5 +1,5 @@
-import { AuthorRepo, Collect, CommentRepo } from './index.ts'
-import { type CollectTransaction } from '@collect.so/javascript-sdk'
+import { AuthorRepo, Collect, CommentRepo } from './index'
+import { CollectRecord, CollectTransaction } from '@collect.so/javascript-sdk'
 
 export const creteAuthors = async (tx: CollectTransaction) => {
   return await AuthorRepo.createMany(
@@ -42,7 +42,14 @@ export const seed = async () => {
   const tx = await Collect.tx.begin({ ttl: 5000 })
 
   const [comments, authors] = await Promise.all([createComments(tx), creteAuthors(tx)])
-  await Promise.all(authors.data.map((a, i) => Collect.toInstance(a).attach(comments.data[i], tx)))
+  if (comments.data && authors.data) {
+    await Promise.all(
+      authors.data.map((a, i) => {
+        const target = comments.data?.[i] as CollectRecord
+        return Collect.toInstance(a).attach(target, tx)
+      })
+    )
+  }
 
   await tx.commit()
 }

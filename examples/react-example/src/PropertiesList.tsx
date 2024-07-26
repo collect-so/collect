@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Collect } from './api'
-import { CollectSDKResult } from '@collect.so/javascript-sdk'
+import { CollectProperty } from '@collect.so/javascript-sdk'
 
 export const PropertiesList = () => {
-  const [properties, setProperties] =
-    useState<CollectSDKResult<typeof Collect.properties.find>['data']>()
+  const [properties, setProperties] = useState<CollectProperty[]>()
 
   useEffect(() => {
     const fetchProperties = async () => {

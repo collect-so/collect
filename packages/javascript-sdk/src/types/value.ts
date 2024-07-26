@@ -4,8 +4,8 @@ import type {
   PROPERTY_TYPE_NULL,
   PROPERTY_TYPE_NUMBER,
   PROPERTY_TYPE_STRING
-} from '../common/constants'
-import type { MaybeArray } from './utils'
+} from '../common/constants.js'
+import type { MaybeArray } from './utils.js'
 
 // DATETIME
 export type CollectDatetimeObject = {

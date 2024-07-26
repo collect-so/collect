@@ -1,28 +1,36 @@
 import type {
   CollectQuery,
-  CollectRelationTarget,
   CollectSchema,
+  FlattenTypes,
+  InferSchemaTypesRead,
   InferSchemaTypesWrite
-} from '../types'
-import type { CollectTransaction } from './transaction'
+} from '../types/index.js'
+import type { CollectRelationTarget } from './record.js'
+import type { CollectTransaction } from './transaction.js'
 
-import { CollectRestApiProxy } from '../api/rest-api-proxy'
-import { isEmptyObject } from '../common/utils'
-import { UniquenessError } from './errors'
+import { CollectRestApiProxy } from '../api/rest-api-proxy.js'
+import { isEmptyObject } from '../common/utils.js'
+import { UniquenessError } from './errors.js'
 import {
   mergeDefaultsWithPayload,
   pickUniqFieldsFromRecord,
   pickUniqFieldsFromRecords
-} from './utils'
+} from './utils.js'
 
-export class CollectModel<S extends CollectSchema = any> extends CollectRestApiProxy {
+type CollectInstance = {
+  registerModel(model: CollectModel): void
+}
+
+export class CollectModel<Schema extends CollectSchema = any> extends CollectRestApiProxy {
   public readonly label: string
-  public readonly schema: S
+  public readonly schema: Schema
 
-  constructor(modelName: string, schema: S) {
+  constructor(modelName: string, schema: Schema, collectInstance?: CollectInstance) {
     super()
     this.label = modelName
     this.schema = schema
+
+    collectInstance?.registerModel(this)
   }
 
   getLabel() {
@@ -30,29 +38,25 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
   }
 
   async find(
-    params: CollectQuery<S> & { labels?: never } = {},
+    params: CollectQuery<Schema> & { labels?: never } = {},
     transaction?: CollectTransaction | string
   ) {
-    return this.apiProxy?.records.find<S>(this.label, params, transaction)
+    return this.apiProxy?.records.find<Schema>(this.label, params, transaction)
   }
 
   async findOne(
-    params: CollectQuery<S> & { labels?: never } = {},
+    params: CollectQuery<Schema> & { labels?: never } = {},
     transaction?: CollectTransaction | string
   ) {
-    return this.apiProxy?.records.findOne<S>(this.label, { ...params }, transaction)
+    return this.apiProxy?.records.findOne<Schema>(this.label, { ...params }, transaction)
   }
 
   async findById(id: string, transaction?: CollectTransaction | string) {
-    return this.apiProxy?.records.findById<S>(id, transaction)
+    return this.apiProxy?.records.findById<Schema>(id, transaction)
   }
 
-  async create(
-    record: InferSchemaTypesWrite<S>,
-    transaction?: CollectTransaction | string,
-    options: { validate: boolean } = { validate: true }
-  ) {
-    const data = await mergeDefaultsWithPayload<S>(this.schema, record)
+  async create(record: InferSchemaTypesWrite<Schema>, transaction?: CollectTransaction | string) {
+    const data = await mergeDefaultsWithPayload<Schema>(this.schema, record)
 
     const uniqFields = pickUniqFieldsFromRecord(this.schema, data)
 
@@ -60,14 +64,10 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
       const tx = transaction ?? (await this.apiProxy.tx.begin())
       const matchingRecords = await this.find({ where: uniqFields }, tx)
       const hasOwnTransaction = typeof transaction !== 'undefined'
-      const canCreate = !matchingRecords?.data.length
+      const canCreate = !matchingRecords?.data?.length
 
       if (canCreate) {
-        const result = await this.apiProxy.records.create<InferSchemaTypesWrite<S>>(
-          this.label,
-          data,
-          tx
-        )
+        const result = await this.apiProxy.records.create<Schema>(this.label, data, tx)
         if (!hasOwnTransaction) {
           await (tx as CollectTransaction).commit()
         }
@@ -79,11 +79,7 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
         throw new UniquenessError(this.label, uniqFields)
       }
     }
-    return await this.apiProxy.records.create<InferSchemaTypesWrite<S>>(
-      this.label,
-      data,
-      transaction
-    )
+    return await this.apiProxy.records.create<Schema>(this.label, data, transaction)
   }
 
   attach(
@@ -104,11 +100,10 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
 
   async updateById(
     id: string,
-    record: InferSchemaTypesWrite<S>,
-    transaction?: CollectTransaction | string,
-    options: { validate: boolean } = { validate: true }
+    record: InferSchemaTypesWrite<Schema>,
+    transaction?: CollectTransaction | string
   ) {
-    const data = await mergeDefaultsWithPayload<S>(this.schema, record)
+    const data = await mergeDefaultsWithPayload<Schema>(this.schema, record)
 
     const uniqFields = pickUniqFieldsFromRecord(this.schema, data)
 
@@ -118,11 +113,11 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
       const hasOwnTransaction = typeof transaction !== 'undefined'
 
       const canUpdate =
-        !matchingRecords?.data.length ||
+        !matchingRecords?.data?.length ||
         (matchingRecords.data.length === 1 && matchingRecords.data[0].__id === id)
 
       if (canUpdate) {
-        const result = await this.apiProxy.records.update<S>(id, data, tx)
+        const result = await this.apiProxy.records.update<Schema>(id, data, tx)
         if (!hasOwnTransaction) {
           await (tx as CollectTransaction).commit()
         }
@@ -134,13 +129,12 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
         throw new UniquenessError(this.label, uniqFields)
       }
     }
-    return await this.apiProxy.records.update<S>(id, data, transaction)
+    return await this.apiProxy.records.update<Schema>(id, data, transaction)
   }
 
-  async createMany<T extends CollectSchema = S>(
-    records: InferSchemaTypesWrite<T>[],
-    transaction?: CollectTransaction | string,
-    options: { validate: boolean } = { validate: true }
+  async createMany(
+    records: InferSchemaTypesWrite<Schema>[],
+    transaction?: CollectTransaction | string
   ) {
     // Begin a transaction if one isn't provided.
     const hasOwnTransaction = typeof transaction !== 'undefined'
@@ -150,13 +144,13 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
       // Apply defaults in parallel
       const recordsToStore = await Promise.all(
         records.map(async (record) => {
-          return await mergeDefaultsWithPayload<T>(this.schema as unknown as T, record)
+          return await mergeDefaultsWithPayload<Schema>(this.schema, record)
         })
       )
 
       // Check uniqueness
       const uniqProperties = pickUniqFieldsFromRecords(
-        recordsToStore as Partial<InferSchemaTypesWrite<S>>[],
+        recordsToStore as Partial<InferSchemaTypesWrite<Schema>>[],
         this.schema,
         this.label
       )
@@ -172,13 +166,13 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
           },
           tx
         )
-        if (matchingRecords?.data.length) {
+        if (matchingRecords?.data?.length) {
           throw new UniquenessError(this.label, Object.keys(uniqProperties))
         }
       }
 
       // Create records in the database
-      const createdRecords = await this.apiProxy.records.createMany<T>(
+      const createdRecords = await this.apiProxy.records.createMany<Schema>(
         this.label,
         recordsToStore,
         tx
@@ -198,10 +192,14 @@ export class CollectModel<S extends CollectSchema = any> extends CollectRestApiP
     }
   }
 
-  async delete<T extends InferSchemaTypesWrite<S> = InferSchemaTypesWrite<S>>(
-    params?: Omit<CollectQuery<T>, 'labels'>,
+  async delete(
+    params?: Omit<CollectQuery<Schema>, 'labels'>,
     transaction?: CollectTransaction | string
   ) {
     return await this.apiProxy.records.delete({ ...params, labels: [this.label] }, transaction)
   }
 }
+
+export type CollectInferType<Model extends CollectModel<any> = CollectModel<any>> = FlattenTypes<
+  InferSchemaTypesRead<Model['schema']>
+>
