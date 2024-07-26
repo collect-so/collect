@@ -47,7 +47,6 @@
     "node": "^18.x"
   },
   "workspaces": [
-    "packages/*",
-    "examples/*"
+    "packages/*"
   ]
 }
