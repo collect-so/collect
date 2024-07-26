@@ -1,5 +1,4 @@
-import type { HttpClientInterface } from '../network/HttpClient'
-import type { Validator } from '../validators/types'
+import type { HttpClientInterface } from '../network/HttpClient.js'
 
 type ApiConnectionConfig =
   | {
@@ -20,7 +19,6 @@ export type CollectState = {
 type CommonUserProvidedConfig = {
   httpClient?: HttpClientInterface
   timeout?: number
-  validator?: Validator
 } & ApiConnectionConfig
 
 export type UserProvidedConfig = CommonUserProvidedConfig

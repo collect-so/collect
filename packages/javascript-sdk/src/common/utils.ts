@@ -1,4 +1,4 @@
-import type { UserProvidedConfig } from '../sdk/types'
+import type { UserProvidedConfig } from '../sdk/types.js'
 
 import {
   ALLOWED_CONFIG_PROPERTIES,
@@ -6,7 +6,7 @@ import {
   DEFAULT_HOST,
   DEFAULT_PORT,
   DEFAULT_PROTOCOL
-} from '../common/constants'
+} from './constants.js'
 
 export function validateInteger(name: string, n: unknown, defaultVal?: number): number {
   if (!Number.isInteger(n)) {
@@ -108,3 +108,22 @@ export const isObjectFlat = (input: any): input is object => {
 }
 
 export const isString = (input: any): input is string => typeof input === 'string'
+
+export const toBoolean = (value: any): boolean => {
+  if (typeof value === 'string') {
+    if (value.toLowerCase() === 'true') {
+      return true
+    } else if (value.toLowerCase() === 'false') {
+      return false
+    }
+  }
+
+  if (isArray(value) && value.length === 0) {
+    return false
+  }
+  if (isObject(value) && Object.keys(value).length === 0) {
+    return false
+  }
+
+  return Boolean(value)
+}

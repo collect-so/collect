@@ -1,4 +1,4 @@
-import { CollectRestApiProxy } from '../api/rest-api-proxy'
+import { CollectRestApiProxy } from '../api/rest-api-proxy.js'
 
 export class CollectTransaction extends CollectRestApiProxy {
   readonly id: string

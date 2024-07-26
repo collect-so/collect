@@ -1,112 +1,21 @@
-import type {
-  AnyObject,
-  CollectPropertyType,
-  CollectPropertyValue,
-  CollectPropertyWithValue,
-  CollectSchema,
-  Enumerable,
-  InferSchemaTypesWrite
-} from '../types'
+import type { CollectPropertyValue, CollectSchema, InferSchemaTypesWrite } from '../types/index.js'
 
-import { UniquenessError } from './errors'
+import { UniquenessError } from './errors.js'
 
-export class CollectBatchDraft {
-  label?: string
-  options?: {
-    generateLabels?: boolean
-    returnResult?: boolean
-    suggestTypes?: boolean
-  }
-  parentId?: string
-  payload: Enumerable<AnyObject>
-
-  constructor({
-    label,
-    options = {
-      generateLabels: true,
-      returnResult: true,
-      suggestTypes: true
-    },
-    parentId,
-    payload
-  }: {
-    label?: string
-    options?: {
-      generateLabels?: boolean
-      returnResult?: boolean
-      suggestTypes?: boolean
-    }
-    parentId?: string
-    payload: AnyObject
-  }) {
-    this.label = label
-    this.options = options
-    this.parentId = parentId
-    this.payload = payload
-  }
-
-  public toJson() {
-    return {
-      label: this.label,
-      options: this.options,
-      parentId: this.parentId,
-      payload: this.payload
-    }
-  }
-}
-
-export class CollectRecordDraft {
-  label?: string
-  parentId?: string
-  properties?: Array<{
-    metadata?: string
-    name: string
-    type: CollectPropertyType
-    value: CollectPropertyValue
-    valueMetadata?: string
-    valueSeparator?: string
-  }>
-
-  constructor({
-    label,
-    parentId,
-    properties = []
-  }: {
-    label?: string
-    parentId?: string
-    properties?: Array<
-      CollectPropertyWithValue & {
-        metadata?: string
-        valueMetadata?: string
-        valueSeparator?: string
-      }
-    >
-  }) {
-    this.label = label
-    this.parentId = parentId
-    this.properties = properties
-  }
-
-  public toJson() {
-    return {
-      label: this.label,
-      parentId: this.parentId,
-      properties: this.properties
-    }
-  }
-}
-
-export const mergeDefaultsWithPayload = async <T extends CollectSchema = CollectSchema>(
-  schema: T,
-  payload: Partial<InferSchemaTypesWrite<T>>
-): Promise<InferSchemaTypesWrite<T>> => {
+export const mergeDefaultsWithPayload = async <Schema extends CollectSchema = CollectSchema>(
+  schema: Schema,
+  payload: Partial<InferSchemaTypesWrite<Schema>>
+): Promise<InferSchemaTypesWrite<Schema>> => {
   const defaultPromises = Object.entries(schema).map(async ([key, prop]) => {
     if (
       prop.default &&
-      typeof prop.default === 'function' &&
-      typeof payload[key as keyof Partial<InferSchemaTypesWrite<T>>] === 'undefined'
+      typeof prop.default !== 'undefined' &&
+      typeof payload[key as keyof Partial<InferSchemaTypesWrite<Schema>>] === 'undefined'
     ) {
-      return { key, value: await prop.default() }
+      return {
+        key,
+        value: typeof prop.default === 'function' ? await prop.default() : prop.default
+      }
     } else {
       return { key, value: undefined }
     }
@@ -124,12 +33,12 @@ export const mergeDefaultsWithPayload = async <T extends CollectSchema = Collect
     {} as Record<string, CollectPropertyValue>
   )
 
-  return { ...defaults, ...payload } as InferSchemaTypesWrite<T>
+  return { ...defaults, ...payload } as InferSchemaTypesWrite<Schema>
 }
 
-export const pickUniqFieldsFromRecord = <T extends CollectSchema = CollectSchema>(
-  schema: T,
-  data: Partial<InferSchemaTypesWrite<T>>
+export const pickUniqFieldsFromRecord = <Schema extends CollectSchema = CollectSchema>(
+  schema: Schema,
+  data: Partial<InferSchemaTypesWrite<Schema>>
 ) => {
   return Object.entries(data)
     .filter(([key]) => schema[key]?.uniq)
@@ -144,9 +53,9 @@ export const pickUniqFieldsFromRecord = <T extends CollectSchema = CollectSchema
     )
 }
 
-export const pickUniqFieldsFromRecords = <T extends CollectSchema = CollectSchema>(
-  data: Partial<InferSchemaTypesWrite<T>>[],
-  schema: T,
+export const pickUniqFieldsFromRecords = <Schema extends CollectSchema = CollectSchema>(
+  data: Partial<InferSchemaTypesWrite<Schema>>[],
+  schema: Schema,
   label: string
 ) => {
   const properties = {} as Record<string, CollectPropertyValue[]>

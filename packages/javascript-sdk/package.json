@@ -14,7 +14,9 @@
     "dev": "tsup --watch",
     "types:check": "tsc --noEmit",
     "clean": "rm -rf ./dist ./node_modules/.cache ./coverage ./esm ./cjs ./types",
-    "flush": "rm -rf node_modules"
+    "flush": "rm -rf node_modules",
+    "lint:circularDeps": "madge --circular ./src/*",
+    "lint:circularDepsWithImage": "madge --image graph.svg --circular ./src/*"
   },
   "devDependencies": {},
   "peerDependencies": {},
@@ -24,7 +26,7 @@
   },
   "repository": {
     "type": "https",
-    "url": "https://github.com/collect-so/collect-toolkit"
+    "url": "https://github.com/collect-so/collect"
   },
   "exports": {
     "types": "./types/index.d.ts",

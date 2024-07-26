@@ -1,68 +1,125 @@
-import type { CollectSchema } from './common'
-import type { Enumerable } from './utils'
 import type {
-  BooleanValue,
-  CollectValueByType,
-  CollectWhereValue,
-  DatetimeValue,
-  NullValue,
-  NumberValue,
-  StringValue
-} from './value'
+  BooleanExpression,
+  CollectPropertyExpression,
+  CollectPropertyExpressionByType,
+  DatetimeExpression,
+  LogicalGrouping,
+  NullExpression,
+  NumberExpression,
+  StringExpression
+} from './expressions.js'
+import type { CollectSchema } from './schema.js'
+import type { MaybeArray, RequireAtLeastOne } from './utils.js'
 
-export type CollectQueryLogicalGrouping<T extends CollectSchema = CollectSchema> = Record<
-  '$AND' | '$NOT' | '$OR' | '$XOR',
-  Enumerable<CollectQueryCondition<T>>
->
+export type CollectQueryRelation = { direction?: 'in' | 'out'; type?: string } | string
 
-export type CollectQueryOrderByMap<T extends CollectSchema = CollectSchema> = Partial<
-  Record<keyof T, 'asc' | 'desc'>
->
+export type CollectAggregate<Schema extends CollectSchema = CollectSchema> = {
+  // @TODO: separate aggregating functions depending on field type
+  [key: string]: Partial<Record<'avg' | 'count' | 'max' | 'min' | 'sum', keyof Schema>>
+} & {
+  [Key in keyof Schema]?: boolean
+}
 
-export type CollectQueryOrderBy<T extends CollectSchema = CollectSchema> =
+export type CollectQueryRelatedCondition = {
+  [Key in keyof CollectModels]?: {
+    // $include?: CollectAggregate<CollectModels[K]> | CollectPaginationClause | true
+    $relation?: CollectQueryRelation
+  } & CollectQueryWhere<CollectModels[Key]>
+}
+
+export type LogicalExpressionValue<T = CollectPropertyExpression & CollectQueryRelatedCondition> =
+  | AndExpression<T>
+  | NorExpression<T>
+  | NotExpression<T>
+  | OrExpression<T>
+  | T
+  | XorExpression<T>
+
+export type AndExpression<T = CollectPropertyExpression & CollectQueryRelatedCondition> = {
+  $and: MaybeArray<LogicalExpressionValue<T>>
+}
+
+export type OrExpression<T = CollectPropertyExpression & CollectQueryRelatedCondition> = {
+  $or: MaybeArray<LogicalExpressionValue<T>>
+}
+
+export type NotExpression<T = CollectPropertyExpression & CollectQueryRelatedCondition> = {
+  $not: MaybeArray<LogicalExpressionValue<T>>
+}
+
+export type XorExpression<T = CollectPropertyExpression & CollectQueryRelatedCondition> = {
+  $xor: MaybeArray<LogicalExpressionValue<T>>
+}
+
+export type NorExpression<T = CollectPropertyExpression & CollectQueryRelatedCondition> = {
+  $nor: MaybeArray<LogicalExpressionValue<T>>
+}
+
+export type LogicalExpression<T = CollectPropertyExpression & CollectQueryRelatedCondition> =
+  RequireAtLeastOne<
+    AndExpression<T> & OrExpression<T> & NotExpression<T> & XorExpression<T> & NorExpression<T>
+  >
+
+export type CollectQueryIdExpression =
+  | ({ __id?: string } & CollectQueryRelatedCondition)
+  | LogicalExpression<{ __id?: string } & CollectQueryRelatedCondition>
+
+export type CollectQueryExpression<Schema extends CollectSchema = CollectSchema> =
+  | CollectQueryIdExpression
+  | (Schema extends CollectSchema ?
+      // When used with actual CollectSchema
+      {
+        [Key in keyof Schema]?:
+          | CollectPropertyExpressionByType[Schema[Key]['type']]
+          | LogicalExpression<CollectPropertyExpressionByType[Schema[Key]['type']]>
+      }
+    : // When used with random object
+      {
+        [Key in keyof Schema]?: Schema[Key] extends MaybeArray<number> ?
+          LogicalExpression<NumberExpression> | NumberExpression
+        : Schema[Key] extends MaybeArray<boolean> ?
+          BooleanExpression | LogicalExpression<BooleanExpression>
+        : Schema[Key] extends MaybeArray<string> ?
+          | DatetimeExpression
+          | LogicalExpression<DatetimeExpression>
+          | LogicalExpression<StringExpression>
+          | StringExpression
+        : Schema[Key] extends MaybeArray<null> ? LogicalExpression<NullExpression> | NullExpression
+        : LogicalExpression | Partial<CollectPropertyExpression>
+      })
+
+export type CollectQueryWhere<Schema extends CollectSchema = CollectSchema> =
+  | ((CollectQueryExpression<Schema> & CollectQueryRelatedCondition) &
+      LogicalGrouping<CollectQueryExpression<Schema> & CollectQueryRelatedCondition>)
+  | LogicalGrouping<CollectQueryExpression<Schema> & CollectQueryRelatedCondition>
+
+export type CollectQueryOrder<Schema extends CollectSchema = CollectSchema> =
   | 'asc'
   | 'desc'
-  | CollectQueryOrderByMap<T>
+  | Partial<Record<keyof Schema, 'asc' | 'desc'>>
 
-type CollectPagination = {
+// CLAUSES
+export type CollectQueryWhereClause<Schema extends CollectSchema = CollectSchema> = {
+  where?: CollectQueryWhere<Schema>
+}
+
+export type CollectPaginationClause = {
   limit?: number
   skip?: number
 }
 
-export type CollectQueryCommonParams<T extends CollectSchema = CollectSchema> = {
+export type CollectQueryLabelsClause = {
   labels?: string[]
-  orderBy?: CollectQueryOrderBy<T>
-} & CollectPagination
-
-export type CollectQueryCondition<T extends CollectSchema = CollectSchema> = (
-  | {
-      [K in keyof T]?: T extends CollectSchema ? CollectValueByType[T[K]['type']]
-      : T[K] extends number ? NumberValue
-      : T[K] extends boolean ? BooleanValue
-      : T[K] extends string ? DatetimeValue | StringValue
-      : T[K] extends null ? NullValue
-      : Partial<CollectWhereValue>
-    }
-  | { __id?: string }
-) & {
-  [K in keyof CollectModels]?: CollectQueryWhere<CollectModels[K]>
 }
 
-export type CollectQueryWhere<T extends CollectSchema = CollectSchema> =
-  | CollectQueryCondition<T>
-  | Partial<CollectQueryLogicalGrouping<T>>
-
-export type CollectQueryWhereClause<T extends CollectSchema = CollectSchema> = {
-  where?: CollectQueryWhere<T>
+export type CollectQueryOrderClause<Schema extends CollectSchema = CollectSchema> = {
+  orderBy?: CollectQueryOrder<Schema>
 }
 
-export type CollectQuery<T extends CollectSchema = any> = CollectQueryCommonParams<T> &
-  CollectQueryWhereClause<T>
-
-// @TODO: Eager fetching
-// export type CollectInclude = {
-//   [K in keyof CollectModels]?: CollectPagination | boolean
-// }
+export type CollectQuery<Schema extends CollectSchema = any> = CollectQueryLabelsClause &
+  CollectPaginationClause &
+  CollectQueryOrderClause<Schema> &
+  CollectQueryWhereClause<Schema>
 
 /** Redeclare CollectModels type in order to have suggestions over related records fields **/
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
