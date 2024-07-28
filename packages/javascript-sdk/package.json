@@ -24,6 +24,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "bugs": "https://github.com/collect-so/collect/issues",
   "repository": {
     "type": "https",
     "url": "https://github.com/collect-so/collect"
@@ -34,11 +35,19 @@
       "import": "./esm/index.esm.worker.js",
       "require": "./cjs/index.cjs.worker.js"
     },
+    "bun": {
+      "import": "./esm/index.esm.worker.js",
+      "require": "./cjs/index.cjs.worker.js"
+    },
     "deno": {
       "import": "./esm/index.esm.worker.js",
       "require": "./cjs/index.cjs.worker.js"
     },
     "worker": {
+      "import": "./esm/index.esm.worker.js",
+      "require": "./cjs/index.cjs.worker.js"
+    },
+    "workerd": {
       "import": "./esm/index.esm.worker.js",
       "require": "./cjs/index.cjs.worker.js"
     },

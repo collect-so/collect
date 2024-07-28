@@ -57,7 +57,7 @@ export type CollectPropertyValuesData = {
   values: CollectPropertyValue[]
 }
 
-type CollectPropertySingleValue<TType extends CollectPropertyType = CollectPropertyType> =
+export type CollectPropertySingleValue<TType extends CollectPropertyType = CollectPropertyType> =
   TType extends typeof PROPERTY_TYPE_DATETIME ? CollectDatetimeValue
   : TType extends typeof PROPERTY_TYPE_NUMBER ? CollectNumberValue
   : TType extends typeof PROPERTY_TYPE_STRING ? CollectStringValue
