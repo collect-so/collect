@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.22.0
+
+### Minor Changes
+
+- 0322176: Extend supported environments and improved typings
+
 ## 0.21.0
 
 ### Minor Changes
