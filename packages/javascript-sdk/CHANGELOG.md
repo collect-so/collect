@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.21.0
+
+### Minor Changes
+
+- 2081e5c: Update \_\_proptypes typings for better developer experience and explicit checks for existence of the property
+
 ## 0.20.0
 
 ### Minor Changes
