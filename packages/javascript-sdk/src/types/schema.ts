@@ -24,13 +24,13 @@ type TypeMappingWrite = {
   string: string
 }
 
-type OptionalKeysWrite<Schema extends CollectSchema = CollectSchema> = {
+export type OptionalKeysWrite<Schema extends CollectSchema = CollectSchema> = {
   [Key in keyof Schema]: Schema[Key]['required'] extends false ? Key
   : Schema[Key]['default'] extends CollectSchemaDefaultValue ? Key
   : never
 }[keyof Schema]
 
-type RequiredKeysWrite<Schema extends CollectSchema = CollectSchema> = {
+export type RequiredKeysWrite<Schema extends CollectSchema = CollectSchema> = {
   [Key in keyof Schema]: Schema[Key]['required'] extends false ? never
   : Schema[Key]['default'] extends CollectSchemaDefaultValue ? never
   : Key
@@ -57,11 +57,11 @@ type TypeMappingRead = {
   string: string
 }
 
-type OptionalKeysRead<Schema extends CollectSchema = CollectSchema> = {
+export type OptionalKeysRead<Schema extends CollectSchema = CollectSchema> = {
   [Key in keyof Schema]: Schema[Key]['required'] extends false ? Key : never
 }[keyof Schema]
 
-type RequiredKeysRead<Schema extends CollectSchema = CollectSchema> = {
+export type RequiredKeysRead<Schema extends CollectSchema = CollectSchema> = {
   [Key in keyof Schema]: Schema[Key]['required'] extends false ? never : Key
 }[keyof Schema]
 
