@@ -8,7 +8,9 @@ import type {
   FlattenTypes,
   InferSchemaTypesRead,
   InferSchemaTypesWrite,
-  MaybeArray
+  MaybeArray,
+  OptionalKeysRead,
+  RequiredKeysRead
 } from '../types/index.js'
 import type { CollectTransaction } from './transaction.js'
 
@@ -17,7 +19,13 @@ import { CollectRestApiProxy } from '../api/rest-api-proxy.js'
 type CollectRecordInternalProps<Schema extends CollectSchema = CollectSchema> = {
   __id: string
   __label?: string
-  __proptypes?: Record<keyof Schema, Schema[keyof Schema]['type']>
+  __proptypes?: FlattenTypes<
+    {
+      [Key in RequiredKeysRead<Schema>]: Schema[Key]['type']
+    } & {
+      [Key in OptionalKeysRead<Schema>]?: Schema[Key]['type']
+    }
+  >
 }
 
 export type CollectRecordProps<Schema extends CollectSchema = CollectSchema> =
