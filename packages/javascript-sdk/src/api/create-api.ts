@@ -157,9 +157,9 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     ) {
       const txId = pickTransactionId(transaction)
 
-      return fetcher<CollectApiResponse<{ message: string }>>(`/records`, {
+      return fetcher<CollectApiResponse<{ message: string }>>(`/records/delete`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
-        method: 'DELETE',
+        method: 'PUT',
         requestData: searchParams
       })
     },
@@ -190,7 +190,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
 
       return fetcher<CollectApiResponse<{ message: string }>>(`/records/${id}/relations`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
-        method: 'DELETE',
+        method: 'PUT',
         requestData: { targetIds: idOrIds }
       })
     },

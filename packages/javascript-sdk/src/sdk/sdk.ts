@@ -6,8 +6,8 @@ import type { CollectState, UserProvidedConfig } from './types.js'
 
 import { CollectRestAPI } from '../api/api.js'
 import { DEFAULT_TIMEOUT } from '../common/constants.js'
-import { parseConfig, validateInteger } from '../common/utils.js'
 import { CollectRecordInstance } from './record.js'
+import { parseConfig, validateInteger } from './utils.js'
 
 export const createCollect = (httpClient: HttpClient) => {
   class Collect extends CollectRestAPI implements Collect {

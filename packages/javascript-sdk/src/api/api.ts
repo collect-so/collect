@@ -10,7 +10,7 @@ import type {
 } from '../types/index.js'
 import type { CollectApiResponse, CollectRecordsApi } from './types.js'
 
-import { buildUrl, isArray, isObject, isObjectFlat, isString, toBoolean } from '../common/utils.js'
+import { isArray, isObject, isObjectFlat, isString, toBoolean } from '../common/utils.js'
 import { createFetcher } from '../network/index.js'
 import { EmptyTargetError } from '../sdk/errors.js'
 import {
@@ -21,7 +21,13 @@ import {
 } from '../sdk/record.js'
 import { CollectTransaction } from '../sdk/transaction.js'
 import { createApi } from './create-api.js'
-import { createSearchParams, isTransaction, normalizeRecord, pickTransaction } from './utils.js'
+import {
+  buildUrl,
+  createSearchParams,
+  isTransaction,
+  normalizeRecord,
+  pickTransaction
+} from './utils.js'
 
 export class CollectRestAPI {
   public api: ReturnType<typeof createApi>

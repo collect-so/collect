@@ -76,6 +76,8 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
         if (!hasOwnTransaction) {
           await (tx as CollectTransaction).commit()
         }
+
+        // @TODO: Make it optional
         throw new UniquenessError(this.label, uniqFields)
       }
     }
