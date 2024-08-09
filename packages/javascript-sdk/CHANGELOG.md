@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.24.0
+
+### Minor Changes
+
+- c0eae95: Update http methods for few api endpoints
+
 ## 0.23.0
 
 ### Minor Changes
