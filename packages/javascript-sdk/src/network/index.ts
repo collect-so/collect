@@ -29,5 +29,6 @@ export const createFetcher =
       return data as Data
     }
 
+    // @TODO: Make it more useful
     throw new Error(`${response.getStatusCode()}`)
   }

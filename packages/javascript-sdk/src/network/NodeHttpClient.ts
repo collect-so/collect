@@ -18,10 +18,6 @@ const https = (https_ as unknown as { default: typeof https_ }).default || https
 const defaultHttpAgent = new http.Agent({ keepAlive: true })
 const defaultHttpsAgent = new https.Agent({ keepAlive: true })
 
-/**
- * HTTP client which uses the Node `http` and `https` packages to issue
- * requests.`
- */
 export class NodeHttpClient extends HttpClient {
   _agent?: http_.Agent | https_.Agent | undefined
 

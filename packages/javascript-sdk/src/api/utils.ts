@@ -1,3 +1,4 @@
+import type { UserProvidedConfig } from '../sdk/types.js'
 import type {
   CollectPropertyType,
   CollectPropertyValue,
@@ -16,6 +17,7 @@ import {
 } from '../common/constants.js'
 import { isArray, isObject, isString } from '../common/utils.js'
 import { CollectTransaction } from '../sdk/transaction.js'
+import { DEFAULT_BASE_PATH, DEFAULT_HOST, DEFAULT_PORT, DEFAULT_PROTOCOL } from './constants.js'
 
 export const buildTransactionHeader = (txId?: string) =>
   txId ?
@@ -142,3 +144,40 @@ export const normalizeRecord = ({
     return { name, type, value: processedValue }
   }) as CollectPropertyWithValue[]
 })
+
+export const buildUrl = (props: UserProvidedConfig): string => {
+  let protocol = DEFAULT_PROTOCOL
+  let host = DEFAULT_HOST
+  let port = DEFAULT_PORT
+  let basePath = DEFAULT_BASE_PATH
+
+  if ('url' in props) {
+    const url = new URL(props.url)
+    protocol = url.protocol.replace(':', '')
+    host = url.hostname
+    port = parseInt(
+      url.port || protocol === 'http' ? '80'
+      : protocol === 'https' ? '443'
+      : ''
+    )
+  }
+
+  if ('host' in props && 'port' in props && 'protocol' in props) {
+    protocol = props.protocol.replace(':', '')
+    host = props.host
+    port = props.port
+  }
+
+  // Ensure the basePath starts with a '/'
+  if (basePath && !basePath.startsWith('/')) {
+    basePath = '/' + basePath
+  }
+
+  // If the port is the default for the protocol (80 for http, 443 for https), it can be omitted
+  let portString = ''
+  if (!((protocol === 'http' && port === 80) || (protocol === 'https' && port === 443))) {
+    portString = ':' + port
+  }
+
+  return `${protocol}://${host}${portString}${basePath}`
+}

@@ -1,5 +1,8 @@
 import type { CollectPropertyValue, CollectSchema, InferSchemaTypesWrite } from '../types/index.js'
+import type { UserProvidedConfig } from './types.js'
 
+import { isObject } from '../common/utils.js'
+import { ALLOWED_CONFIG_PROPERTIES } from './constants.js'
 import { UniquenessError } from './errors.js'
 
 export const mergeDefaultsWithPayload = async <Schema extends CollectSchema = CollectSchema>(
@@ -87,4 +90,36 @@ export const pickUniqFieldsFromRecords = <Schema extends CollectSchema = Collect
   })
 
   return properties
+}
+
+export const parseConfig = (config?: Record<string, unknown>): UserProvidedConfig => {
+  if (!config) {
+    return {} as UserProvidedConfig
+  }
+
+  if (!isObject(config)) {
+    throw new Error('Config must be an object')
+  }
+
+  const values = Object.keys(config).filter((value) => !ALLOWED_CONFIG_PROPERTIES.includes(value))
+
+  if (values.length > 0) {
+    throw new Error(
+      `Config object may only contain the following: ${ALLOWED_CONFIG_PROPERTIES.join(', ')}`
+    )
+  }
+
+  return config as UserProvidedConfig
+}
+
+export function validateInteger(name: string, n: unknown, defaultVal?: number): number {
+  if (!Number.isInteger(n)) {
+    if (defaultVal !== undefined) {
+      return defaultVal
+    } else {
+      throw new Error(`${name} must be an integer`)
+    }
+  }
+
+  return n as number
 }
