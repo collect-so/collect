@@ -168,9 +168,9 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       const txId = pickTransactionId(transaction)
 
       if (isArray(ids)) {
-        return fetcher<CollectApiResponse<{ message: string }>>(`/records`, {
+        return fetcher<CollectApiResponse<{ message: string }>>(`/records/delete`, {
           headers: Object.assign({}, buildTransactionHeader(txId)),
-          method: 'DELETE',
+          method: 'PUT',
           requestData: { ids: ids }
         })
       } else {
