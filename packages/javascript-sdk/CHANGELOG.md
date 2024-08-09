@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.23.0
+
+### Minor Changes
+
+- bfb8cdb: Update http methods and fix minor issue with protocol mapping
+
 ## 0.22.0
 
 ### Minor Changes
