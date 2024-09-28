@@ -10,7 +10,7 @@ import type {
 } from './expressions.js'
 import type { CollectSchema } from './schema.js'
 import type { MaybeArray, RequireAtLeastOne } from './utils.js'
-import { CollectRelationOptions } from '../sdk'
+import type { CollectRelationOptions } from '../sdk'
 
 export type CollectQueryRelation = CollectRelationOptions | string
 
