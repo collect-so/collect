@@ -1,5 +1,10 @@
 import type { HttpClient } from '../network/HttpClient.js'
-import type { CollectRecord, CollectRelationTarget } from '../sdk/record.js'
+import type {
+  CollectRecord,
+  CollectRelationTarget,
+  CollectRelationOptions,
+  CollectRelationDetachOptions
+} from '../sdk/record.js'
 import type { UserProvidedConfig } from '../sdk/types.js'
 import type {
   CollectPropertyValue,
@@ -52,20 +57,21 @@ export class CollectRestAPI {
       attach: async (
         sourceId: string,
         target: CollectRelationTarget,
+        options?: CollectRelationOptions,
         transaction?: CollectTransaction | string
       ) => {
         // target is MaybeArray<CollectRecordInstance>
         if (target instanceof CollectRecordInstance) {
           const id = target.data?.__id
           if (id) {
-            return await this.api.records.attach(sourceId, id, transaction)
+            return await this.api.records.attach(sourceId, id, options, transaction)
           } else {
             throw new EmptyTargetError('Attach error: Target id is empty')
           }
         } else if (isArray(target) && target.every((r) => r instanceof CollectRecordInstance)) {
           const ids = target.map((r) => (r as CollectRecordInstance).data?.__id).filter(toBoolean)
           if (ids.length) {
-            return await this.api.records.attach(sourceId, ids as string[], transaction)
+            return await this.api.records.attach(sourceId, ids as string[], options, transaction)
           } else {
             throw new EmptyTargetError('Attach error: Target ids are empty')
           }
@@ -75,7 +81,7 @@ export class CollectRestAPI {
         else if (target instanceof CollectRecordsArrayInstance) {
           const ids = target.data?.map((r) => r.__id).filter(Boolean)
           if (ids?.length) {
-            return await this.api.records.attach(sourceId, ids, transaction)
+            return await this.api.records.attach(sourceId, ids, options, transaction)
           } else {
             throw new EmptyTargetError('Attach error: Target ids are empty')
           }
@@ -83,11 +89,11 @@ export class CollectRestAPI {
 
         // target is MaybeArray<CollectRecord>
         else if (isObject(target) && '__id' in target) {
-          return await this.api.records.attach(sourceId, target.__id, transaction)
+          return await this.api.records.attach(sourceId, target.__id, options, transaction)
         } else if (isArray(target) && target.every((r) => isObject(r) && '__id' in r)) {
           const ids = target?.map((r) => (r as CollectRecord).__id).filter(Boolean)
           if (ids?.length) {
-            return await this.api.records.attach(sourceId, ids, transaction)
+            return await this.api.records.attach(sourceId, ids, options, transaction)
           } else {
             throw new EmptyTargetError('Attach error: Target ids are empty')
           }
@@ -95,7 +101,12 @@ export class CollectRestAPI {
 
         // target is MaybeArray<string>
         else {
-          return await this.api.records.attach(sourceId, target as MaybeArray<string>, transaction)
+          return await this.api.records.attach(
+            sourceId,
+            target as MaybeArray<string>,
+            options,
+            transaction
+          )
         }
       },
 
@@ -214,20 +225,21 @@ export class CollectRestAPI {
       detach: async (
         sourceId: string,
         target: CollectRelationTarget,
+        options?: CollectRelationDetachOptions,
         transaction?: CollectTransaction | string
       ) => {
         // target is MaybeArray<CollectRecordInstance>
         if (target instanceof CollectRecordInstance) {
           const id = target.data?.__id
           if (id) {
-            return await this.api.records.detach(sourceId, id, transaction)
+            return await this.api.records.detach(sourceId, id, options, transaction)
           } else {
             throw new EmptyTargetError('Detach error: Target id is empty')
           }
         } else if (isArray(target) && target.every((r) => r instanceof CollectRecordInstance)) {
           const ids = target.map((r) => (r as CollectRecordInstance).data?.__id).filter(Boolean)
           if (ids.length) {
-            return await this.api.records.detach(sourceId, ids as string[], transaction)
+            return await this.api.records.detach(sourceId, ids as string[], options, transaction)
           } else {
             throw new EmptyTargetError('Detach error: Target ids are empty')
           }
@@ -237,7 +249,7 @@ export class CollectRestAPI {
         else if (target instanceof CollectRecordsArrayInstance) {
           const ids = target.data?.map((r) => r.__id).filter(Boolean)
           if (ids?.length) {
-            return await this.api.records.detach(sourceId, ids, transaction)
+            return await this.api.records.detach(sourceId, ids, options, transaction)
           } else {
             throw new EmptyTargetError('Detach error: Target ids are empty')
           }
@@ -245,11 +257,11 @@ export class CollectRestAPI {
 
         // target is MaybeArray<CollectRecord>
         else if (isObject(target) && '__id' in target) {
-          return await this.api.records.detach(sourceId, target.__id, transaction)
+          return await this.api.records.detach(sourceId, target.__id, options, transaction)
         } else if (isArray(target) && target.every((r) => isObject(r) && '__id' in r)) {
           const ids = target?.map((r) => (r as CollectRecord).__id).filter(Boolean)
           if (ids?.length) {
-            return await this.api.records.detach(sourceId, ids, transaction)
+            return await this.api.records.detach(sourceId, ids, options, transaction)
           } else {
             throw new EmptyTargetError('Detach error: Target ids are empty')
           }
@@ -257,7 +269,12 @@ export class CollectRestAPI {
 
         // target is MaybeArray<string>
         else {
-          return await this.api.records.detach(sourceId, target as MaybeArray<string>, transaction)
+          return await this.api.records.detach(
+            sourceId,
+            target as MaybeArray<string>,
+            options,
+            transaction
+          )
         }
       },
 
