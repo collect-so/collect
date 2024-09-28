@@ -121,7 +121,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
         method: 'POST',
         requestData: {
           targetIds: idOrIds,
-          ...(options?.type && { type: options?.type }),
+          ...(options?.type && { typeOrTypes: options?.type }),
           ...(options?.direction && { direction: options?.direction })
         }
       })
