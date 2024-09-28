@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.25.0
+
+### Minor Changes
+
+- 332be44: fix(sdk): attach record now accepts type property
+
 ## 0.24.1
 
 ### Patch Changes
