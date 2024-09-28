@@ -45,7 +45,7 @@ export type CollectRelationTarget =
 
 export type CollectRelationOptions = { direction?: 'in' | 'out'; type?: string }
 export type CollectRelationDetachOptions = Omit<CollectRelationOptions, 'type'> & {
-  typeOrTypes: string | string[]
+  typeOrTypes?: string | string[]
 }
 
 export class CollectBatchDraft {
