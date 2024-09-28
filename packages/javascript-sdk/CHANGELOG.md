@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.24.1
+
+### Patch Changes
+
+- 2dc7c7a: feat(sdk): relation can now have a direction and name
+
 ## 0.24.0
 
 ### Minor Changes
