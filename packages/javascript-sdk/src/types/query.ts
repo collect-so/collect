@@ -10,9 +10,8 @@ import type {
 } from './expressions.js'
 import type { CollectSchema } from './schema.js'
 import type { MaybeArray, RequireAtLeastOne } from './utils.js'
-import type { CollectRelationOptions } from '../sdk'
 
-export type CollectQueryRelation = CollectRelationOptions | string
+export type CollectQueryRelation = { direction?: 'in' | 'out'; type?: string } | string
 
 export type CollectAggregate<Schema extends CollectSchema = CollectSchema> = {
   // @TODO: separate aggregating functions depending on field type

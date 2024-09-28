@@ -3,9 +3,7 @@ import type {
   CollectRecordDraft,
   CollectRecordInstance,
   CollectRecordsArrayInstance,
-  CollectRelationTarget,
-  CollectRelationOptions,
-  CollectRelationDetachOptions
+  CollectRelationTarget
 } from '../sdk/record.js'
 import type { CollectTransaction } from '../sdk/transaction.js'
 import type {
@@ -26,7 +24,6 @@ export type CollectRecordsApi = {
   attach(
     sourceId: string,
     target: CollectRelationTarget,
-    options?: CollectRelationOptions,
     transaction?: CollectTransaction | string
   ): Promise<CollectApiResponse<{ message: string }>>
 
@@ -77,7 +74,6 @@ export type CollectRecordsApi = {
   detach(
     sourceId: string,
     target: CollectRelationTarget,
-    options?: CollectRelationDetachOptions,
     transaction?: CollectTransaction | string
   ): Promise<CollectApiResponse<{ message: string }>>
 

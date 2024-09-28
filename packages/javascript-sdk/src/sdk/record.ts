@@ -43,11 +43,6 @@ export type CollectRelationTarget =
   | MaybeArray<CollectRecordInstance<any>>
   | MaybeArray<string>
 
-export type CollectRelationOptions = { direction?: 'in' | 'out'; type?: string }
-export type CollectRelationDetachOptions = Omit<CollectRelationOptions, 'type'> & {
-  typeOrTypes?: string | string[]
-}
-
 export class CollectBatchDraft {
   label?: string
   options?: {
@@ -174,23 +169,15 @@ export class CollectRecordInstance<
     }
   }
 
-  async attach(
-    target: CollectRelationTarget,
-    options?: CollectRelationOptions,
-    transaction?: CollectTransaction | string
-  ) {
+  async attach(target: CollectRelationTarget, transaction?: CollectTransaction | string) {
     if (this.data) {
-      return this.apiProxy.records.attach(this.data.__id, target, options, transaction)
+      return this.apiProxy.records.attach(this.data.__id, target, transaction)
     }
   }
 
-  async detach(
-    target: CollectRelationTarget,
-    options?: CollectRelationDetachOptions,
-    transaction?: CollectTransaction | string
-  ) {
+  async detach(target: CollectRelationTarget, transaction?: CollectTransaction | string) {
     if (this.data) {
-      return this.apiProxy.records.detach(this.data.__id, target, options, transaction)
+      return this.apiProxy.records.detach(this.data.__id, target, transaction)
     }
   }
 

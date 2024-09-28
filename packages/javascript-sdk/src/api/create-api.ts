@@ -1,9 +1,5 @@
 import type { createFetcher } from '../network/index.js'
-import type {
-  CollectRecord,
-  CollectRelationOptions,
-  CollectRelationDetachOptions
-} from '../sdk/record.js'
+import type { CollectRecord } from '../sdk/record.js'
 import type { CollectTransaction } from '../sdk/transaction.js'
 import type {
   CollectFile,
@@ -111,7 +107,6 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     attach: async (
       id: string,
       idOrIds: MaybeArray<string>,
-      options?: CollectRelationOptions,
       transaction?: CollectTransaction | string
     ) => {
       const txId = pickTransactionId(transaction)
@@ -119,11 +114,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       return fetcher<CollectApiResponse<{ message: string }>>(`/records/${id}/relations`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'POST',
-        requestData: {
-          targetIds: idOrIds,
-          ...(options?.type && { typeOrTypes: options?.type }),
-          ...(options?.direction && { direction: options?.direction })
-        }
+        requestData: { targetIds: idOrIds }
       })
     },
     async create<Schema extends CollectSchema = any>(
@@ -193,7 +184,6 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     detach: async (
       id: string,
       idOrIds: MaybeArray<string>,
-      options?: CollectRelationDetachOptions,
       transaction?: CollectTransaction | string
     ) => {
       const txId = pickTransactionId(transaction)
@@ -201,11 +191,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       return fetcher<CollectApiResponse<{ message: string }>>(`/records/${id}/relations`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'PUT',
-        requestData: {
-          targetIds: idOrIds,
-          ...(options?.typeOrTypes && { typeOrTypes: options?.typeOrTypes }),
-          ...(options?.direction && { direction: options?.direction })
-        }
+        requestData: { targetIds: idOrIds }
       })
     },
 
