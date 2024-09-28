@@ -5,7 +5,11 @@ import type {
   InferSchemaTypesRead,
   InferSchemaTypesWrite
 } from '../types/index.js'
-import type { CollectRelationTarget } from './record.js'
+import type {
+  CollectRelationTarget,
+  CollectRelationOptions,
+  CollectRelationDetachOptions
+} from './record.js'
 import type { CollectTransaction } from './transaction.js'
 
 import { CollectRestApiProxy } from '../api/rest-api-proxy.js'
@@ -87,17 +91,19 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
   attach(
     sourceId: string,
     target: CollectRelationTarget,
+    options?: CollectRelationOptions,
     transaction?: CollectTransaction | string
   ) {
-    return this.apiProxy.records.attach(sourceId, target, transaction)
+    return this.apiProxy.records.attach(sourceId, target, options, transaction)
   }
 
   detach(
     sourceId: string,
     target: CollectRelationTarget,
+    options?: CollectRelationDetachOptions,
     transaction?: CollectTransaction | string
   ) {
-    return this.apiProxy.records.detach(sourceId, target, transaction)
+    return this.apiProxy.records.detach(sourceId, target, options, transaction)
   }
 
   async updateById(
