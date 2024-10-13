@@ -408,7 +408,7 @@ export class CollectRestAPI {
       return this.api?.properties.find<Schema>(searchParams, transaction)
     },
     findById: async (id: string, transaction?: CollectTransaction | string) => {
-      return this.api?.properties.values(id, transaction)
+      return this.api?.properties.findById(id, transaction)
     },
     values: async (id: string, transaction?: CollectTransaction | string) => {
       return this.api?.properties.values(id, transaction)
