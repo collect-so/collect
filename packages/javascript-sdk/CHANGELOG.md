@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.24.3
+
+### Patch Changes
+
+- 2344606: fix(sdk): used findById endpoint for findById property
+
 ## 0.24.2
 
 ### Patch Changes
