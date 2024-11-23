@@ -1,3 +1,4 @@
+import type { CollectRelationOptions } from '../sdk'
 import type {
   BooleanExpression,
   CollectPropertyExpression,
@@ -10,20 +11,12 @@ import type {
 } from './expressions.js'
 import type { CollectSchema } from './schema.js'
 import type { MaybeArray, RequireAtLeastOne } from './utils.js'
-import type { CollectRelationOptions } from '../sdk'
 
 export type CollectQueryRelation = CollectRelationOptions | string
 
-export type CollectAggregate<Schema extends CollectSchema = CollectSchema> = {
-  // @TODO: separate aggregating functions depending on field type
-  [key: string]: Partial<Record<'avg' | 'count' | 'max' | 'min' | 'sum', keyof Schema>>
-} & {
-  [Key in keyof Schema]?: boolean
-}
-
 export type CollectQueryRelatedCondition = {
   [Key in keyof CollectModels]?: {
-    // $include?: CollectAggregate<CollectModels[K]> | CollectPaginationClause | true
+    $alias?: string
     $relation?: CollectQueryRelation
   } & CollectQueryWhere<CollectModels[Key]>
 }
@@ -99,6 +92,36 @@ export type CollectQueryOrder<Schema extends CollectSchema = CollectSchema> =
   | 'desc'
   | Partial<Record<keyof Schema, 'asc' | 'desc'>>
 
+export type AggregateCollectFn = {
+  alias: string
+  field?: string
+  fn: 'collect'
+  limit?: number
+  orderBy?: CollectQueryOrder
+  skip?: number
+  uniq?: true
+}
+
+export type AggregateCollectNestedFn = Omit<AggregateCollectFn, 'field'> & {
+  aggregate?: { [field: string]: AggregateCollectNestedFn }
+}
+
+export type CollectQueryAggregateFn<Schema extends CollectSchema = CollectSchema> =
+  | { alias: string; field: string; fn: 'avg'; precision?: number }
+  | { alias: string; field: string; fn: 'max' }
+  | { alias: string; field: string; fn: 'min' }
+  | { alias: string; field: string; fn: 'sum' }
+  | { alias: string; field?: string; fn: 'count'; uniq?: true }
+  | AggregateCollectFn
+
+export type CollectQueryAggregate =
+  | {
+      [field: string]: AggregateCollectNestedFn
+    }
+  | {
+      [field: string]: CollectQueryAggregateFn | string
+    }
+
 // CLAUSES
 export type CollectQueryWhereClause<Schema extends CollectSchema = CollectSchema> = {
   where?: CollectQueryWhere<Schema>
@@ -117,10 +140,15 @@ export type CollectQueryOrderClause<Schema extends CollectSchema = CollectSchema
   orderBy?: CollectQueryOrder<Schema>
 }
 
+export type CollectQueryAggregateClause = {
+  aggregate?: CollectQueryAggregate
+}
+
 export type CollectQuery<Schema extends CollectSchema = any> = CollectQueryLabelsClause &
   CollectPaginationClause &
   CollectQueryOrderClause<Schema> &
-  CollectQueryWhereClause<Schema>
+  CollectQueryWhereClause<Schema> &
+  CollectQueryAggregateClause
 
 /** Redeclare CollectModels type in order to have suggestions over related records fields **/
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

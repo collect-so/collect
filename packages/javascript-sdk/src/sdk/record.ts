@@ -49,13 +49,13 @@ export type CollectRelationDetachOptions = Omit<CollectRelationOptions, 'type'> 
 }
 
 export class CollectBatchDraft {
-  label?: string
+  label: string
   options?: {
     generateLabels?: boolean
     returnResult?: boolean
     suggestTypes?: boolean
   }
-  parentId?: string
+  targetId?: string
   payload: MaybeArray<AnyObject>
 
   constructor({
@@ -65,21 +65,21 @@ export class CollectBatchDraft {
       returnResult: true,
       suggestTypes: true
     },
-    parentId,
-    payload
+    payload,
+    targetId
   }: {
-    label?: string
+    label: string
     options?: {
       generateLabels?: boolean
       returnResult?: boolean
       suggestTypes?: boolean
     }
-    parentId?: string
     payload: AnyObject
+    targetId?: string
   }) {
     this.label = label
     this.options = options
-    this.parentId = parentId
+    this.targetId = targetId
     this.payload = payload
   }
 
@@ -87,49 +87,47 @@ export class CollectBatchDraft {
     return {
       label: this.label,
       options: this.options,
-      parentId: this.parentId,
-      payload: this.payload
+      payload: this.payload,
+      targetId: this.targetId
     }
   }
 }
 
 export class CollectRecordDraft {
   label?: string
-  parentId?: string
+  targetId?: string
   properties?: Array<{
     metadata?: string
     name: string
     type: CollectPropertyType
     value: CollectPropertyValue
-    valueMetadata?: string
     valueSeparator?: string
   }>
 
   constructor({
     label,
-    parentId,
-    properties = []
+    properties = [],
+    targetId
   }: {
     label?: string
-    parentId?: string
     properties?: Array<
       CollectPropertyWithValue & {
         metadata?: string
-        valueMetadata?: string
         valueSeparator?: string
       }
     >
+    targetId?: string
   }) {
     this.label = label
-    this.parentId = parentId
+    this.targetId = targetId
     this.properties = properties
   }
 
   public toJson() {
     return {
       label: this.label,
-      parentId: this.parentId,
-      properties: this.properties
+      properties: this.properties,
+      targetId: this.targetId
     }
   }
 }

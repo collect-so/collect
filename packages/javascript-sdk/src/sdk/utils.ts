@@ -123,3 +123,14 @@ export function validateInteger(name: string, n: unknown, defaultVal?: number): 
 
   return n as number
 }
+
+export function idToTimestamp(id: string): number {
+  const parts = id.split('-')
+  const highBitsHex = parts[0] + parts[1].slice(0, 4)
+
+  return parseInt(highBitsHex, 16)
+}
+
+export function idToDate(id: string): Date {
+  return new Date(idToTimestamp(id))
+}

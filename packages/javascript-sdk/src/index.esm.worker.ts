@@ -1,4 +1,3 @@
-import { CollectBatchDraft, CollectRecordDraft } from './api/index.js'
 import { FetchHttpClient } from './network/FetchHttpClient.js'
 import { HttpClient, HttpClientResponse } from './network/HttpClient.js'
 import {
@@ -6,20 +5,22 @@ import {
   CollectRecordInstance,
   CollectRecordsArrayInstance,
   CollectTransaction,
-  createCollect
+  createCollect,
+  idToDate,
+  idToTimestamp
 } from './sdk/index.js'
 
 const Collect = createCollect(new FetchHttpClient())
 
 export {
   Collect,
-  CollectBatchDraft,
   CollectModel,
-  CollectRecordDraft,
   CollectRecordInstance,
   CollectRecordsArrayInstance,
   CollectTransaction,
   HttpClient,
-  HttpClientResponse
+  HttpClientResponse,
+  idToDate,
+  idToTimestamp
 }
 export default Collect

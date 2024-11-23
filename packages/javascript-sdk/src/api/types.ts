@@ -1,11 +1,10 @@
 import type {
-  CollectBatchDraft,
   CollectRecordDraft,
   CollectRecordInstance,
   CollectRecordsArrayInstance,
-  CollectRelationTarget,
+  CollectRelationDetachOptions,
   CollectRelationOptions,
-  CollectRelationDetachOptions
+  CollectRelationTarget
 } from '../sdk/record.js'
 import type { CollectTransaction } from '../sdk/transaction.js'
 import type {
@@ -31,36 +30,14 @@ export type CollectRecordsApi = {
   ): Promise<CollectApiResponse<{ message: string }>>
 
   create<Schema extends CollectSchema = any>(
-    data: CollectRecordDraft | InferSchemaTypesWrite<Schema>,
-    transaction?: CollectTransaction | string
-  ): Promise<CollectRecordInstance<Schema>>
-
-  create<Schema extends CollectSchema = any>(
     label: string,
-    data?: InferSchemaTypesWrite<Schema>,
-    transaction?: CollectTransaction | string
-  ): Promise<CollectRecordInstance<Schema>>
-  create<Schema extends CollectSchema = any>(
-    labelOrData: CollectRecordDraft | Schema | string,
-    maybeDataOrTransaction?: CollectTransaction | Schema | string,
+    data: InferSchemaTypesWrite<Schema>,
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordInstance<Schema>>
 
   createMany<Schema extends CollectSchema = any>(
-    data: CollectBatchDraft | InferSchemaTypesWrite<Schema>[],
-    transaction?: CollectTransaction | string
-  ): Promise<CollectRecordsArrayInstance<Schema>>
-  createMany<Schema extends CollectSchema = any>(
     label: string,
-    data?: CollectBatchDraft | InferSchemaTypesWrite<Schema>[],
-    transaction?: CollectTransaction | string
-  ): Promise<CollectRecordsArrayInstance<Schema>>
-  createMany<Schema extends CollectSchema = any>(
-    labelOrData: CollectBatchDraft | MaybeArray<InferSchemaTypesWrite<Schema>> | string,
-    maybeDataOrTransaction?:
-      | CollectTransaction
-      | MaybeArray<InferSchemaTypesWrite<Schema>>
-      | string,
+    data: InferSchemaTypesWrite<Schema>[],
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordsArrayInstance<Schema>>
 
