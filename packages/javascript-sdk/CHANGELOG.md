@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.25.0
+
+### Minor Changes
+
+- 40d19d1: add aggregations to query
+
 ## 0.24.3
 
 ### Patch Changes
