@@ -1,5 +1,4 @@
 import type {
-  CollectBatchDraft,
   CollectRecordDraft,
   CollectRecordInstance,
   CollectRecordsArrayInstance,
@@ -30,39 +29,17 @@ export type CollectRecordsApi = {
     transaction?: CollectTransaction | string
   ): Promise<CollectApiResponse<{ message: string }>>
 
-  // create<Schema extends CollectSchema = any>(
-  //   data: CollectRecordDraft | InferSchemaTypesWrite<Schema>,
-  //   transaction?: CollectTransaction | string
-  // ): Promise<CollectRecordInstance<Schema>>
-
   create<Schema extends CollectSchema = any>(
     label: string,
     data: InferSchemaTypesWrite<Schema>,
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordInstance<Schema>>
-  // create<Schema extends CollectSchema = any>(
-  //   labelOrData: CollectRecordDraft | Schema | string,
-  //   maybeDataOrTransaction?: CollectTransaction | Schema | string,
-  //   transaction?: CollectTransaction | string
-  // ): Promise<CollectRecordInstance<Schema>>
 
-  // createMany<Schema extends CollectSchema = any>(
-  //   data: CollectBatchDraft | InferSchemaTypesWrite<Schema>[],
-  //   transaction?: CollectTransaction | string
-  // ): Promise<CollectRecordsArrayInstance<Schema>>
   createMany<Schema extends CollectSchema = any>(
     label: string,
     data: InferSchemaTypesWrite<Schema>[],
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordsArrayInstance<Schema>>
-  // createMany<Schema extends CollectSchema = any>(
-  //   labelOrData: CollectBatchDraft | MaybeArray<InferSchemaTypesWrite<Schema>> | string,
-  //   maybeDataOrTransaction?:
-  //     | CollectTransaction
-  //     | MaybeArray<InferSchemaTypesWrite<Schema>>
-  //     | string,
-  //   transaction?: CollectTransaction | string
-  // ): Promise<CollectRecordsArrayInstance<Schema>>
 
   delete<Schema extends CollectSchema = any>(
     searchParams: CollectQuery<Schema>,
