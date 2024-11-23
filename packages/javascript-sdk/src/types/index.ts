@@ -1,5 +1,4 @@
 export * from './value.js'
-export * from './files.js'
 export * from './query.js'
 export * from './utils.js'
 export * from './schema.js'

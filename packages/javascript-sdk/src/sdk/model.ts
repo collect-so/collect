@@ -6,9 +6,9 @@ import type {
   InferSchemaTypesWrite
 } from '../types/index.js'
 import type {
-  CollectRelationTarget,
+  CollectRelationDetachOptions,
   CollectRelationOptions,
-  CollectRelationDetachOptions
+  CollectRelationTarget
 } from './record.js'
 import type { CollectTransaction } from './transaction.js'
 
@@ -126,6 +126,7 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
 
       if (canUpdate) {
         const result = await this.apiProxy.records.update<Schema>(id, data, tx)
+
         if (!hasOwnTransaction) {
           await (tx as CollectTransaction).commit()
         }

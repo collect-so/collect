@@ -1,12 +1,11 @@
 import type { createFetcher } from '../network/index.js'
 import type {
   CollectRecord,
-  CollectRelationOptions,
-  CollectRelationDetachOptions
+  CollectRelationDetachOptions,
+  CollectRelationOptions
 } from '../sdk/record.js'
 import type { CollectTransaction } from '../sdk/transaction.js'
 import type {
-  CollectFile,
   CollectProperty,
   CollectPropertyValuesData,
   CollectQuery,
@@ -24,28 +23,6 @@ import { buildTransactionHeader, pickTransactionId } from './utils.js'
 // POST /api/v1/records/:id @TODO
 
 export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
-  files: {
-    delete() {
-      // @TODO
-    },
-    get() {
-      // @TODO
-    },
-    list(transaction?: CollectTransaction | string) {
-      const txId = pickTransactionId(transaction)
-
-      return fetcher<CollectApiResponse<CollectFile[]>>(`/files`, {
-        headers: Object.assign({}, buildTransactionHeader(txId)),
-        method: 'GET'
-      })
-    },
-    update() {
-      // @TODO
-    },
-    upload() {
-      // @TODO
-    }
-  },
   labels: {
     async find<Schema extends CollectSchema = any>(
       searchParams: CollectQuery<Schema>,
@@ -90,9 +67,6 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       })
     },
     update: () => {
-      // @TODO
-    },
-    updateValues: (id: string, transaction?: CollectTransaction | string) => {
       // @TODO
     },
     values: (id: string, transaction?: CollectTransaction | string) => {
@@ -311,10 +285,14 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       return fetcher<CollectApiResponse<CollectRecord<Schema>>>(`/records/${id}`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'PUT',
-        requestData: data
+        requestData: data instanceof CollectRecordDraft ? data.toJson() : data
       })
     }
     // upsert() {
+    //   // @TODO
+    // }
+
+    // patch() {
     //   // @TODO
     // }
   },

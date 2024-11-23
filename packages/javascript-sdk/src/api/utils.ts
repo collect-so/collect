@@ -131,7 +131,6 @@ export const normalizeRecord = ({
 }: {
   label?: string
   options?: { suggestTypes: boolean }
-  parentId?: string
   payload: Record<string, CollectPropertyValue>
 }) => ({
   label,
