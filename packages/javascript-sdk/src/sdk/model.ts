@@ -205,7 +205,7 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
     searchParams: Omit<CollectQuery<Schema>, 'labels'>,
     transaction?: CollectTransaction | string
   ) {
-    if (isEmptyObject(searchParams)) {
+    if (isEmptyObject(searchParams.where)) {
       throw new EmptyTargetError(
         `You must specify criteria to delete records of type '${this.label}'. Empty criteria are not allowed. If this was intentional, use the Dashboard instead.`
       )

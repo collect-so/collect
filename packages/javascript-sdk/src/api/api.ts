@@ -222,7 +222,7 @@ export class CollectRestAPI {
         searchParams: CollectQuery<Schema>,
         transaction?: CollectTransaction | string
       ) => {
-        if (isEmptyObject(searchParams)) {
+        if (isEmptyObject(searchParams.where)) {
           throw new EmptyTargetError(
             `You must specify criteria to delete records. Empty criteria are not allowed. If this was intentional, use the Dashboard instead.`
           )
