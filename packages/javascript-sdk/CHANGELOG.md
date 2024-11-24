@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.26.0
+
+### Minor Changes
+
+- 80c7ba1: Add deleteById method for Model
+
 ## 0.25.0
 
 ### Minor Changes
