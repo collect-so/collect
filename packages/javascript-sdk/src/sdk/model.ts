@@ -3,7 +3,8 @@ import type {
   CollectSchema,
   FlattenTypes,
   InferSchemaTypesRead,
-  InferSchemaTypesWrite
+  InferSchemaTypesWrite,
+  MaybeArray
 } from '../types/index.js'
 import type {
   CollectRelationDetachOptions,
@@ -14,7 +15,7 @@ import type { CollectTransaction } from './transaction.js'
 
 import { CollectRestApiProxy } from '../api/rest-api-proxy.js'
 import { isEmptyObject } from '../common/utils.js'
-import { UniquenessError } from './errors.js'
+import { EmptyTargetError, UniquenessError } from './errors.js'
 import {
   mergeDefaultsWithPayload,
   pickUniqFieldsFromRecord,
@@ -202,10 +203,23 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
   }
 
   async delete(
-    params?: Omit<CollectQuery<Schema>, 'labels'>,
+    searchParams: Omit<CollectQuery<Schema>, 'labels'>,
     transaction?: CollectTransaction | string
   ) {
-    return await this.apiProxy.records.delete({ ...params, labels: [this.label] }, transaction)
+    if (isEmptyObject(searchParams.where)) {
+      throw new EmptyTargetError(
+        `You must specify criteria to delete records of type '${this.label}'. Empty criteria are not allowed. If this was intentional, use the Dashboard instead.`
+      )
+    }
+
+    return await this.apiProxy.records.delete(
+      { ...searchParams, labels: [this.label] },
+      transaction
+    )
+  }
+
+  async deleteById(idOrIds: MaybeArray<string>, transaction?: CollectTransaction | string) {
+    return await this.apiProxy.records.deleteById(idOrIds, transaction)
   }
 }
 
