@@ -1,9 +1,9 @@
 import type { HttpClient } from '../network/HttpClient.js'
 import type {
   CollectRecord,
-  CollectRelationTarget,
+  CollectRelationDetachOptions,
   CollectRelationOptions,
-  CollectRelationDetachOptions
+  CollectRelationTarget
 } from '../sdk/record.js'
 import type { UserProvidedConfig } from '../sdk/types.js'
 import type {
@@ -15,7 +15,14 @@ import type {
 } from '../types/index.js'
 import type { CollectApiResponse, CollectRecordsApi } from './types.js'
 
-import { isArray, isObject, isObjectFlat, isString, toBoolean } from '../common/utils.js'
+import {
+  isArray,
+  isEmptyObject,
+  isObject,
+  isObjectFlat,
+  isString,
+  toBoolean
+} from '../common/utils.js'
 import { createFetcher } from '../network/index.js'
 import { EmptyTargetError } from '../sdk/errors.js'
 import {
@@ -215,11 +222,20 @@ export class CollectRestAPI {
         searchParams: CollectQuery<Schema>,
         transaction?: CollectTransaction | string
       ) => {
+        if (isEmptyObject(searchParams)) {
+          throw new EmptyTargetError(
+            `You must specify criteria to delete records. Empty criteria are not allowed. If this was intentional, use the Dashboard instead.`
+          )
+        }
+
         return this.api?.records.delete(searchParams, transaction)
       },
 
-      deleteById: async (ids: MaybeArray<string>, transaction?: CollectTransaction | string) => {
-        return this.api?.records.deleteById(ids, transaction)
+      deleteById: async (
+        idOrIds: MaybeArray<string>,
+        transaction?: CollectTransaction | string
+      ) => {
+        return this.api?.records.deleteById(idOrIds, transaction)
       },
 
       detach: async (

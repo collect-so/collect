@@ -1,8 +1,8 @@
 import type { createFetcher } from '../network/index.js'
 import type {
   CollectRecord,
-  CollectRelationOptions,
-  CollectRelationDetachOptions
+  CollectRelationDetachOptions,
+  CollectRelationOptions
 } from '../sdk/record.js'
 import type { CollectTransaction } from '../sdk/transaction.js'
 import type {
@@ -173,17 +173,17 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       })
     },
 
-    deleteById(ids: MaybeArray<string>, transaction?: CollectTransaction | string) {
+    deleteById(idOrIds: MaybeArray<string>, transaction?: CollectTransaction | string) {
       const txId = pickTransactionId(transaction)
 
-      if (isArray(ids)) {
+      if (isArray(idOrIds)) {
         return fetcher<CollectApiResponse<{ message: string }>>(`/records/delete`, {
           headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'PUT',
-          requestData: { ids: ids }
+          requestData: { ids: idOrIds }
         })
       } else {
-        return fetcher<CollectApiResponse<{ message: string }>>(`/records/${ids}`, {
+        return fetcher<CollectApiResponse<{ message: string }>>(`/records/${idOrIds}`, {
           headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'DELETE'
         })
@@ -240,18 +240,18 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     },
 
     findById<Schema extends CollectSchema = any>(
-      ids: MaybeArray<string>,
+      idOrIds: MaybeArray<string>,
       transaction?: CollectTransaction | string
     ) {
       const txId = pickTransactionId(transaction)
-      if (isArray(ids)) {
+      if (isArray(idOrIds)) {
         return fetcher<CollectApiResponse<CollectRecord<Schema>[]>>(`/records`, {
           headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'POST',
-          requestData: { ids }
+          requestData: { ids: idOrIds }
         })
       }
-      return fetcher<CollectApiResponse<CollectRecord<Schema>>>(`/records/${ids}`, {
+      return fetcher<CollectApiResponse<CollectRecord<Schema>>>(`/records/${idOrIds}`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'GET'
       })
