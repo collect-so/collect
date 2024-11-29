@@ -1,3 +1,4 @@
+import type { CollectRecordTarget } from '../sdk'
 import type { UserProvidedConfig } from '../sdk/types.js'
 import type {
   CollectPropertyType,
@@ -16,6 +17,7 @@ import {
   PROPERTY_TYPE_STRING
 } from '../common/constants.js'
 import { isArray, isObject, isString } from '../common/utils.js'
+import { CollectRecordInstance } from '../sdk'
 import { CollectTransaction } from '../sdk/transaction.js'
 import { DEFAULT_BASE_PATH, DEFAULT_HOST, DEFAULT_PORT, DEFAULT_PROTOCOL } from './constants.js'
 
@@ -37,6 +39,17 @@ export const pickTransactionId = (input: any) =>
       input.id
     : input
   : undefined
+
+export const pickRecordId = (input: CollectRecordTarget) => {
+  if (isString(input)) {
+    return input
+  } else if (input instanceof CollectRecordInstance && input.data) {
+    return input.data.__id
+  } else if ('__id' in input) {
+    return input.__id
+  }
+  return undefined
+}
 
 export const createSearchParams = <Schema extends CollectSchema = CollectSchema>(
   labelOrSearchParams?: CollectQuery<Schema> | string,
@@ -124,17 +137,11 @@ const processNonArrayValue = (value: CollectPropertyValue, suggestTypes: boolean
   return { type, value: type === PROPERTY_TYPE_NULL ? null : value }
 }
 
-export const normalizeRecord = ({
-  label,
-  options = { suggestTypes: true },
-  payload
-}: {
-  label?: string
-  options?: { suggestTypes: boolean }
-  payload: Record<string, CollectPropertyValue>
-}) => ({
-  label,
-  properties: Object.entries(payload).map(([name, value]) => {
+export const prepareProperties = (
+  data: Record<string, CollectPropertyValue>,
+  options: { suggestTypes: boolean } = { suggestTypes: true }
+) =>
+  Object.entries(data).map(([name, value]) => {
     const { type, value: processedValue } =
       isArray(value) ?
         processArrayValue(value, options.suggestTypes)
@@ -142,6 +149,18 @@ export const normalizeRecord = ({
 
     return { name, type, value: processedValue }
   }) as CollectPropertyWithValue[]
+
+export const normalizeRecord = ({
+  label,
+  options = { suggestTypes: true },
+  payload
+}: {
+  label: string
+  options?: { suggestTypes: boolean }
+  payload: Record<string, CollectPropertyValue>
+}) => ({
+  label,
+  properties: prepareProperties(payload, options)
 })
 
 export const buildUrl = (props: UserProvidedConfig): string => {

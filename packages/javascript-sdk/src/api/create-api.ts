@@ -1,6 +1,7 @@
 import type { createFetcher } from '../network/index.js'
 import type {
   CollectRecord,
+  CollectRecordTarget,
   CollectRelationDetachOptions,
   CollectRelationOptions
 } from '../sdk/record.js'
@@ -16,7 +17,7 @@ import type { CollectApiResponse } from './types.js'
 
 import { isArray } from '../common/utils.js'
 import { CollectBatchDraft, CollectRecordDraft } from '../sdk/record.js'
-import { buildTransactionHeader, pickTransactionId } from './utils.js'
+import { buildTransactionHeader, pickRecordId, pickTransactionId } from './utils.js'
 
 // @TODO's
 // PATCH /api/v1/records/:id @TODO
@@ -66,9 +67,12 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
         method: 'GET'
       })
     },
-    update: () => {
-      // @TODO
-    },
+    // update: () => {
+    //   // @TODO
+    // },
+    // updateValues: (id: string, transaction?: CollectTransaction | string) => {
+    //   // @TODO
+    // },
     values: (id: string, transaction?: CollectTransaction | string) => {
       const txId = pickTransactionId(transaction)
 
@@ -83,14 +87,15 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
   },
   records: {
     attach: async (
-      id: string,
+      source: CollectRecordTarget,
       idOrIds: MaybeArray<string>,
       options?: CollectRelationOptions,
       transaction?: CollectTransaction | string
     ) => {
       const txId = pickTransactionId(transaction)
+      const recordId = pickRecordId(source)!
 
-      return fetcher<CollectApiResponse<{ message: string }>>(`/records/${id}/relations`, {
+      return fetcher<CollectApiResponse<{ message: string }>>(`/records/${recordId}/relations`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'POST',
         requestData: {
@@ -165,14 +170,15 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     },
 
     detach: async (
-      id: string,
+      source: CollectRecordTarget,
       idOrIds: MaybeArray<string>,
       options?: CollectRelationDetachOptions,
       transaction?: CollectTransaction | string
     ) => {
       const txId = pickTransactionId(transaction)
+      const recordId = pickRecordId(source)!
 
-      return fetcher<CollectApiResponse<{ message: string }>>(`/records/${id}/relations`, {
+      return fetcher<CollectApiResponse<{ message: string }>>(`/records/${recordId}/relations`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'PUT',
         requestData: {
@@ -250,17 +256,19 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       return { ...response, data: record } as CollectApiResponse<CollectRecord<Schema>>
     },
 
-    properties(id: string, transaction?: CollectTransaction | string) {
+    properties(target: string, transaction?: CollectTransaction | string) {
       const txId = pickTransactionId(transaction)
+      const recordId = pickRecordId(target)!
 
-      return fetcher<CollectApiResponse<CollectProperty[]>>(`/records/${id}/properties`, {
+      return fetcher<CollectApiResponse<CollectProperty[]>>(`/records/${recordId}/properties`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'GET'
       })
     },
 
-    relations: async (id: string, transaction?: CollectTransaction | string) => {
+    relations: async (target: CollectRecordTarget, transaction?: CollectTransaction | string) => {
       const txId = pickTransactionId(transaction)
+      const recordId = pickRecordId(target)!
 
       return fetcher<
         CollectApiResponse<
@@ -269,32 +277,43 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
             type: string
           }>
         >
-      >(`/records/${id}/relations`, {
+      >(`/records/${recordId}/relations`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'GET'
       })
     },
-
-    update<Schema extends CollectSchema = any>(
-      id: string,
-      data: CollectRecordDraft | Schema,
-      transaction?: CollectTransaction | string
-    ) {
-      const txId = pickTransactionId(transaction)
-
-      return fetcher<CollectApiResponse<CollectRecord<Schema>>>(`/records/${id}`, {
-        headers: Object.assign({}, buildTransactionHeader(txId)),
-        method: 'PUT',
-        requestData: data instanceof CollectRecordDraft ? data.toJson() : data
-      })
-    }
     // upsert() {
     //   // @TODO
     // }
 
-    // patch() {
-    //   // @TODO
-    // }
+    set<Schema extends CollectSchema = any>(
+      target: CollectRecordTarget,
+      data: CollectRecordDraft | Schema,
+      transaction?: CollectTransaction | string
+    ) {
+      const txId = pickTransactionId(transaction)
+      const recordId = pickRecordId(target)!
+
+      return fetcher<CollectApiResponse<CollectRecord<Schema>>>(`/records/${recordId}`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
+        method: 'PUT',
+        requestData: data instanceof CollectRecordDraft ? data.toJson() : data
+      })
+    },
+    update<Schema extends CollectSchema = any>(
+      target: CollectRecordTarget,
+      data: CollectRecordDraft | Schema,
+      transaction?: CollectTransaction | string
+    ) {
+      const txId = pickTransactionId(transaction)
+      const recordId = pickRecordId(target)!
+
+      return fetcher<CollectApiResponse<CollectRecord<Schema>>>(`/records/${recordId}`, {
+        headers: Object.assign({}, buildTransactionHeader(txId)),
+        method: 'PATCH',
+        requestData: data instanceof CollectRecordDraft ? data.toJson() : data
+      })
+    }
   },
   tx: {
     begin(config: Partial<{ ttl: number }> = {}) {
