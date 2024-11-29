@@ -39,7 +39,8 @@ import {
   createSearchParams,
   isTransaction,
   normalizeRecord,
-  pickTransaction
+  pickTransaction,
+  prepareProperties
 } from './utils.js'
 
 export class CollectRestAPI {
@@ -119,17 +120,24 @@ export class CollectRestAPI {
       },
 
       create: async <Schema extends CollectSchema = any>(
-        label: string,
-        data: InferSchemaTypesWrite<Schema>,
+        labelOrData: CollectRecordDraft | string,
+        maybeDataOrTransaction?: CollectTransaction | InferSchemaTypesWrite<Schema> | string,
         transaction?: CollectTransaction | string
       ): Promise<CollectRecordInstance<Schema>> => {
         let response
 
-        if (!response && isString(label)) {
-          if (isObjectFlat(data)) {
+        if (labelOrData instanceof CollectRecordDraft) {
+          response = await this.api?.records.create<Schema>(
+            labelOrData,
+            pickTransaction(maybeDataOrTransaction)
+          )
+        }
+
+        if (!response && isString(labelOrData)) {
+          if (isObjectFlat(maybeDataOrTransaction)) {
             const normalizedRecord = normalizeRecord({
-              label: label,
-              payload: data as Record<string, CollectPropertyValue>
+              label: labelOrData,
+              payload: maybeDataOrTransaction as Record<string, CollectPropertyValue>
             })
 
             response = await this.api?.records.create<Schema>(
@@ -138,7 +146,7 @@ export class CollectRestAPI {
               ),
               transaction
             )
-          } else if (isObject(data)) {
+          } else if (isObject(maybeDataOrTransaction)) {
             throw Error('Provided data is not a flat object. Consider to use `createMany` method.')
           }
         }
@@ -153,18 +161,32 @@ export class CollectRestAPI {
       },
 
       createMany: async <Schema extends CollectSchema = any>(
-        label: string,
-        data: MaybeArray<InferSchemaTypesWrite<Schema>>,
+        labelOrData: CollectBatchDraft | string,
+        maybeDataOrTransaction?:
+          | CollectTransaction
+          | MaybeArray<InferSchemaTypesWrite<Schema>>
+          | string,
         transaction?: CollectTransaction | string
       ): Promise<CollectRecordsArrayInstance<Schema>> => {
         let response
 
-        if (!response && isString(label) && (isArray(data) || isObject(data))) {
-          const batchDraft = new CollectBatchDraft({
-            label: label,
-            payload: data
+        if (labelOrData instanceof CollectBatchDraft) {
+          response = await this.api?.records.createMany<Schema>(
+            labelOrData,
+            pickTransaction(maybeDataOrTransaction)
+          )
+        }
+
+        if (
+          !response &&
+          isString(labelOrData) &&
+          (isArray(maybeDataOrTransaction) || isObject(maybeDataOrTransaction))
+        ) {
+          const data = new CollectBatchDraft({
+            label: labelOrData,
+            payload: maybeDataOrTransaction
           })
-          response = await this.api?.records.createMany<Schema>(batchDraft, transaction)
+          response = await this.api?.records.createMany<Schema>(data, transaction)
         }
 
         if (response?.success && response?.data) {
@@ -338,7 +360,7 @@ export class CollectRestAPI {
         return await this.api.records.relations(id, transaction)
       },
 
-      update: async <Schema extends CollectSchema = any>(
+      set: async <Schema extends CollectSchema = any>(
         id: string,
         data: CollectRecordDraft | InferSchemaTypesWrite<Schema>,
         transaction?: CollectTransaction | string
@@ -346,16 +368,49 @@ export class CollectRestAPI {
         let response
 
         if (data instanceof CollectRecordDraft) {
-          response = await this.api?.records.update<Schema>(id, data, transaction)
+          response = await this.api?.records.set<Schema>(id, data, transaction)
         } else if (isObjectFlat(data)) {
-          const normalizedRecord = normalizeRecord({
-            payload: data as Record<string, CollectPropertyValue>
-          })
-          response = await this.api?.records.update<Schema>(
+          const properties = prepareProperties(data)
+
+          response = await this.api?.records.set<Schema>(
             id,
-            new CollectRecordDraft(normalizedRecord),
+            new CollectRecordDraft({ properties } as {
+              label: string
+              properties: CollectPropertyWithValue[]
+            }),
             transaction
           )
+        } else if (isObject(data)) {
+          throw Error('Provided data is not a flat object. Consider to use `createMany` method.')
+        }
+
+        if (response?.success && response?.data) {
+          const result = new CollectRecordInstance<Schema>(response.data)
+          result.init(this)
+          return result
+        }
+
+        return new CollectRecordInstance<Schema>()
+      },
+
+      update: async <Schema extends CollectSchema = any>(
+        id: string,
+        data: CollectRecordDraft | Partial<InferSchemaTypesWrite<Schema>>,
+        transaction?: CollectTransaction | string
+      ) => {
+        let response
+
+        if (data instanceof CollectRecordDraft) {
+          response = await this.api?.records.update<Schema>(id, data, transaction)
+        } else if (isObjectFlat(data)) {
+          const properties = prepareProperties(data)
+
+          const recordDraft = new CollectRecordDraft({ properties } as {
+            label: string
+            properties: CollectPropertyWithValue[]
+          })
+
+          response = await this.api?.records.update<Schema>(id, recordDraft, transaction)
         } else if (isObject(data)) {
           throw Error('Provided data is not a flat object. Consider to use `createMany` method.')
         }

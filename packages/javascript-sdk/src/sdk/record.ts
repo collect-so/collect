@@ -18,7 +18,7 @@ import { CollectRestApiProxy } from '../api/rest-api-proxy.js'
 
 type CollectRecordInternalProps<Schema extends CollectSchema = CollectSchema> = {
   __id: string
-  __label?: string
+  __label: string
   __proptypes?: FlattenTypes<
     {
       [Key in RequiredKeysRead<Schema>]: Schema[Key]['type']
@@ -37,14 +37,19 @@ export type CollectRecordProps<Schema extends CollectSchema = CollectSchema> =
 export type CollectRecord<Schema extends CollectSchema = CollectSchema> =
   CollectRecordInternalProps<Schema> & FlattenTypes<CollectRecordProps<Schema>>
 
+// For set, update, attach, detach, delete methods (extending plain id: string)
+export type CollectRecordTarget = CollectRecord<any> | CollectRecordInstance<any> | string
+
 export type CollectRelationTarget =
   | CollectRecordsArrayInstance<any>
   | MaybeArray<CollectRecord<any>>
   | MaybeArray<CollectRecordInstance<any>>
   | MaybeArray<string>
 
-export type CollectRelationOptions = { direction?: 'in' | 'out'; type?: string }
-export type CollectRelationDetachOptions = Omit<CollectRelationOptions, 'type'> & {
+export type RelationDirection = 'in' | 'out'
+export type CollectRelationOptions = { direction?: RelationDirection; type?: string }
+export type CollectRelationDetachOptions = {
+  direction?: RelationDirection
   typeOrTypes?: string | string[]
 }
 
@@ -55,7 +60,6 @@ export class CollectBatchDraft {
     returnResult?: boolean
     suggestTypes?: boolean
   }
-  targetId?: string
   payload: MaybeArray<AnyObject>
 
   constructor({
@@ -65,8 +69,7 @@ export class CollectBatchDraft {
       returnResult: true,
       suggestTypes: true
     },
-    payload,
-    targetId
+    payload
   }: {
     label: string
     options?: {
@@ -75,11 +78,9 @@ export class CollectBatchDraft {
       suggestTypes?: boolean
     }
     payload: AnyObject
-    targetId?: string
   }) {
     this.label = label
     this.options = options
-    this.targetId = targetId
     this.payload = payload
   }
 
@@ -87,15 +88,13 @@ export class CollectBatchDraft {
     return {
       label: this.label,
       options: this.options,
-      payload: this.payload,
-      targetId: this.targetId
+      payload: this.payload
     }
   }
 }
 
 export class CollectRecordDraft {
-  label?: string
-  targetId?: string
+  label: string
   properties?: Array<{
     metadata?: string
     name: string
@@ -106,28 +105,25 @@ export class CollectRecordDraft {
 
   constructor({
     label,
-    properties = [],
-    targetId
+    properties = []
   }: {
-    label?: string
+    label: string
     properties?: Array<
       CollectPropertyWithValue & {
         metadata?: string
         valueSeparator?: string
       }
     >
-    targetId?: string
+    relation?: CollectRelationOptions
   }) {
     this.label = label
-    this.targetId = targetId
     this.properties = properties
   }
 
   public toJson() {
     return {
       label: this.label,
-      properties: this.properties,
-      targetId: this.targetId
+      properties: this.properties
     }
   }
 }
@@ -151,24 +147,19 @@ export class CollectRecordInstance<
   }
 
   async update<Schema extends CollectSchema = CollectSchema>(
-    data: CollectRecordDraft | InferSchemaTypesWrite<Schema>,
-    transaction?: CollectTransaction | string
-  ) {
-    if (this.data) {
-      return this.apiProxy.records.update(this.data.__id, data, transaction)
-    }
-  }
-
-  async patch<Schema extends CollectSchema = CollectSchema>(
     partialData: CollectRecordDraft | Partial<InferSchemaTypesWrite<Schema>>,
     transaction?: CollectTransaction | string
   ) {
     if (this.data) {
-      return this.apiProxy.records.update(
-        this.data.__id,
-        partialData instanceof CollectRecordDraft ? partialData : { ...this.data, ...partialData },
-        transaction
-      )
+      return this.apiProxy.records.update(this.data.__id, partialData, transaction)
+    }
+  }
+  async set<Schema extends CollectSchema = CollectSchema>(
+    data: CollectRecordDraft | InferSchemaTypesWrite<Schema>,
+    transaction?: CollectTransaction | string
+  ) {
+    if (this.data) {
+      return this.apiProxy.records.set(this.data.__id, data, transaction)
     }
   }
 
@@ -191,8 +182,6 @@ export class CollectRecordInstance<
       return this.apiProxy.records.detach(this.data.__id, target, options, transaction)
     }
   }
-
-  // @TODO: Create Related Record (use this as parent); Upload file;
 }
 
 export class CollectRecordsArrayInstance<

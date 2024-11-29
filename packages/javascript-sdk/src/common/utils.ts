@@ -1,3 +1,5 @@
+import type { CollectPropertyValue } from '../types/index.js'
+
 export const isArray = (item: any): item is any[] =>
   typeof item === 'object' && Array.isArray(item) && item !== null
 
@@ -7,13 +9,13 @@ export const isObject = (input: unknown): input is object =>
 export const isEmptyObject = (input: unknown): boolean =>
   isObject(input) && Object.keys(input).length === 0
 
-export const isObjectFlat = (input: any): input is object => {
+export const isObjectFlat = (input: any): input is Record<string, CollectPropertyValue> => {
   return (
     isObject(input) &&
     Object.keys(input).every((key) => {
       const value = (input as Record<string, any>)[key]
       // Check if the value is an array
-      if (Array.isArray(value)) {
+      if (isArray(value)) {
         // Check if every element in the array is of an allowed type (string, number, boolean, or null)
         return value.every(
           (element) =>

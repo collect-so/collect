@@ -1,6 +1,8 @@
 import type {
+  CollectBatchDraft,
   CollectRecordDraft,
   CollectRecordInstance,
+  CollectRecordTarget,
   CollectRecordsArrayInstance,
   CollectRelationDetachOptions,
   CollectRelationOptions,
@@ -23,7 +25,7 @@ export type CollectApiResponse<T, E = Record<string, any>> = {
 
 export type CollectRecordsApi = {
   attach(
-    sourceId: string,
+    source: CollectRecordTarget,
     target: CollectRelationTarget,
     options?: CollectRelationOptions,
     transaction?: CollectTransaction | string
@@ -34,10 +36,23 @@ export type CollectRecordsApi = {
     data: InferSchemaTypesWrite<Schema>,
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordInstance<Schema>>
+  create<Schema extends CollectSchema = any>(
+    labelOrData: CollectRecordDraft | string,
+    maybeDataOrTransaction?: CollectTransaction | InferSchemaTypesWrite<Schema> | string,
+    transaction?: CollectTransaction | string
+  ): Promise<CollectRecordInstance<Schema>>
 
   createMany<Schema extends CollectSchema = any>(
     label: string,
     data: InferSchemaTypesWrite<Schema>[],
+    transaction?: CollectTransaction | string
+  ): Promise<CollectRecordsArrayInstance<Schema>>
+  createMany<Schema extends CollectSchema = any>(
+    labelOrData: CollectBatchDraft | string,
+    maybeDataOrTransaction?:
+      | CollectTransaction
+      | MaybeArray<InferSchemaTypesWrite<Schema>>
+      | string,
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordsArrayInstance<Schema>>
 
@@ -52,7 +67,7 @@ export type CollectRecordsApi = {
   ): Promise<CollectApiResponse<{ message: string }>>
 
   detach(
-    sourceId: string,
+    source: CollectRecordTarget,
     target: CollectRelationTarget,
     options?: CollectRelationDetachOptions,
     transaction?: CollectTransaction | string
@@ -101,12 +116,12 @@ export type CollectRecordsApi = {
   ): Promise<CollectRecordInstance<Schema>>
 
   properties(
-    id: string,
+    target: CollectRecordTarget,
     transaction?: CollectTransaction | string
   ): Promise<CollectApiResponse<CollectProperty[]>>
 
   relations(
-    id: string,
+    target: CollectRecordTarget,
     transaction?: CollectTransaction | string
   ): Promise<
     CollectApiResponse<
@@ -117,9 +132,17 @@ export type CollectRecordsApi = {
     >
   >
 
-  update<Schema extends CollectSchema = any>(
-    id: string,
+  // overwrite whole record
+  set<Schema extends CollectSchema = any>(
+    target: CollectRecordTarget,
     data: CollectRecordDraft | InferSchemaTypesWrite<Schema>,
+    transaction?: CollectTransaction | string
+  ): Promise<CollectRecordInstance<Schema>>
+
+  // partially update
+  update<Schema extends CollectSchema = any>(
+    target: CollectRecordTarget,
+    data: CollectRecordDraft | Partial<InferSchemaTypesWrite<Schema>>,
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordInstance<Schema>>
 }
