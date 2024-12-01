@@ -164,22 +164,40 @@ export class CollectRecordInstance<
   }
 
   async attach(
-    target: CollectRelationTarget,
-    options?: CollectRelationOptions,
+    relationConfig: {
+      target: CollectRelationTarget
+      options?: CollectRelationOptions
+    },
     transaction?: CollectTransaction | string
   ) {
     if (this.data) {
-      return this.apiProxy.records.attach(this.data.__id, target, options, transaction)
+      return this.apiProxy.records.attach(
+        {
+          source: this.data.__id,
+          target: relationConfig.target,
+          options: relationConfig.options
+        },
+        transaction
+      )
     }
   }
 
   async detach(
-    target: CollectRelationTarget,
-    options?: CollectRelationDetachOptions,
+    relationConfig: {
+      target: CollectRelationTarget
+      options?: CollectRelationDetachOptions
+    },
     transaction?: CollectTransaction | string
   ) {
     if (this.data) {
-      return this.apiProxy.records.detach(this.data.__id, target, options, transaction)
+      return this.apiProxy.records.detach(
+        {
+          source: this.data.__id,
+          target: relationConfig.target,
+          options: relationConfig.options
+        },
+        transaction
+      )
     }
   }
 }
