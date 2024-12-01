@@ -87,21 +87,23 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
   },
   records: {
     attach: async (
-      source: CollectRecordTarget,
-      idOrIds: MaybeArray<string>,
-      options?: CollectRelationOptions,
+      relationConfig: {
+        source: CollectRecordTarget
+        idOrIds: MaybeArray<string>
+        options?: CollectRelationOptions
+      },
       transaction?: CollectTransaction | string
     ) => {
       const txId = pickTransactionId(transaction)
-      const recordId = pickRecordId(source)!
+      const recordId = pickRecordId(relationConfig.source)!
 
       return fetcher<CollectApiResponse<{ message: string }>>(`/records/${recordId}/relations`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'POST',
         requestData: {
-          targetIds: idOrIds,
-          ...(options?.type && { type: options?.type }),
-          ...(options?.direction && { direction: options?.direction })
+          targetIds: relationConfig.idOrIds,
+          ...(relationConfig.options?.type && { type: relationConfig.options?.type }),
+          ...(relationConfig.options?.direction && { direction: relationConfig.options?.direction })
         }
       })
     },
@@ -170,21 +172,25 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     },
 
     detach: async (
-      source: CollectRecordTarget,
-      idOrIds: MaybeArray<string>,
-      options?: CollectRelationDetachOptions,
+      relationConfig: {
+        source: CollectRecordTarget
+        idOrIds: MaybeArray<string>
+        options?: CollectRelationDetachOptions
+      },
       transaction?: CollectTransaction | string
     ) => {
       const txId = pickTransactionId(transaction)
-      const recordId = pickRecordId(source)!
+      const recordId = pickRecordId(relationConfig.source)!
 
       return fetcher<CollectApiResponse<{ message: string }>>(`/records/${recordId}/relations`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'PUT',
         requestData: {
-          targetIds: idOrIds,
-          ...(options?.typeOrTypes && { typeOrTypes: options?.typeOrTypes }),
-          ...(options?.direction && { direction: options?.direction })
+          targetIds: relationConfig.idOrIds,
+          ...(relationConfig.options?.typeOrTypes && {
+            typeOrTypes: relationConfig.options?.typeOrTypes
+          }),
+          ...(relationConfig.options?.direction && { direction: relationConfig.options?.direction })
         }
       })
     },
