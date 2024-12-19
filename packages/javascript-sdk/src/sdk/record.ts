@@ -46,6 +46,14 @@ export type CollectRelationTarget =
   | MaybeArray<CollectRecordInstance<any>>
   | MaybeArray<string>
 
+export type CollectRelation = {
+  sourceId: string
+  sourceLabel: string
+  targetId: string
+  targetLabel: string
+  type: string
+}
+
 export type RelationDirection = 'in' | 'out'
 export type CollectRelationOptions = { direction?: RelationDirection; type?: string }
 export type CollectRelationDetachOptions = {
@@ -56,7 +64,6 @@ export type CollectRelationDetachOptions = {
 export class CollectBatchDraft {
   label: string
   options?: {
-    generateLabels?: boolean
     returnResult?: boolean
     suggestTypes?: boolean
   }
@@ -65,7 +72,6 @@ export class CollectBatchDraft {
   constructor({
     label,
     options = {
-      generateLabels: true,
       returnResult: true,
       suggestTypes: true
     },
@@ -73,7 +79,6 @@ export class CollectBatchDraft {
   }: {
     label: string
     options?: {
-      generateLabels?: boolean
       returnResult?: boolean
       suggestTypes?: boolean
     }

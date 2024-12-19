@@ -2,6 +2,7 @@ import type { createFetcher } from '../network/index.js'
 import type {
   CollectRecord,
   CollectRecordTarget,
+  CollectRelation,
   CollectRelationDetachOptions,
   CollectRelationOptions
 } from '../sdk/record.js'
@@ -19,8 +20,6 @@ import { isArray } from '../common/utils.js'
 import { CollectBatchDraft, CollectRecordDraft } from '../sdk/record.js'
 import { buildTransactionHeader, pickRecordId, pickTransactionId } from './utils.js'
 
-// @TODO's
-// PATCH /api/v1/records/:id @TODO
 // POST /api/v1/records/:id @TODO
 
 export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
@@ -270,14 +269,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
       const txId = pickTransactionId(transaction)
       const recordId = pickRecordId(target)!
 
-      return fetcher<
-        CollectApiResponse<
-          Array<{
-            relations: Array<{ count: number; label: string }>
-            type: string
-          }>
-        >
-      >(`/records/${recordId}/relations`, {
+      return fetcher<CollectApiResponse<Array<CollectRelation>>>(`/records/${recordId}/relations`, {
         headers: Object.assign({}, buildTransactionHeader(txId)),
         method: 'GET'
       })
@@ -313,6 +305,35 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
         method: 'PATCH',
         requestData: data instanceof CollectRecordDraft ? data.toJson() : data
       })
+    }
+  },
+  relations: {
+    find: async <Schema extends CollectSchema = any>(
+      searchParams: CollectQuery<Schema>,
+      pagination?: Pick<CollectQuery, 'limit' | 'skip'>,
+      transaction?: CollectTransaction | string
+    ) => {
+      const txId = pickTransactionId(transaction)
+
+      const queryParams = new URLSearchParams()
+
+      if (typeof pagination?.limit !== 'undefined') {
+        queryParams.append('limit', pagination.limit.toString())
+      }
+      if (typeof pagination?.skip !== 'undefined') {
+        queryParams.append('skip', pagination?.skip.toString())
+      }
+
+      const queryString = queryParams.toString() ? '?' + queryParams.toString() : ''
+
+      return fetcher<CollectApiResponse<Array<CollectRelation>>>(
+        `/records/relations/search${queryString}`,
+        {
+          headers: Object.assign({}, buildTransactionHeader(txId)),
+          method: 'POST',
+          requestData: searchParams
+        }
+      )
     }
   },
   tx: {

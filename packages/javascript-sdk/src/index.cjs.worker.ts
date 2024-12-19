@@ -1,6 +1,7 @@
 import { FetchHttpClient } from './network/FetchHttpClient.js'
 import { HttpClient, HttpClientResponse } from './network/HttpClient.js'
 import {
+  CollectBatchDraft,
   CollectModel,
   CollectRecordInstance,
   CollectRecordsArrayInstance,
@@ -14,6 +15,7 @@ const Collect = createCollect(new FetchHttpClient())
 
 module.exports = {
   Collect,
+  CollectBatchDraft,
   CollectModel,
   CollectRecordInstance,
   CollectRecordsArrayInstance,

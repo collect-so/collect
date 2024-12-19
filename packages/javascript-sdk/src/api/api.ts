@@ -426,6 +426,24 @@ export class CollectRestAPI {
     }
   }
 
+  public relations = {
+    find: async <Schema extends CollectSchema = any>({
+      pagination,
+      search,
+      transaction
+    }: {
+      pagination?: Pick<CollectQuery, 'limit' | 'skip'>
+      search?: CollectQuery<Schema>
+      transaction?: CollectTransaction | string
+    }) => {
+      const { searchParams } = createSearchParams<Schema>(undefined, search)
+
+      const tx = pickTransaction(transaction)
+
+      return await this.api.relations.find(searchParams, pagination, tx)
+    }
+  }
+
   public properties = {
     delete: async (id: string, transaction?: CollectTransaction | string) => {
       return this.api?.properties.delete(id, transaction)

@@ -50,7 +50,7 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
   }
 
   async findOne(
-    params: CollectQuery<Schema> & { labels?: never } = {},
+    params: CollectQuery<Schema> & { labels?: never; limit?: never; skip?: never } = {},
     transaction?: CollectTransaction | string
   ) {
     return this.apiProxy?.records.findOne<Schema>(this.label, { ...params }, transaction)

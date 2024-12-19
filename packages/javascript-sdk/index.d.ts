@@ -1,6 +1,16 @@
-import type { CollectInferType, CollectRecord, UserProvidedConfig } from './src/sdk'
+import type {
+  CollectInferType,
+  CollectRecord,
+  UserProvidedConfig,
+  CollectRelation
+} from './src/sdk'
 
-import { CollectBatchDraft, CollectRecordDraft, CollectRestAPI } from './src/api'
+import {
+  CollectBatchDraft,
+  CollectRecordDraft,
+  CollectRestAPI,
+  CollectApiResponse
+} from './src/api'
 import { HttpClient, HttpClientResponse } from './src/network/HttpClient'
 import {
   CollectModel,
@@ -30,6 +40,8 @@ declare module '@collect.so/javascript-sdk' {
 
   export {
     CollectBatchDraft,
+    CollectRelation,
+    CollectApiResponse,
     CollectInferType,
     CollectModel,
     CollectModels,

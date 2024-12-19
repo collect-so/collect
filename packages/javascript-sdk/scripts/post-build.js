@@ -46,10 +46,33 @@ async function replaceImportsInIndexDts() {
   }
 }
 
+async function createPackageJson(dir, type) {
+  const packageJsonContent = JSON.stringify(
+    {
+      type: type,
+      name: '@collect.so/javascript-sdk'
+    },
+    null,
+    2
+  )
+
+  const packageJsonPath = path.join(process.cwd(), dir, 'package.json')
+
+  try {
+    await fs.promises.writeFile(packageJsonPath, packageJsonContent)
+    console.log(`Created package.json in ${dir} directory`)
+  } catch (error) {
+    console.error(`Error creating package.json in ${dir} directory:`, error)
+  }
+}
+
 async function main() {
   await copyIndexDts()
   await removeSpecificDtsFiles()
   await replaceImportsInIndexDts()
+
+  await createPackageJson('cjs', 'commonjs')
+  await createPackageJson('esm', 'module')
 }
 
 main()
