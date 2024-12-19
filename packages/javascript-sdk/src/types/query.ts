@@ -1,4 +1,4 @@
-import type { CollectRelationOptions } from '../sdk'
+import type { CollectRelationOptions } from '../sdk/index.js'
 import type {
   BooleanExpression,
   CollectPropertyExpression,

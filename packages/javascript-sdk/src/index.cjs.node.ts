@@ -1,6 +1,7 @@
 import { HttpClient, HttpClientResponse } from './network/HttpClient.js'
 import { NodeHttpClient } from './network/NodeHttpClient.js'
 import {
+  CollectBatchDraft,
   CollectModel,
   CollectRecordInstance,
   CollectRecordsArrayInstance,
@@ -14,6 +15,7 @@ const Collect = createCollect(new NodeHttpClient())
 
 module.exports = {
   Collect,
+  CollectBatchDraft,
   CollectModel,
   CollectRecordInstance,
   CollectRecordsArrayInstance,

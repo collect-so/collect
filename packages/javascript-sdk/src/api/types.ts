@@ -4,6 +4,7 @@ import type {
   CollectRecordInstance,
   CollectRecordTarget,
   CollectRecordsArrayInstance,
+  CollectRelation,
   CollectRelationDetachOptions,
   CollectRelationOptions,
   CollectRelationTarget
@@ -103,15 +104,15 @@ export type CollectRecordsApi = {
 
   findOne<Schema extends CollectSchema = any>(
     label: string,
-    searchParams: CollectQuery<Schema>,
+    searchParams: CollectQuery<Schema> & { limit?: never; skip?: never },
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordInstance<Schema>>
   findOne<Schema extends CollectSchema = any>(
-    labelOrSearchParams: CollectQuery<Schema> | string,
+    labelOrSearchParams: (CollectQuery<Schema> & { limit?: never; skip?: never }) | string,
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordInstance<Schema>>
   findOne<Schema extends CollectSchema = any>(
-    searchParams: CollectQuery<Schema>,
+    searchParams: CollectQuery<Schema> & { limit?: never; skip?: never },
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordInstance<Schema>>
 
@@ -123,14 +124,7 @@ export type CollectRecordsApi = {
   relations(
     target: CollectRecordTarget,
     transaction?: CollectTransaction | string
-  ): Promise<
-    CollectApiResponse<
-      Array<{
-        relations: Array<{ count: number; label: string }>
-        type: string
-      }>
-    >
-  >
+  ): Promise<CollectApiResponse<Array<CollectRelation>>>
 
   // overwrite whole record
   set<Schema extends CollectSchema = any>(
