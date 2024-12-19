@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.28.0
+
+### Minor Changes
+
+- 3db80de: Update relations API
+
 ## 0.27.0
 
 ### Minor Changes
