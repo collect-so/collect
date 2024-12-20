@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.28.1
+
+### Patch Changes
+
+- 9365aed: Fix empty search params in relations query
+
 ## 0.28.0
 
 ### Minor Changes
