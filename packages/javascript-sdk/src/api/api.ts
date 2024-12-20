@@ -436,7 +436,7 @@ export class CollectRestAPI {
       search?: CollectQuery<Schema>
       transaction?: CollectTransaction | string
     }) => {
-      const { searchParams } = createSearchParams<Schema>(undefined, search)
+      const { searchParams } = createSearchParams<Schema>(search)
 
       const tx = pickTransaction(transaction)
 
