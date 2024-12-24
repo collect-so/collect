@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.29.1
+
+### Patch Changes
+
+- 9180663: Import hotfix
+
 ## 0.29.0
 
 ### Minor Changes
