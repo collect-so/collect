@@ -6,6 +6,10 @@ import {
   CollectRecordInstance,
   CollectRecordsArrayInstance,
   CollectTransaction,
+  EmptyTargetError,
+  NotFoundError,
+  UniquenessError,
+  ValidationError,
   createCollect,
   idToDate,
   idToTimestamp
@@ -20,8 +24,12 @@ module.exports = {
   CollectRecordInstance,
   CollectRecordsArrayInstance,
   CollectTransaction,
+  EmptyTargetError,
   HttpClient,
   HttpClientResponse,
+  NotFoundError,
+  UniquenessError,
+  ValidationError,
   default: Collect,
   idToDate,
   idToTimestamp

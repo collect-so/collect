@@ -38,13 +38,12 @@
     "jest-ts-webcompat-resolver": "1.0.0",
     "prettier": "3.2.5",
     "rimraf": "5.0.1",
-    "tsup": "^7.1.0",
     "typescript": "5.3.3"
   },
   "packageManager": "pnpm@9.1.0",
   "engines": {
     "pnpm": "9",
-    "node": "^18.x"
+    "node": "^18.x || ^20.x || ^22.x"
   },
   "workspaces": [
     "packages/*"

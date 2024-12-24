@@ -107,13 +107,13 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
     return this.apiProxy.records.detach(sourceId, target, options, transaction)
   }
 
-  async updateById(
+  private async handleSetOrUpdate(
     id: string,
-    record: InferSchemaTypesWrite<Schema>,
+    record: Partial<InferSchemaTypesWrite<Schema>>,
+    method: 'set' | 'update',
     transaction?: CollectTransaction | string
   ) {
     const data = await mergeDefaultsWithPayload<Schema>(this.schema, record)
-
     const uniqFields = pickUniqFieldsFromRecord(this.schema, data)
 
     if (!isEmptyObject(uniqFields)) {
@@ -126,7 +126,7 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
         (matchingRecords.data.length === 1 && matchingRecords.data[0].__id === id)
 
       if (canUpdate) {
-        const result = await this.apiProxy.records.update<Schema>(id, data, tx)
+        const result = await this.apiProxy.records[method]<Schema>(id, data, tx)
 
         if (!hasOwnTransaction) {
           await (tx as CollectTransaction).commit()
@@ -139,7 +139,24 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
         throw new UniquenessError(this.label, uniqFields)
       }
     }
-    return await this.apiProxy.records.update<Schema>(id, data, transaction)
+
+    return await this.apiProxy.records[method]<Schema>(id, data, transaction)
+  }
+
+  async set(
+    id: string,
+    record: InferSchemaTypesWrite<Schema>,
+    transaction?: CollectTransaction | string
+  ) {
+    return await this.handleSetOrUpdate(id, record, 'set', transaction)
+  }
+
+  async update(
+    id: string,
+    record: Partial<InferSchemaTypesWrite<Schema>>,
+    transaction?: CollectTransaction | string
+  ) {
+    return await this.handleSetOrUpdate(id, record, 'update', transaction)
   }
 
   async createMany(
