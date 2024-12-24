@@ -54,31 +54,29 @@ export type LogicalExpression<T = CollectPropertyExpression & CollectQueryRelate
     AndExpression<T> & OrExpression<T> & NotExpression<T> & XorExpression<T> & NorExpression<T>
   >
 
-export type CollectQueryIdExpression =
-  | ({ __id?: string } & CollectQueryRelatedCondition)
-  | LogicalExpression<{ __id?: string } & CollectQueryRelatedCondition>
+type MaybeLogicalExpression<T> = LogicalExpression<T> | T
+
+export type CollectQueryIdExpression = MaybeLogicalExpression<
+  { $id?: LogicalExpression<StringExpression> | StringExpression } & CollectQueryRelatedCondition
+>
 
 export type CollectQueryExpression<Schema extends CollectSchema = CollectSchema> =
   | CollectQueryIdExpression
   | (Schema extends CollectSchema ?
       // When used with actual CollectSchema
       {
-        [Key in keyof Schema]?:
-          | CollectPropertyExpressionByType[Schema[Key]['type']]
-          | LogicalExpression<CollectPropertyExpressionByType[Schema[Key]['type']]>
+        [Key in keyof Schema]?: MaybeLogicalExpression<
+          CollectPropertyExpressionByType[Schema[Key]['type']]
+        >
       }
     : // When used with random object
       {
         [Key in keyof Schema]?: Schema[Key] extends MaybeArray<number> ?
-          LogicalExpression<NumberExpression> | NumberExpression
-        : Schema[Key] extends MaybeArray<boolean> ?
-          BooleanExpression | LogicalExpression<BooleanExpression>
+          MaybeLogicalExpression<NumberExpression>
+        : Schema[Key] extends MaybeArray<boolean> ? MaybeLogicalExpression<BooleanExpression>
         : Schema[Key] extends MaybeArray<string> ?
-          | DatetimeExpression
-          | LogicalExpression<DatetimeExpression>
-          | LogicalExpression<StringExpression>
-          | StringExpression
-        : Schema[Key] extends MaybeArray<null> ? LogicalExpression<NullExpression> | NullExpression
+          MaybeLogicalExpression<DatetimeExpression> | MaybeLogicalExpression<StringExpression>
+        : Schema[Key] extends MaybeArray<null> ? MaybeLogicalExpression<NullExpression>
         : LogicalExpression | Partial<CollectPropertyExpression>
       })
 

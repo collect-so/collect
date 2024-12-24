@@ -17,9 +17,9 @@ import type { CollectTransaction } from './transaction.js'
 import { CollectRestApiProxy } from '../api/rest-api-proxy.js'
 
 type CollectRecordInternalProps<Schema extends CollectSchema = CollectSchema> = {
-  __id: string
-  __label: string
-  __proptypes?: FlattenTypes<
+  readonly __id: string
+  readonly __label: string
+  readonly __proptypes?: FlattenTypes<
     {
       [Key in RequiredKeysRead<Schema>]: Schema[Key]['type']
     } & {
@@ -34,8 +34,9 @@ export type CollectRecordProps<Schema extends CollectSchema = CollectSchema> =
       [K in keyof Schema]?: Schema[K]
     }
 
-export type CollectRecord<Schema extends CollectSchema = CollectSchema> =
+export type CollectRecord<Schema extends CollectSchema = CollectSchema> = FlattenTypes<
   CollectRecordInternalProps<Schema> & FlattenTypes<CollectRecordProps<Schema>>
+>
 
 // For set, update, attach, detach, delete methods (extending plain id: string)
 export type CollectRecordTarget = CollectRecord<any> | CollectRecordInstance<any> | string

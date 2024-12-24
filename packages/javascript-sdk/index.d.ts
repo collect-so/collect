@@ -16,9 +16,15 @@ import {
   CollectModel,
   CollectRecordInstance,
   CollectRecordsArrayInstance,
-  CollectTransaction
-} from './src/sdk'
-import { CollectModels, CollectSchema } from './src/types'
+  CollectTransaction,
+  idToDate,
+  idToTimestamp,
+  EmptyTargetError,
+  NotFoundError,
+  UniquenessError,
+  ValidationError
+} from './types/sdk'
+import { CollectModels, CollectSchema } from './types/types'
 
 declare module '@collect.so/javascript-sdk' {
   export namespace Collect {}
@@ -53,7 +59,13 @@ declare module '@collect.so/javascript-sdk' {
     CollectSchema,
     CollectTransaction,
     HttpClient,
-    HttpClientResponse
+    HttpClientResponse,
+    EmptyTargetError,
+    NotFoundError,
+    UniquenessError,
+    ValidationError,
+    idToDate,
+    idToTimestamp
   }
 
   export * from './src/types'

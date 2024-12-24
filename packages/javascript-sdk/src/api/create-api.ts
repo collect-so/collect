@@ -158,7 +158,7 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
         return fetcher<CollectApiResponse<{ message: string }>>(`/records/delete`, {
           headers: Object.assign({}, buildTransactionHeader(txId)),
           method: 'PUT',
-          requestData: { ids: idOrIds }
+          requestData: { limit: 1000, where: { $id: { $in: idOrIds } } }
         })
       } else {
         return fetcher<CollectApiResponse<{ message: string }>>(`/records/${idOrIds}`, {
