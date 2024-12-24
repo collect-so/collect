@@ -23,8 +23,8 @@ import {
   NotFoundError,
   UniquenessError,
   ValidationError
-} from './types/sdk'
-import { CollectModels, CollectSchema } from './types/types'
+} from './src/sdk'
+import { CollectModels, CollectSchema } from './src/types'
 
 declare module '@collect.so/javascript-sdk' {
   export namespace Collect {}
