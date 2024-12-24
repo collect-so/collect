@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.29.0
+
+### Minor Changes
+
+- 2094d4f: Update model methods with set and update. New delete by id API.
+
 ## 0.28.1
 
 ### Patch Changes
