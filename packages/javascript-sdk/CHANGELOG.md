@@ -1,5 +1,11 @@
 # @collect.so/javascript-sdk
 
+## 0.30.0
+
+### Minor Changes
+
+- c910462: Add findUniq method and type helpers to Model class
+
 ## 0.29.1
 
 ### Patch Changes
