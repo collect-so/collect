@@ -2,8 +2,7 @@ import type { FlattenTypes, MaybePromise } from './utils.js'
 import type { CollectDatetimeObject, CollectPropertyType, CollectPropertyValue } from './value.js'
 
 export type CollectSchemaDefaultValue<T extends CollectPropertyType = CollectPropertyType> =
-  | CollectPropertyValue<T>
-  | MaybePromise<CollectPropertyValue<T>>
+  MaybePromise<CollectPropertyValue<T>>
 
 export type CollectSchemaField<T extends CollectPropertyType = CollectPropertyType> = {
   default?: CollectSchemaDefaultValue<T>

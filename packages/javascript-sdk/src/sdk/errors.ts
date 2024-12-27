@@ -1,29 +1,10 @@
 export class UniquenessError extends Error {
   constructor(label: string, properties: any) {
     super(
-      `Collect Uniqueness Error: Record with label "${label}" and properties ${JSON.stringify(properties)} already exists`
+      `Record with label "${label}" and properties ${JSON.stringify(properties)} already exists`
     )
     this.name = 'UniquenessError'
     Object.setPrototypeOf(this, UniquenessError.prototype)
-  }
-}
-
-export class ValidationError extends Error {
-  errors: { [key: string]: string } | string
-
-  constructor(errors: { [key: string]: string } | string) {
-    super('Validation failed')
-    this.errors = errors
-    this.name = 'ValidationError'
-    Object.setPrototypeOf(this, ValidationError.prototype)
-  }
-}
-
-export class NotFoundError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = 'NotFoundError'
-    Object.setPrototypeOf(this, NotFoundError.prototype)
   }
 }
 
@@ -32,5 +13,17 @@ export class EmptyTargetError extends Error {
     super(message)
     this.name = 'EmptyTarget'
     Object.setPrototypeOf(this, EmptyTargetError.prototype)
+  }
+}
+
+export class NonUniqueResultError extends Error {
+  constructor(duplicateCount: number, searchParams: Record<string, any>) {
+    super(
+      `Expected a unique result but found ${duplicateCount} matches for the provided search parameters: ${JSON.stringify(
+        searchParams
+      )}. Ensure your search parameters uniquely identify a single result.`
+    )
+    this.name = 'NonUniqueResultError'
+    Object.setPrototypeOf(this, NonUniqueResultError.prototype)
   }
 }

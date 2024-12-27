@@ -7,9 +7,8 @@ import {
   CollectRecordsArrayInstance,
   CollectTransaction,
   EmptyTargetError,
-  NotFoundError,
+  NonUniqueResultError,
   UniquenessError,
-  ValidationError,
   createCollect,
   idToDate,
   idToTimestamp
@@ -27,9 +26,8 @@ export {
   EmptyTargetError,
   HttpClient,
   HttpClientResponse,
-  NotFoundError,
+  NonUniqueResultError,
   UniquenessError,
-  ValidationError,
   idToDate,
   idToTimestamp
 }

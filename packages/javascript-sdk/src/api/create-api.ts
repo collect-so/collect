@@ -17,6 +17,7 @@ import type {
 import type { CollectApiResponse } from './types.js'
 
 import { isArray } from '../common/utils.js'
+import { NonUniqueResultError } from '../sdk/errors.js'
 import { CollectBatchDraft, CollectRecordDraft } from '../sdk/record.js'
 import { buildTransactionHeader, pickRecordId, pickTransactionId } from './utils.js'
 
@@ -242,7 +243,6 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
     ) {
       const txId = pickTransactionId(transaction)
 
-      // @TODO: create distinct API method to fetch single record by search params
       const response = await fetcher<CollectApiResponse<CollectRecord<Schema>[]>>(
         `/records/search`,
         {
@@ -251,6 +251,29 @@ export const createApi = (fetcher: ReturnType<typeof createFetcher>) => ({
           requestData: { ...searchParams, limit: 1, skip: 0 } as CollectQuery<Schema>
         }
       )
+      const [record] = response.data
+      return { ...response, data: record } as CollectApiResponse<CollectRecord<Schema>>
+    },
+
+    async findUniq<Schema extends CollectSchema = any>(
+      searchParams: CollectQuery<Schema>,
+      transaction?: CollectTransaction | string
+    ) {
+      const txId = pickTransactionId(transaction)
+
+      const response = await fetcher<CollectApiResponse<CollectRecord<Schema>[]>>(
+        `/records/search`,
+        {
+          headers: Object.assign({}, buildTransactionHeader(txId)),
+          method: 'POST',
+          requestData: { ...searchParams, limit: 1, skip: 0 } as CollectQuery<Schema>
+        }
+      )
+
+      if (typeof response.total !== 'undefined' && response.total > 1) {
+        throw new NonUniqueResultError(response.total, searchParams)
+      }
+
       const [record] = response.data
       return { ...response, data: record } as CollectApiResponse<CollectRecord<Schema>>
     },

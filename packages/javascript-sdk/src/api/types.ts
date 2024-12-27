@@ -104,7 +104,7 @@ export type CollectRecordsApi = {
 
   findOne<Schema extends CollectSchema = any>(
     label: string,
-    searchParams: CollectQuery<Schema> & { limit?: never; skip?: never },
+    searchParams: CollectQuery<Schema> & { labels?: never; limit?: never; skip?: never },
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordInstance<Schema>>
   findOne<Schema extends CollectSchema = any>(
@@ -112,6 +112,20 @@ export type CollectRecordsApi = {
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordInstance<Schema>>
   findOne<Schema extends CollectSchema = any>(
+    searchParams: CollectQuery<Schema> & { limit?: never; skip?: never },
+    transaction?: CollectTransaction | string
+  ): Promise<CollectRecordInstance<Schema>>
+
+  findUniq<Schema extends CollectSchema = any>(
+    label: string,
+    searchParams: CollectQuery<Schema> & { labels?: never; limit?: never; skip?: never },
+    transaction?: CollectTransaction | string
+  ): Promise<CollectRecordInstance<Schema>>
+  findUniq<Schema extends CollectSchema = any>(
+    labelOrSearchParams: (CollectQuery<Schema> & { limit?: never; skip?: never }) | string,
+    transaction?: CollectTransaction | string
+  ): Promise<CollectRecordInstance<Schema>>
+  findUniq<Schema extends CollectSchema = any>(
     searchParams: CollectQuery<Schema> & { limit?: never; skip?: never },
     transaction?: CollectTransaction | string
   ): Promise<CollectRecordInstance<Schema>>
