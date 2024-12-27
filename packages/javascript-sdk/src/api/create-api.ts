@@ -17,7 +17,7 @@ import type {
 import type { CollectApiResponse } from './types.js'
 
 import { isArray } from '../common/utils.js'
-import { NonUniqueResultError, UniquenessError } from '../sdk'
+import { NonUniqueResultError } from '../sdk/errors.js'
 import { CollectBatchDraft, CollectRecordDraft } from '../sdk/record.js'
 import { buildTransactionHeader, pickRecordId, pickTransactionId } from './utils.js'
 
