@@ -114,7 +114,7 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
       if (canCreate) {
         const result = await this.apiProxy.records.create<Schema>(this.label, data, tx)
         if (!hasOwnTransaction) {
-          await (tx as CollectTransaction).commit() // http req 4
+          await (tx as CollectTransaction).commit()
         }
         return result
       } else {
