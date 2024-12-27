@@ -7,6 +7,9 @@ import type {
   MaybeArray
 } from '../types/index.js'
 import type {
+  CollectRecord,
+  CollectRecordInstance,
+  CollectRecordsArrayInstance,
   CollectRelationDetachOptions,
   CollectRelationOptions,
   CollectRelationTarget
@@ -38,6 +41,36 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
     collectInstance?.registerModel(this)
   }
 
+  /** @description
+   * Type helper for a draft version of the schema.
+   * Represents a flat object containing only the record's own properties
+   * (defined by the schema), excluding system fields such as `__id`, `__label`,
+   * and `__proptypes`. This type does not yet have a representation on the
+   * database side.
+   */
+  readonly draft!: CollectInferType<CollectModel<Schema>>
+
+  /** @description
+   * Type helper for a fully-defined record with database representation.
+   * Similar to the draft, but includes all fields that come with the record's
+   * database-side representation, such as `__id`, `__label`, and `__proptypes`.
+   */
+  readonly record!: CollectRecord<Schema>
+
+  /** @description
+   * Type helper for a single record instance.
+   * Extends the record by providing additional methods to operate on this specific
+   * record, such as saving, updating, or deleting it.
+   */
+  readonly recordInstance!: CollectRecordInstance<Schema>
+
+  /** @description
+   * Type helper for an array of record instances.
+   * Similar to a single record instance but supports batch or bulk operations,
+   * allowing efficient management of multiple records simultaneously.
+   */
+  readonly recordsArrayInstance!: CollectRecordsArrayInstance<Schema>
+
   getLabel() {
     return this.label
   }
@@ -57,7 +90,14 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
   }
 
   async findById(id: string, transaction?: CollectTransaction | string) {
-    return this.apiProxy?.records.findById<Schema>(id, transaction)
+    return this.findOne({ where: { $id: id } }, transaction)
+  }
+
+  async findUniq(
+    params: CollectQuery<Schema> & { labels?: never; limit?: never; skip?: never } = {},
+    transaction?: CollectTransaction | string
+  ) {
+    return this.apiProxy?.records.findUniq<Schema>(this.label, { ...params }, transaction)
   }
 
   async create(record: InferSchemaTypesWrite<Schema>, transaction?: CollectTransaction | string) {
@@ -74,7 +114,7 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
       if (canCreate) {
         const result = await this.apiProxy.records.create<Schema>(this.label, data, tx)
         if (!hasOwnTransaction) {
-          await (tx as CollectTransaction).commit()
+          await (tx as CollectTransaction).commit() // http req 4
         }
         return result
       } else {

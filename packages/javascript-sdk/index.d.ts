@@ -20,9 +20,8 @@ import {
   idToDate,
   idToTimestamp,
   EmptyTargetError,
-  NotFoundError,
   UniquenessError,
-  ValidationError
+  NonUniqueResultError
 } from './src/sdk'
 import { CollectModels, CollectSchema } from './src/types'
 
@@ -61,9 +60,8 @@ declare module '@collect.so/javascript-sdk' {
     HttpClient,
     HttpClientResponse,
     EmptyTargetError,
-    NotFoundError,
+    NonUniqueResultError,
     UniquenessError,
-    ValidationError,
     idToDate,
     idToTimestamp
   }

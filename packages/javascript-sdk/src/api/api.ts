@@ -352,6 +352,27 @@ export class CollectRestAPI {
         return result
       },
 
+      findUniq: async <Schema extends CollectSchema = any>(
+        labelOrSearchParams?: CollectQuery<Schema> | string,
+        searchParamsOrTransaction?: CollectQuery<Schema> | CollectTransaction | string,
+        transaction?: CollectTransaction | string
+      ): Promise<CollectRecordInstance<Schema>> => {
+        const isTransactionParam = isTransaction(searchParamsOrTransaction)
+        const { searchParams } = createSearchParams<Schema>(
+          labelOrSearchParams,
+          searchParamsOrTransaction
+        )
+        const tx = isTransactionParam ? searchParamsOrTransaction : transaction
+        const response = await this.api?.records.findUniq<Schema>(searchParams, tx)
+
+        const result = new CollectRecordInstance<Schema>(
+          response.data,
+          searchParamsOrTransaction as CollectQuery<Schema>
+        )
+        result.init(this)
+        return result
+      },
+
       properties: async (id: string, transaction?: CollectTransaction | string) => {
         return this.api?.records.properties(id, transaction)
       },
