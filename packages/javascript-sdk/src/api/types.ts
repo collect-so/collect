@@ -25,13 +25,6 @@ export type CollectApiResponse<T, E = Record<string, any>> = {
 } & E
 
 export type CollectRecordsApi = {
-  attach(
-    source: CollectRecordTarget,
-    target: CollectRelationTarget,
-    options?: CollectRelationOptions,
-    transaction?: CollectTransaction | string
-  ): Promise<CollectApiResponse<{ message: string }>>
-
   create<Schema extends CollectSchema = any>(
     label: string,
     data: InferSchemaTypesWrite<Schema>,
@@ -68,9 +61,20 @@ export type CollectRecordsApi = {
   ): Promise<CollectApiResponse<{ message: string }>>
 
   detach(
-    source: CollectRecordTarget,
-    target: CollectRelationTarget,
-    options?: CollectRelationDetachOptions,
+    relationConfig: {
+      source: CollectRecordTarget
+      target: CollectRelationTarget
+      options?: CollectRelationDetachOptions
+    },
+    transaction?: CollectTransaction | string
+  ): Promise<CollectApiResponse<{ message: string }>>
+
+  attach(
+    relationConfig: {
+      source: CollectRecordTarget
+      target: CollectRelationTarget
+      options?: CollectRelationOptions
+    },
     transaction?: CollectTransaction | string
   ): Promise<CollectApiResponse<{ message: string }>>
 

@@ -130,21 +130,39 @@ export class CollectModel<Schema extends CollectSchema = any> extends CollectRes
   }
 
   attach(
-    sourceId: string,
-    target: CollectRelationTarget,
-    options?: CollectRelationOptions,
+    relationConfig: {
+      sourceId: string
+      target: CollectRelationTarget
+      options?: CollectRelationOptions
+    },
     transaction?: CollectTransaction | string
   ) {
-    return this.apiProxy.records.attach(sourceId, target, options, transaction)
+    return this.apiProxy.records.attach(
+      {
+        source: relationConfig.sourceId,
+        target: relationConfig.target,
+        options: relationConfig.options
+      },
+      transaction
+    )
   }
 
   detach(
-    sourceId: string,
-    target: CollectRelationTarget,
-    options?: CollectRelationDetachOptions,
+    relationConfig: {
+      sourceId: string
+      target: CollectRelationTarget
+      options?: CollectRelationDetachOptions
+    },
     transaction?: CollectTransaction | string
   ) {
-    return this.apiProxy.records.detach(sourceId, target, options, transaction)
+    return this.apiProxy.records.detach(
+      {
+        source: relationConfig.sourceId,
+        target: relationConfig.target,
+        options: relationConfig.options
+      },
+      transaction
+    )
   }
 
   private async handleSetOrUpdate(
